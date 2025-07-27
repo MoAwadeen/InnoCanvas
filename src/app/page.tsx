@@ -8,12 +8,18 @@ import Footer from '@/components/landing/footer';
 
 export default function LandingPage() {
   return (
-    <div className="flex min-h-dvh w-full flex-col bg-background">
-      <div className="absolute inset-0 -z-10 h-full w-full bg-background bg-[radial-gradient(hsl(var(--primary)/_0.5)_1px,transparent_1px)] bg-[size:2rem_2rem]">
-        <div className="absolute left-0 right-0 top-0 h-[40rem] w-full bg-[radial-gradient(circle_500px_at_50%_200px,hsl(var(--primary)_/_0.15),transparent)]"></div>
+    <div className="flex min-h-dvh w-full flex-col bg-background overflow-hidden">
+      <div className="absolute inset-0 -z-10 h-full w-full">
+        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div 
+          className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,hsl(var(--primary)/0.1),transparent_40%),radial-gradient(circle_800px_at_20%_80%,hsl(var(--accent)/0.1),transparent_50%),radial-gradient(circle_600px_at_80%_90%,hsl(226,100%,50%/0.1),transparent_50%)]"
+          style={{ animation: 'gradient-bg 15s ease infinite' }}
+        ></div>
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
       </div>
+      
       <Header />
-      <main className="flex-1">
+      <main className="flex-1 flex flex-col items-center text-center px-4">
         <Hero />
         <Features />
         <Testimonials />

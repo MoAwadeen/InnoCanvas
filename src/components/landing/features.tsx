@@ -9,7 +9,7 @@ export default function Features() {
     },
     {
       icon: <LayoutTemplate className="w-8 h-8 text-primary" />,
-      title: "Customizable Templates",
+      title: "Smart Templates",
       description: "Choose from a variety of beautiful, modern templates to visualize your business model in style.",
     },
     {
@@ -33,16 +33,18 @@ export default function Features() {
         </p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {features.map((feature) => (
-          <div key={feature.title} className="p-px rounded-2xl bg-gradient-to-b from-primary/30 to-transparent">
-            <div className="p-6 h-full bg-card rounded-[15px] flex flex-col items-start border shadow-sm">
+        {features.map((feature, i) => (
+           <div 
+            key={feature.title} 
+            className="glass-card p-6 flex flex-col items-start text-left transition-all duration-300 hover:border-primary/50 hover:scale-105"
+            style={{ animation: `float ${3 + i*0.5}s ease-in-out infinite` }}
+            >
               <div className="p-3 bg-primary/10 rounded-lg mb-4">
                 {feature.icon}
               </div>
               <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
               <p className="text-muted-foreground">{feature.description}</p>
             </div>
-          </div>
         ))}
       </div>
     </section>

@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Zap } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
@@ -65,14 +65,15 @@ export default function Pricing() {
       </div>
 
       <div className="flex justify-center items-center gap-4 mb-10">
-        <Label htmlFor="billing-cycle" className={cn("transition-colors", !isYearly && "text-primary")}>Monthly</Label>
+        <Label htmlFor="billing-cycle" className={cn("transition-colors font-medium", !isYearly ? "text-primary text-glow" : "text-muted-foreground")}>Monthly</Label>
         <Switch
           id="billing-cycle"
           checked={isYearly}
           onCheckedChange={setIsYearly}
+          className="data-[state=checked]:bg-accent"
         />
-        <Label htmlFor="billing-cycle" className={cn("transition-colors", isYearly && "text-primary")}>
-            Yearly <span className="text-sm font-medium text-green-600">(Save 25%)</span>
+        <Label htmlFor="billing-cycle" className={cn("transition-colors font-medium", isYearly ? "text-accent text-glow" : "text-muted-foreground")}>
+            Yearly <span className="text-sm font-medium text-green-400">(Save 25%)</span>
         </Label>
       </div>
 
@@ -81,50 +82,45 @@ export default function Pricing() {
           <div
             key={plan.name}
             className={cn(
-              "rounded-lg p-px relative",
-              plan.popular ? "bg-gradient-to-tr from-primary to-primary/50" : "bg-border/50"
+              "glass-card p-8 flex flex-col transition-all duration-300",
+              plan.popular ? "border-accent/50 shadow-[0_0_30px_hsl(var(--accent)/0.3)]" : "hover:border-white/20"
             )}
           >
-            <div className="p-8 h-full bg-card rounded-md flex flex-col border shadow-sm">
-              {plan.popular && (
-                <div className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2">
-                  <div className="px-3 py-1 text-sm font-semibold text-primary-foreground bg-primary rounded-full shadow-md">
-                    Recommended
-                  </div>
+            {plan.popular && (
+              <div className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2">
+                <div className="px-4 py-1 text-sm font-semibold text-white bg-accent rounded-full shadow-md flex items-center gap-2">
+                  <Zap className="w-4 h-4" />
+                  Recommended
                 </div>
-              )}
-              <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-              <p className="text-muted-foreground mb-6">{plan.description}</p>
-              <div className="mb-8">
-                <span className={cn(
-                  "text-5xl font-extrabold transition-colors",
-                  isYearly && plan.price.yearly > 0 ? "text-accent" : "text-foreground"
-                  )}>
-                  ${isYearly ? (plan.price.yearly / 12).toFixed(0) : plan.price.monthly}
-                </span>
-                <span className="text-muted-foreground text-lg">/month</span>
               </div>
-              <ul className="space-y-4 mb-10 flex-1">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link href={plan.href} className="w-full">
-                <Button
-                  size="lg"
-                  variant={plan.popular ? 'default' : 'outline'}
-                  className={cn(
-                    "w-full",
-                    plan.popular && "hover:animate-gradient-bg"
-                  )}
-                >
-                  {plan.cta}
-                </Button>
-              </Link>
+            )}
+            <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+            <p className="text-muted-foreground mb-6 h-10">{plan.description}</p>
+            <div className="mb-8">
+              <span className="text-5xl font-extrabold">
+                ${isYearly ? (plan.price.yearly / 12).toFixed(0) : plan.price.monthly}
+              </span>
+              <span className="text-muted-foreground text-lg">/month</span>
             </div>
+            <ul className="space-y-4 mb-10 flex-1">
+              {plan.features.map((feature) => (
+                <li key={feature} className="flex items-center gap-3 text-left">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+            <Link href={plan.href} className="w-full">
+              <Button
+                size="lg"
+                className={cn(
+                  "w-full text-lg",
+                  plan.popular ? "bg-accent text-white hover:bg-accent/90 glow-button" : "bg-white/10 text-white hover:bg-white/20"
+                )}
+              >
+                {plan.cta}
+              </Button>
+            </Link>
           </div>
         ))}
       </div>

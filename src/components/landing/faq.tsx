@@ -42,9 +42,9 @@ export default function Faq() {
       </div>
       <Accordion type="single" collapsible className="w-full max-w-3xl mx-auto">
         {faqs.map((faq, index) => (
-          <AccordionItem key={index} value={`item-${index}`} className="bg-card shadow-sm rounded-2xl mb-4 px-6 border">
+          <AccordionItem key={index} value={`item-${index}`} className="glass-card mb-4 px-6 border-none">
             <AccordionTrigger className="text-lg text-left hover:no-underline">{faq.question}</AccordionTrigger>
-            <AccordionContent className="text-base text-muted-foreground">{faq.answer}</AccordionContent>
+            <AccordionContent className="text-base text-muted-foreground text-left">{faq.answer}</AccordionContent>
           </AccordionItem>
         ))}
       </Accordion>
