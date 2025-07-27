@@ -39,13 +39,14 @@ interface Canvas {
 }
 
 export default function MyCanvasesPage() {
-  const { user, userData } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const [canvases, setCanvases] = useState<Canvas[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (authLoading) return; 
     if (!user) {
       router.push('/login');
       return;
@@ -81,10 +82,9 @@ export default function MyCanvasesPage() {
       setIsLoading(false);
     });
 
-    // Cleanup subscription on unmount
     return () => unsubscribe();
 
-  }, [user, router, toast]);
+  }, [user, authLoading, router, toast]);
 
   const handleLogout = async () => {
     try {
@@ -119,9 +119,20 @@ export default function MyCanvasesPage() {
       });
     }
   };
+  
+  const displayName = user?.displayName || 'Innovator';
+
+  if (authLoading) {
+      return (
+            <div className="min-h-screen w-full flex items-center justify-center bg-background">
+                <Loader className="w-16 h-16 animate-spin text-primary" />
+            </div>
+        );
+  }
+
 
   if (!user) {
-    return null; // or a loading spinner
+    return null;
   }
 
   return (
@@ -146,7 +157,7 @@ export default function MyCanvasesPage() {
           transition={{ duration: 0.5 }}
           className="mb-12"
         >
-          <h1 className="text-4xl md:text-5xl font-bold">Welcome back, {userData?.fullName || user.displayName || 'Innovator'} 👋</h1>
+          <h1 className="text-4xl md:text-5xl font-bold">Welcome back, {displayName} 👋</h1>
           <p className="text-muted-foreground mt-2 text-lg">Here’s your latest business canvas progress.</p>
         </motion.div>
         
@@ -175,15 +186,15 @@ export default function MyCanvasesPage() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
                 <Card
-                  className="flex flex-col h-full hover:border-primary/50 transition-all border-border"
+                  className="flex flex-col h-full hover:border-primary/50 transition-all border-border bg-card"
                 >
                   <CardHeader>
-                    <CardTitle className="line-clamp-2">{canvas.title}</CardTitle>
+                    <CardTitle className="line-clamp-2 text-card-foreground">{canvas.title}</CardTitle>
                   </CardHeader>
                   <CardContent className="flex-grow">
                     <p className="text-muted-foreground text-sm line-clamp-3 h-16">{canvas.preview}</p>
                   </CardContent>
-                  <CardFooter className="flex justify-between items-center">
+                  <CardFooter className="flex justify-between items-center mt-auto pt-4 border-t border-border/20">
                     <p className="text-sm text-muted-foreground">{canvas.date}</p>
                     <div className="flex gap-2">
                         <Link href={`/generate?canvasId=${canvas.id}`}>

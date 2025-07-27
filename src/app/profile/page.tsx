@@ -42,14 +42,16 @@ export default function ProfilePage() {
     useEffect(() => {
         if (userData) {
             setProfileData({
-                fullName: userData.fullName || '',
+                fullName: userData.fullName || user?.displayName || '',
                 age: userData.age || '',
                 gender: userData.gender || '',
                 country: userData.country || '',
                 useCase: userData.useCase || '',
             });
+        } else if (user) {
+             setProfileData(prev => ({ ...prev, fullName: user.displayName || '' }));
         }
-    }, [userData]);
+    }, [userData, user]);
     
     const handleInputChange = (field: keyof typeof profileData, value: string) => {
         setProfileData(prev => ({...prev, [field]: value}))
@@ -61,7 +63,13 @@ export default function ProfilePage() {
         setIsLoading(true);
         try {
             const userRef = doc(db, 'users', user.uid);
-            await updateDoc(userRef, profileData);
+            await updateDoc(userRef, {
+                fullName: profileData.fullName,
+                age: profileData.age,
+                gender: profileData.gender,
+                country: profileData.country,
+                useCase: profileData.useCase
+            });
             
             if (auth.currentUser && auth.currentUser.displayName !== profileData.fullName) {
                 await updateAuthProfile(auth.currentUser, { displayName: profileData.fullName });
@@ -100,7 +108,7 @@ export default function ProfilePage() {
         }
     };
     
-    if (authLoading) {
+    if (authLoading || (!user && !authLoading)) {
         return (
             <div className="min-h-screen w-full flex items-center justify-center bg-background">
                 <Loader className="w-16 h-16 animate-spin text-primary" />
@@ -112,6 +120,9 @@ export default function ProfilePage() {
         router.push('/login');
         return null;
     }
+    
+    const displayName = profileData.fullName || user.displayName || 'Innovator';
+    const displayInitial = (profileData.fullName || user.displayName || 'I').charAt(0).toUpperCase();
 
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center p-4 md:p-8">
@@ -129,15 +140,15 @@ export default function ProfilePage() {
       </header>
       <main className="w-full max-w-5xl flex-grow">
         <h1 className="text-4xl md:text-5xl font-bold mb-8">Your Profile</h1>
-        <Card className="mx-auto max-w-3xl w-full border-border">
+        <Card className="mx-auto max-w-3xl w-full border-border bg-card">
             <CardHeader>
                 <div className="flex items-center gap-4">
                     <Avatar className="w-20 h-20 border-2 border-primary">
-                        <AvatarImage src={user.photoURL || "https://placehold.co/100x100.png"} alt={profileData.fullName} data-ai-hint="man portrait"/>
-                        <AvatarFallback>{profileData.fullName ? profileData.fullName.charAt(0).toUpperCase() : 'U'}</AvatarFallback>
+                        <AvatarImage src={user.photoURL || `https://placehold.co/100x100.png/000987/FFFFFF?text=${displayInitial}`} alt={displayName} />
+                        <AvatarFallback>{displayInitial}</AvatarFallback>
                     </Avatar>
                     <div>
-                        <CardTitle className="text-2xl">{profileData.fullName || 'Innovator'}</CardTitle>
+                        <CardTitle className="text-2xl text-card-foreground">{displayName}</CardTitle>
                         <CardDescription>{user.email}</CardDescription>
                     </div>
                 </div>
@@ -147,27 +158,27 @@ export default function ProfilePage() {
                 <div className="grid gap-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="grid gap-2">
-                            <Label htmlFor="full-name">Full Name</Label>
+                            <Label htmlFor="full-name" className="text-card-foreground">Full Name</Label>
                             <Input id="full-name" value={profileData.fullName} onChange={(e) => handleInputChange('fullName', e.target.value)} required />
                         </div>
                         <div className="grid gap-2">
-                        <Label htmlFor="email">Email</Label>
+                        <Label htmlFor="email" className="text-card-foreground">Email</Label>
                         <Input
                             id="email"
                             type="email"
-                            defaultValue={user.email || ''}
-                            required
+                            value={user.email || ''}
                             disabled
+                            className="text-muted-foreground"
                         />
                         </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="grid gap-2">
-                            <Label htmlFor="age">Age</Label>
-                            <Input id="age" type="number" placeholder="25" value={profileData.age} onChange={(e) => handleInputChange('age', e.target.value)} required />
+                            <Label htmlFor="age" className="text-card-foreground">Age</Label>
+                            <Input id="age" type="number" placeholder="25" value={profileData.age} onChange={(e) => handleInputChange('age', e.target.value)} />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="gender">Gender</Label>
+                            <Label htmlFor="gender" className="text-card-foreground">Gender</Label>
                             <Select value={profileData.gender} onValueChange={(value) => handleInputChange('gender', value)}>
                                 <SelectTrigger id="gender">
                                     <SelectValue placeholder="Select gender" />
@@ -182,7 +193,7 @@ export default function ProfilePage() {
                         </div>
                     </div>
                     <div className="grid gap-2">
-                        <Label htmlFor="country">Country</Label>
+                        <Label htmlFor="country" className="text-card-foreground">Country</Label>
                         <Select value={profileData.country} onValueChange={(value) => handleInputChange('country', value)}>
                             <SelectTrigger id="country">
                                 <SelectValue placeholder="Select your country" />
@@ -202,7 +213,7 @@ export default function ProfilePage() {
                         </Select>
                     </div>
                     <div className="grid gap-2">
-                        <Label htmlFor="use-case">Primary Use Case</Label>
+                        <Label htmlFor="use-case" className="text-card-foreground">Primary Use Case</Label>
                         <Select value={profileData.useCase} onValueChange={(value) => handleInputChange('useCase', value)}>
                             <SelectTrigger id="use-case">
                                 <SelectValue placeholder="How will you use InnoCanvas?" />
@@ -217,7 +228,7 @@ export default function ProfilePage() {
                         </Select>
                     </div>
                     
-                    <Button variant="gradient" type="submit" className="w-full" disabled={isLoading}>
+                    <Button variant="gradient" type="submit" className="w-full mt-2" disabled={isLoading}>
                       {isLoading ? <Loader className="animate-spin"/> : 'Save Changes'}
                     </Button>
                 </div>

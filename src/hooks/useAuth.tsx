@@ -4,7 +4,7 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { Loader } from 'lucide-react';
 
 interface AuthContextType {
@@ -25,23 +25,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       setUser(user);
-      if (user) {
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
-        if (userDoc.exists()) {
-          setUserData(userDoc.data());
-        } else {
-            setUserData(null);
-        }
-      } else {
+      if (!user) {
         setUserData(null);
+        setLoading(false);
       }
-      setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => unsubscribeAuth();
   }, []);
+
+  useEffect(() => {
+      if (user) {
+          const userDocRef = doc(db, 'users', user.uid);
+          const unsubscribeFirestore = onSnapshot(userDocRef, (doc) => {
+              if (doc.exists()) {
+                  setUserData(doc.data());
+              } else {
+                  setUserData(null);
+              }
+              setLoading(false);
+          });
+           return () => unsubscribeFirestore();
+      }
+  }, [user]);
+
 
   if (loading) {
     return (
