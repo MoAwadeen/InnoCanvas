@@ -391,3 +391,5 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
     )}
   </div>
 );
+
+    

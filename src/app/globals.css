@@ -14,16 +14,16 @@
     --popover: 210 20% 98%;
     --popover-foreground: 210 10% 23%;
 
-    --primary: 226 100% 50%;
+    --primary: 206 100% 50%;
     --primary-foreground: 210 20% 98%;
     
-    --secondary: 317 69% 49%;
+    --secondary: 265 89% 65%;
     --secondary-foreground: 210 20% 98%;
 
     --muted: 210 20% 93%;
     --muted-foreground: 210 20% 65%;
 
-    --accent: 184 99% 52%;
+    --accent: 300 81% 60%;
     --accent-foreground: 210 10% 23%;
 
     --destructive: 0 84.2% 60.2%;
@@ -31,7 +31,7 @@
     
     --border: 210 10% 85%;
     --input: 210 10% 85%;
-    --ring: 226 100% 50%;
+    --ring: 206 100% 50%;
 
     --radius: 1.5rem;
   }
@@ -52,59 +52,51 @@
 }
 
 @layer components {
-  /* Animated Gradient Button */
-  .btn-animated-gradient {
+  /* New IO Button Style */
+  .btn-io {
+    align-items: center;
+    background-image: linear-gradient(144deg, #af40ff, #5b42f3 50%, #00ddeb);
+    border: 0;
+    border-radius: 8px;
+    box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
+    box-sizing: border-box;
+    color: #ffffff;
+    display: flex;
+    font-size: 18px;
+    justify-content: center;
+    line-height: 1em;
+    max-width: 100%;
+    min-width: 140px;
+    padding: 3px;
     text-decoration: none;
-    position: relative;
-    border: none;
-    font-size: 14px;
-    font-family: inherit;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    white-space: nowrap;
     cursor: pointer;
-    color: #fff;
-    width: 9em;
-    height: 3em;
-    line-height: 2em;
-    text-align: center;
-    background: linear-gradient(90deg, #03a9f4, #f441a5, #ffeb3b, #03a9f4);
-    background-size: 300%;
-    border-radius: 30px;
-    z-index: 1;
+    transition: all 0.3s;
   }
 
-  .btn-animated-gradient:hover {
-    animation: ani 8s linear infinite;
-    border: none;
+  .btn-io:active,
+  .btn-io:hover {
+    outline: 0;
   }
 
-  @keyframes ani {
-    0% {
-      background-position: 0%;
-    }
-    100% {
-      background-position: 400%;
-    }
+  .btn-io-span {
+    background-color: rgb(5, 6, 45);
+    padding: 16px 24px;
+    border-radius: 6px;
+    width: 100%;
+    height: 100%;
+    transition: 300ms;
   }
 
-  .btn-animated-gradient::before {
-    content: "";
-    position: absolute;
-    top: -5px;
-    left: -5px;
-    right: -5px;
-    bottom: -5px;
-    z-index: -1;
-    background: linear-gradient(90deg, #03a9f4, #f441a5, #ffeb3b, #03a9f4);
-    background-size: 400%;
-    border-radius: 35px;
-    transition: 1s;
+  .btn-io:hover .btn-io-span {
+    background: none;
   }
 
-  .btn-animated-gradient:hover::before {
-    filter: blur(20px);
-  }
-
-  .btn-animated-gradient:active {
-    background: linear-gradient(32deg, #03a9f4, #f441a5, #ffeb3b, #03a9f4);
+  .btn-io:active {
+    transform: scale(0.9);
   }
 
   /* Interactive Card */
@@ -137,7 +129,7 @@
     opacity: 0;
     bottom: 8px;
     z-index: 20;
-    font-size: 0.875rem;
+    font-size: 0.875rem; /* 14px */
     font-weight: bold;
     line-height: 1.25;
     transition: all 300ms ease-in-out 100ms;
@@ -171,18 +163,18 @@
     transform: translateY(-10px);
   }
   
-  .title {
+  .interactive-card-title {
     opacity: 1;
     transition: all 300ms ease-in-out;
     position: relative;
-    font-size: 1.25rem;
+    font-size: 1.25rem; /* 20px */
     font-weight: bold;
     color: white;
     text-align: center;
     transform: translateY(0);
   }
 
-  .tracker:hover ~ .interactive-card .title {
+  .tracker:hover ~ .interactive-card .interactive-card-title {
     opacity: 0;
     transform: translateY(-10px);
   }
@@ -270,3 +262,5 @@
     user-select: none;
   }
 }
+
+    
