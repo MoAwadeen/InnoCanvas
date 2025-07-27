@@ -140,28 +140,49 @@ export default function BmcGeneratorPage() {
   
   const handleExport = () => {
     if (canvasRef.current) {
-      toast({
-          title: 'Exporting PDF...',
-          description: 'Please wait while we generate your PDF.',
-      });
-      html2canvas(canvasRef.current, {
-        useCORS: true,
-        backgroundColor: null, // Use transparent background
-        scale: 2, // Increase resolution
-      }).then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF({
-          orientation: 'landscape',
-          unit: 'px',
-          format: [canvas.width, canvas.height]
-        });
-        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-        pdf.save('innocanvas-bmc.pdf');
+        const originalTemplate = currentTemplate;
         toast({
-          title: 'PDF Exported!',
-          description: 'Your canvas has been downloaded.',
-      });
-      });
+            title: 'Exporting PDF...',
+            description: 'Please wait while we generate your PDF.',
+        });
+        
+        // Temporarily switch to a print-friendly theme
+        setCurrentTemplate('minimal');
+
+        // Allow state to update before rendering canvas
+        setTimeout(() => {
+            html2canvas(canvasRef.current!, {
+                useCORS: true,
+                backgroundColor: null, // Use transparent background
+                scale: 2, // Increase resolution
+            }).then((canvas) => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF({
+                    orientation: 'landscape',
+                    unit: 'px',
+                    format: [canvas.width, canvas.height]
+                });
+                pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+                pdf.save('innocanvas-bmc.pdf');
+                
+                // Revert to original template
+                setCurrentTemplate(originalTemplate);
+
+                toast({
+                    title: 'PDF Exported!',
+                    description: 'Your canvas has been downloaded.',
+                });
+            }).catch(err => {
+                console.error("Error exporting PDF:", err);
+                toast({
+                    title: 'Error exporting',
+                    description: 'Failed to generate PDF. Please try again.',
+                    variant: 'destructive',
+                });
+                // Revert to original template on error
+                setCurrentTemplate(originalTemplate);
+            });
+        }, 100); // Small delay to ensure DOM update
     } else {
         toast({
             title: 'Error exporting',
@@ -169,7 +190,7 @@ export default function BmcGeneratorPage() {
             variant: 'destructive',
         });
     }
-  }
+};
 
   const handleShare = () => {
       toast({
@@ -305,7 +326,7 @@ export default function BmcGeneratorPage() {
                         <Button variant="outline" onClick={handleExport}><Download className="mr-2" /> Export as PDF</Button>
                         <Button variant="outline" onClick={handleShare}><Share2 className="mr-2" /> Share Public Link</Button>
                     </div>
-                  <div ref={canvasRef} className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                  <div ref={canvasRef} className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 p-4">
                     {/* Top Row */}
                     <BmcCard key={initialBmcBlocks[0].keyProp} {...initialBmcBlocks[0]} content={bmcData.keyPartnerships} className="lg:col-span-1" isEditing={isEditing} onContentChange={handleBmcDataChange} />
                     <div className="lg:col-span-1 grid grid-rows-2 gap-4">
@@ -367,12 +388,17 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
     // Glass Template
     `data-[template=glass]:bg-white/10 data-[template=glass]:backdrop-blur-lg data-[template=glass]:border data-[template=glass]:border-white/20`,
     // Minimal Light Template
-    `data-[template=minimal]:bg-gray-50 data-[template=minimal]:text-gray-800 data-[template=minimal]:border`,
+    `data-[template=minimal]:bg-gray-50 data-[template=minimal]:text-gray-800 data-[template=minimal]:border-gray-900 data-[template=minimal]:border`,
     // Minimal Dark Template
     `data-[template=dark]:bg-gray-900 data-[template=dark]:text-gray-200 data-[template=dark]:border data-[template=dark]:border-gray-700`,
     className
     )}>
-    <div className="flex items-center gap-2 mb-2">
+    <div className={cn(
+      "flex items-center gap-2 mb-2",
+      "data-[template=minimal]:text-gray-800",
+      "data-[template=dark]:text-gray-200",
+      "data-[template=glass]:text-white"
+      )}>
       {icon}
       <h3 className="font-bold text-lg">{title}</h3>
     </div>
@@ -395,4 +421,6 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
     />
   </div>
 );
+    
+
     
