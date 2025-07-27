@@ -29,7 +29,7 @@ import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
-import { collection, query, where, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { collection, query, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 
 interface Canvas {
   id: string;
@@ -46,39 +46,40 @@ export default function MyCanvasesPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
-      const fetchCanvases = async () => {
-        setIsLoading(true);
-        try {
-          const q = query(collection(db, 'users', user.uid, 'canvases'));
-          const querySnapshot = await getDocs(q);
-          const userCanvases = querySnapshot.docs.map(doc => ({
-            id: doc.id,
-            title: doc.data().businessDescription,
-            preview: Object.values(doc.data()).slice(0, 3).join(' '),
-            date: doc.data().createdAt?.toDate().toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            }) || new Date().toLocaleDateString(),
-          }));
-          setCanvases(userCanvases);
-        } catch (error) {
-          console.error("Error fetching canvases: ", error);
-          toast({
-            title: 'Error',
-            description: 'Could not fetch your canvases.',
-            variant: 'destructive'
-          });
-        } finally {
-          setIsLoading(false);
-        }
-      };
-
-      fetchCanvases();
-    } else {
-        router.push('/login');
+    if (!user) {
+      router.push('/login');
+      return;
     }
+
+    setIsLoading(true);
+    const q = query(collection(db, 'users', user.uid, 'canvases'));
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const userCanvases = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        title: doc.data().businessDescription,
+        preview: Object.values(doc.data()).slice(0, 3).join(' '),
+        date: doc.data().createdAt?.toDate().toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        }) || new Date().toLocaleDateString(),
+      }));
+      setCanvases(userCanvases);
+      setIsLoading(false);
+    }, (error) => {
+      console.error("Error fetching canvases: ", error);
+      toast({
+        title: 'Error',
+        description: 'Could not fetch your canvases.',
+        variant: 'destructive'
+      });
+      setIsLoading(false);
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+
   }, [user, router, toast]);
 
   const handleLogout = async () => {
@@ -102,7 +103,6 @@ export default function MyCanvasesPage() {
     if (!user) return;
     try {
       await deleteDoc(doc(db, 'users', user.uid, 'canvases', canvasId));
-      setCanvases(canvases.filter(canvas => canvas.id !== canvasId));
       toast({
         title: 'Canvas Deleted',
         description: 'Your canvas has been successfully deleted.',
