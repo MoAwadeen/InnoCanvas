@@ -14,12 +14,12 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border-2 border-vivid-pink bg-transparent hover:bg-soft-magenta hover:text-accent-foreground",
+          "border-2 border-vivid-pink bg-transparent hover:bg-soft-magenta hover:text-accent-foreground rounded-lg",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-secondary hover:text-secondary-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        gradient: "btn-glow text-primary-foreground rounded-md",
+        gradient: "text-primary-foreground",
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -48,7 +48,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     if (variant === 'gradient') {
       return (
         <Comp
-          className={cn(buttonVariants({ variant, size, className }))}
+          className={cn(buttonVariants({ variant, size, className }), "btn-glow rounded-md")}
           ref={ref}
           {...props}
         >
