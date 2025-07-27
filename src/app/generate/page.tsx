@@ -1,16 +1,10 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
   Users,
   Lightbulb,
@@ -34,10 +28,11 @@ import {
 import { AnimatePresence, motion } from 'framer-motion';
 import { generateBMC, GenerateBMCInput, GenerateBMCOutput } from '@/ai/flows/generate-bmc';
 import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 type BMCBlock = {
   title: string;
@@ -95,13 +90,12 @@ export default function BmcGeneratorPage() {
     valuePropositions: '',
     channels: '',
     customerRelationships: 'Automated', // Default value
-    revenueStreams: '',
     keyActivities: 'Software Development', // Default
-    keyResources: '',
     keyPartnerships: 'Tech Providers', // Default
     costStructure: 'Technology Infrastructure', // Default
   });
   const [bmcData, setBmcData] = useState<GenerateBMCOutput | null>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
 
   const handleInputChange = (
     key: keyof GenerateBMCInput,
@@ -145,10 +139,36 @@ export default function BmcGeneratorPage() {
   };
   
   const handleExport = () => {
+    if (canvasRef.current) {
       toast({
-          title: 'Coming Soon!',
-          description: 'PDF export functionality is currently under development.',
+          title: 'Exporting PDF...',
+          description: 'Please wait while we generate your PDF.',
       });
+      html2canvas(canvasRef.current, {
+        useCORS: true,
+        backgroundColor: null, // Use transparent background
+        scale: 2, // Increase resolution
+      }).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF({
+          orientation: 'landscape',
+          unit: 'px',
+          format: [canvas.width, canvas.height]
+        });
+        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+        pdf.save('innocanvas-bmc.pdf');
+        toast({
+          title: 'PDF Exported!',
+          description: 'Your canvas has been downloaded.',
+      });
+      });
+    } else {
+        toast({
+            title: 'Error exporting',
+            description: 'Could not find the canvas to export.',
+            variant: 'destructive',
+        });
+    }
   }
 
   const handleShare = () => {
@@ -285,7 +305,7 @@ export default function BmcGeneratorPage() {
                         <Button variant="outline" onClick={handleExport}><Download className="mr-2" /> Export as PDF</Button>
                         <Button variant="outline" onClick={handleShare}><Share2 className="mr-2" /> Share Public Link</Button>
                     </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                  <div ref={canvasRef} className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
                     {/* Top Row */}
                     <BmcCard key={initialBmcBlocks[0].keyProp} {...initialBmcBlocks[0]} content={bmcData.keyPartnerships} className="lg:col-span-1" isEditing={isEditing} onContentChange={handleBmcDataChange} />
                     <div className="lg:col-span-1 grid grid-rows-2 gap-4">
@@ -299,8 +319,8 @@ export default function BmcGeneratorPage() {
                     </div>
                     <BmcCard key={initialBmcBlocks[6].keyProp} {...initialBmcBlocks[6]} content={bmcData.customerSegments} className="lg:col-span-1" isEditing={isEditing} onContentChange={handleBmcDataChange} />
                     {/* Bottom Row */}
-                    <BmcCard key={initialBmcBlocks[7].keyProp} {...initialBmcBlocks[7]} content={bmcData.costStructure} className="lg:col-span-2" isEditing={isEditing} onContentChange={handleBmcDataChange} />
-                    <BmcCard key={initialBmcBlocks[8].keyProp} {...initialBmcBlocks[8]} content={bmcData.revenueStreams} className="lg:col-span-3" isEditing={isEditing} onContentChange={handleBmcDataChange} />
+                    <BmcCard key={initialBmcBlocks[7].keyProp} {...initialBmcBlocks[7]} content={bmcData.costStructure} className="md:col-span-2 lg:col-span-2" isEditing={isEditing} onContentChange={handleBmcDataChange} />
+                    <BmcCard key={initialBmcBlocks[8].keyProp} {...initialBmcBlocks[8]} content={bmcData.revenueStreams} className="md:col-span-1 lg:col-span-3" isEditing={isEditing} onContentChange={handleBmcDataChange} />
                   </div>
                 </div>
               )
