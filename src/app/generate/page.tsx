@@ -421,7 +421,7 @@ export default function BmcGeneratorPage() {
     <div className="min-h-screen w-full bg-background text-foreground p-4 md:p-8">
        <header className="flex justify-between items-center mb-8">
           <Link href="/my-canvases" className="flex items-center gap-2">
-            <Bot className="h-8 w-8" />
+            <Bot className="h-8 w-8 text-primary" />
             <span className="font-bold text-2xl">InnoCanvas</span>
           </Link>
           <div className="flex items-center gap-2 text-sm font-medium">

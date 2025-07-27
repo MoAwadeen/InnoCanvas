@@ -79,6 +79,8 @@ export default function ProfilePage() {
                 title: 'Profile Updated',
                 description: 'Your changes have been saved successfully.',
             });
+            
+            router.push('/my-canvases');
 
         } catch(error: any) {
             toast({
@@ -108,17 +110,12 @@ export default function ProfilePage() {
         }
     };
     
-    if (authLoading || (!user && !authLoading)) {
+    if (authLoading || !user) {
         return (
             <div className="min-h-screen w-full flex items-center justify-center bg-background">
                 <Loader className="w-16 h-16 animate-spin text-primary" />
             </div>
         );
-    }
-    
-    if (!user) {
-        router.push('/login');
-        return null;
     }
     
     const displayName = profileData.fullName || user.displayName || 'Innovator';
