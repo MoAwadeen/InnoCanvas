@@ -29,6 +29,7 @@ import {
   Palette,
   Loader,
   ChevronRight,
+  Bot,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { generateBMC, GenerateBMCInput, GenerateBMCOutput } from '@/ai/flows/generate-bmc';
@@ -285,3 +286,4 @@ const BmcCard = ({ title, icon, content, className }: BMCBlock & { className?: s
     />
   </div>
 );
+
