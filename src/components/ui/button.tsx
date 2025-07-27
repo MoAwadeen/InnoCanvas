@@ -47,13 +47,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     if (variant === "gradient") {
       return (
-        <button className={cn("btn-realism", className)} ref={ref} {...props}>
-            <div className="blob1" />
-            <div className="blob2" />
-            <div className="inner">
+         <div className={cn("btn-gradient-container", className)}>
+            <button className="btn-gradient-inner" ref={ref} {...props}>
                 {children}
-            </div>
-        </button>
+            </button>
+        </div>
       )
     }
 

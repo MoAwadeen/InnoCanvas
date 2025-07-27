@@ -1,3 +1,4 @@
+
 import { Bot, Download, LayoutTemplate, Share2 } from "lucide-react";
 
 export default function Features() {
@@ -36,12 +37,12 @@ export default function Features() {
         {features.map((feature, i) => (
            <div 
             key={feature.title} 
-            className="bg-card p-6 flex flex-col items-start text-left transition-all duration-300 hover:border-primary/50 hover:scale-105 rounded-2xl border"
+            className="bg-card p-6 flex flex-col items-start text-left transition-all duration-300 hover:scale-105 rounded-2xl border border-border"
             >
               <div className="p-3 bg-secondary rounded-lg mb-4">
                 {feature.icon}
               </div>
-              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+              <h3 className="text-xl font-semibold mb-2 text-card-foreground">{feature.title}</h3>
               <p className="text-muted-foreground">{feature.description}</p>
             </div>
         ))}

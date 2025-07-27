@@ -29,16 +29,16 @@ export default function ProfilePage() {
             </Link>
             <div className="flex items-center gap-4">
                 <Link href="/my-canvases">
-                    <Button variant="outline">My Canvases</Button>
+                    <Button variant="secondary">My Canvases</Button>
                 </Link>
                 <Link href="/">
-                  <Button variant="outline">Logout</Button>
+                  <Button variant="secondary">Logout</Button>
                 </Link>
             </div>
       </header>
       <main className="w-full max-w-5xl flex-grow">
         <h1 className="text-4xl md:text-5xl font-bold mb-8">Your Profile</h1>
-        <Card className="mx-auto max-w-3xl w-full">
+        <Card className="mx-auto max-w-3xl w-full border-border">
             <CardHeader>
                 <div className="flex items-center gap-4">
                     <Avatar className="w-20 h-20 border-2 border-primary">

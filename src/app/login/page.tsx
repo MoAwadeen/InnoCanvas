@@ -21,7 +21,7 @@ export default function LoginPage() {
             <span className="font-bold text-2xl">InnoCanvas</span>
           </Link>
         </div>
-      <Card className="mx-auto max-w-md w-full">
+      <Card className="mx-auto max-w-md w-full border-border">
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>
@@ -53,7 +53,7 @@ export default function LoginPage() {
                 Login
                 </Button>
             </Link>
-            <Button variant="outline" className="w-full">
+            <Button variant="secondary" className="w-full">
               Login with Google
             </Button>
           </div>

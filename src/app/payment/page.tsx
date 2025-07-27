@@ -50,7 +50,7 @@ export default function PaymentPage() {
                 <span className="font-bold text-2xl">InnoCanvas</span>
             </Link>
             <Link href="/my-canvases">
-                <Button variant="outline">Back to My Canvases</Button>
+                <Button variant="secondary">Back to My Canvases</Button>
             </Link>
       </header>
       <main className="w-full max-w-5xl flex-grow">
@@ -64,8 +64,8 @@ export default function PaymentPage() {
                         key={plan.name}
                         onClick={() => setSelectedPlan(plan)}
                         className={cn(
-                            "cursor-pointer transition-all",
-                            selectedPlan.name === plan.name ? 'border-primary ring-2 ring-primary' : 'hover:border-primary/50'
+                            "cursor-pointer transition-all border-border",
+                            selectedPlan.name === plan.name ? 'ring-2 ring-primary' : 'hover:border-primary/50'
                         )}
                     >
                         <CardHeader>
@@ -88,7 +88,7 @@ export default function PaymentPage() {
                  ))}
                 </div>
             </div>
-            <Card className="w-full">
+            <Card className="w-full border-border">
                 <CardHeader>
                     <CardTitle className="text-2xl">Payment Details</CardTitle>
                     <CardDescription>
@@ -120,8 +120,8 @@ export default function PaymentPage() {
                     </div>
                     <div className="border-t pt-4 mt-2">
                         <div className="flex justify-between items-center text-lg font-bold">
-                            <span>Total Due Today:</span>
-                            <span>${selectedPlan.price}.00</span>
+                            <span className="text-card-foreground">Total Due Today:</span>
+                            <span className="text-card-foreground">${selectedPlan.price}.00</span>
                         </div>
                     </div>
                     <Button variant="gradient" type="submit" className="w-full text-lg py-6">

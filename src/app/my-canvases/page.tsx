@@ -55,10 +55,10 @@ export default function MyCanvasesPage() {
         </Link>
         <div className="flex items-center gap-4">
            <Link href="/profile">
-            <Button variant="outline"><User className="mr-2"/>Profile</Button>
+            <Button variant="secondary"><User className="mr-2"/>Profile</Button>
            </Link>
            <Link href="/">
-            <Button variant="outline">Logout</Button>
+            <Button variant="secondary">Logout</Button>
           </Link>
         </div>
       </header>
@@ -95,7 +95,7 @@ export default function MyCanvasesPage() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
                 <Card
-                  className="flex flex-col h-full hover:border-primary/50 transition-all"
+                  className="flex flex-col h-full hover:border-primary/50 transition-all border-border"
                 >
                   <CardHeader>
                     <CardTitle>{canvas.title}</CardTitle>

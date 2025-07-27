@@ -208,21 +208,21 @@ export default function BmcGeneratorPage() {
             exit={{ opacity: 0, y: -20 }}
             className="w-full max-w-4xl"
           >
-            <div className="bg-card rounded-2xl p-8 shadow-lg text-center border">
-              <h1 className="text-4xl font-bold mb-4">Tell Us About Your Idea</h1>
+            <div className="bg-card rounded-2xl p-8 shadow-lg text-center border-border border">
+              <h1 className="text-4xl font-bold mb-4 text-card-foreground">Tell Us About Your Idea</h1>
               <p className="text-muted-foreground mb-8">
                 Start with your business name and a brief description. The more detail, the better!
               </p>
               <Textarea
                 placeholder="Ex: A mobile app that helps tourists explore historical places using AR…"
-                className="min-h-[150px] text-lg"
+                className="min-h-[150px] text-lg bg-background text-foreground"
                 value={formData.businessDescription}
                 onChange={(e) => handleInputChange('businessDescription', e.target.value)}
               />
               <Button
                 size="lg"
                 variant="gradient"
-                className="mt-8 w-full"
+                className="mt-8"
                 onClick={() => setStep(2)}
                 disabled={!formData.businessDescription}
               >
@@ -240,15 +240,15 @@ export default function BmcGeneratorPage() {
             exit={{ opacity: 0, y: -20 }}
             className="w-full max-w-4xl"
           >
-            <div className="bg-card rounded-2xl p-8 shadow-lg border">
-              <h1 className="text-3xl font-bold mb-2 text-center">Refine Your Business Vision</h1>
+            <div className="bg-card rounded-2xl p-8 shadow-lg border-border border">
+              <h1 className="text-3xl font-bold mb-2 text-center text-card-foreground">Refine Your Business Vision</h1>
               <p className="text-muted-foreground mb-8 text-center">
                 Answer these questions to help the AI understand your business better.
               </p>
               <div className="space-y-6">
                 {refinementQuestions.map((q) => (
                   <div key={q.key}>
-                    <Label className="font-semibold text-lg mb-2 block">{q.label}</Label>
+                    <Label className="font-semibold text-lg mb-2 block text-card-foreground">{q.label}</Label>
                     <RadioGroup
                       onValueChange={(value) => handleInputChange(q.key as keyof GenerateBMCInput, value)}
                       value={formData[q.key as keyof GenerateBMCInput]}
@@ -257,7 +257,7 @@ export default function BmcGeneratorPage() {
                       {q.options.map((opt) => (
                         <div key={opt} className="flex items-center">
                           <RadioGroupItem value={opt} id={`${q.key}-${opt}`} className="peer sr-only"/>
-                          <Label htmlFor={`${q.key}-${opt}`} className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent/10 hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary w-full cursor-pointer">
+                          <Label htmlFor={`${q.key}-${opt}`} className="flex flex-col items-center justify-between rounded-md border-2 border-border bg-background p-4 hover:bg-accent/10 text-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary w-full cursor-pointer">
                             {opt}
                           </Label>
                         </div>
@@ -269,7 +269,7 @@ export default function BmcGeneratorPage() {
               <Button
                 size="lg"
                 variant="gradient"
-                className="mt-8 w-full"
+                className="mt-8"
                 onClick={() => handleGenerateCanvas(false)}
                 disabled={isLoading}
               >
@@ -300,12 +300,12 @@ export default function BmcGeneratorPage() {
                             {isLoading ? <Loader className="mr-2 animate-spin" /> : <RefreshCw className="mr-2" />} 
                             Regenerate
                         </Button>
-                        <Button variant="outline" onClick={() => setIsEditing(!isEditing)}>
+                        <Button variant="secondary" onClick={() => setIsEditing(!isEditing)}>
                             <Edit className="mr-2" /> {isEditing ? 'Done Editing' : 'Edit'}
                         </Button>
-                        <Button variant="outline" onClick={handleSave}><Save className="mr-2" /> Save to My Canvases</Button>
-                        <Button variant="outline" onClick={handleExport}><Download className="mr-2" /> Export as PDF</Button>
-                        <Button variant="outline" onClick={handleShare}><Share2 className="mr-2" /> Share Public Link</Button>
+                        <Button variant="secondary" onClick={handleSave}><Save className="mr-2" /> Save to My Canvases</Button>
+                        <Button variant="secondary" onClick={handleExport}><Download className="mr-2" /> Export as PDF</Button>
+                        <Button variant="secondary" onClick={handleShare}><Share2 className="mr-2" /> Share Public Link</Button>
                     </div>
                   <div ref={canvasRef} className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 p-4 bg-transparent">
                     {/* Top Row */}
@@ -365,7 +365,7 @@ type BmcCardProps = Omit<BMCBlock, 'content'> & {
 
 const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onContentChange }: BmcCardProps) => (
     <div className={cn(
-        "rounded-2xl p-4 shadow-sm flex flex-col transition-all overflow-hidden bg-card border",
+        "rounded-2xl p-4 shadow-sm flex flex-col transition-all overflow-hidden bg-card border-border border",
         className
     )}>
     <div className={cn("flex items-center gap-2 mb-2 text-card-foreground")}>
@@ -377,8 +377,8 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
         value={content}
         onChange={(e) => onContentChange(keyProp, e.target.value)}
         className={cn(
-          "bg-transparent border-0 text-base flex-grow resize-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0",
-          "cursor-text text-card-foreground/80 placeholder:text-muted-foreground",
+          "bg-background border-0 text-base flex-grow resize-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0",
+          "cursor-text text-foreground/80 placeholder:text-muted-foreground",
           "border-t mt-2 pt-2 border-border"
         )}
       />

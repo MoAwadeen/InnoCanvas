@@ -8,30 +8,30 @@
     --background: 210 20% 98%; /* Light gray */
     --foreground: 210 10% 23%; /* Dark Gray */
 
-    --card: 210 20% 96%; /* Slightly darker card */
-    --card-foreground: 210 10% 23%;
+    --card: 210 10% 15%; /* Darker card for contrast */
+    --card-foreground: 210 20% 98%;
 
     --popover: 210 20% 98%;
     --popover-foreground: 210 10% 23%;
 
-    --primary: 206 90% 50%; /* A modern, saturated blue */
+    --primary: 206 98% 51%; /* #03a9f4 */
     --primary-foreground: 210 20% 98%;
     
-    --secondary: 210 20% 93%;
-    --secondary-foreground: 210 10% 23%;
+    --secondary: 210 10% 23%;
+    --secondary-foreground: 210 20% 98%;
 
     --muted: 210 20% 93%;
     --muted-foreground: 210 20% 65%;
 
-    --accent: 320 80% 60%; /* A vibrant pink/purple */
+    --accent: 326 90% 61%; /* #f441a5 */
     --accent-foreground: 210 20% 98%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 20% 98%;
     
-    --border: 210 20% 88%;
-    --input: 210 20% 88%;
-    --ring: 206 90% 50%;
+    --border: 210 10% 23%;
+    --input: 210 10% 23%;
+    --ring: 206 98% 51%;
 
     --radius: 1.5rem;
   }
@@ -51,120 +51,51 @@
   }
 }
 
+
 @layer components {
-  /* Realism Button Style */
-  .btn-realism {
-    cursor: pointer;
-    font-size: 1.1rem; /* Adjusted for consistency */
-    border-radius: 16px;
+  /* New Gradient Button Style */
+  .btn-gradient-container {
+    position: relative;
+    padding: 3px;
+    background: linear-gradient(90deg, #03a9f4, #f441a5);
+    border-radius: 0.9em;
+    transition: all 0.4s ease;
+    display: inline-block;
+  }
+
+  .btn-gradient-container::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    border-radius: 0.9em;
+    z-index: -1;
+    filter: blur(0);
+    transition: filter 0.4s ease;
+  }
+
+  .btn-gradient-container:hover::before {
+    background: linear-gradient(90deg, #03a9f4, #f441a5);
+    filter: blur(1.2em);
+  }
+
+  .btn-gradient-container:active::before {
+    filter: blur(0.2em);
+  }
+
+  .btn-gradient-inner {
+    font-size: 1.1em;
+    padding: 0.6em 1.2em;
+    border-radius: 0.5em;
     border: none;
-    padding: 2px;
-    background: radial-gradient(circle 80px at 80% -10%, #ffffff, #181b1b);
-    position: relative;
-    transition:
-      background 0.3s,
-      transform 0.3s;
-  }
-
-  .btn-realism:hover {
-    transform: scale(0.98);
-  }
-
-  .btn-realism::after {
-    content: "";
-    position: absolute;
-    width: 65%;
-    height: 60%;
-    border-radius: 120px;
-    top: 0;
-    right: 0;
-    box-shadow: 0 0 20px #ffffff38;
-    z-index: -1;
-    transition: box-shadow 0.3s;
-  }
-
-  .btn-realism:hover::after {
-    box-shadow: 0 0 10px #ffffff18;
-  }
-
-  .btn-realism .blob1 {
-    position: absolute;
-    width: 70px;
-    height: 100%;
-    border-radius: 16px;
-    bottom: 0;
-    left: 0;
-    background: radial-gradient(
-      circle 60px at 0% 100%,
-      #3fe9ff,
-      #0000ff80,
-      transparent
-    );
-    box-shadow: -10px 10px 30px #0051ff2d;
-    transition:
-      background 0.3s,
-      box-shadow 0.3s;
-    z-index: 0;
-  }
-  
-  .btn-realism .blob2 {
-    position: absolute;
-    width: 70px;
-    height: 100%;
-    border-radius: 16px;
-    bottom: 0;
-    right: 0;
-    background: radial-gradient(
-      circle 60px at 100% 100%,
-      #ff3f9c,
-      #ff000080,
-      transparent
-    );
-    box-shadow: 10px 10px 30px #ff00512d;
-    transition:
-      background 0.3s,
-      box-shadow 0.3s;
-    z-index: 0;
-  }
-
-  .btn-realism:hover .blob1,
-  .btn-realism:hover .blob2 {
-    box-shadow: -5px 5px 20px #000;
-  }
-
-  .btn-realism .inner {
-    padding: 10px 20px; /* Adjusted for consistency */
-    border-radius: 14px;
+    background-color: #0d1117;
     color: #fff;
-    z-index: 1;
-    position: relative;
-    background: radial-gradient(circle 80px at 80% -50%, #777777, #0f1111);
-    transition: background 0.3s;
-  }
-
-  .btn-realism:hover .inner {
-    background: radial-gradient(circle 80px at 80% -50%, #333333, #0f0f0f);
-  }
-
-  .btn-realism .inner::before {
-    content: "";
+    cursor: pointer;
+    box-shadow: 2px 2px 3px #000000b4;
     width: 100%;
-    height: 100%;
-    left: 0;
-    top: 0;
-    border-radius: 14px;
-    background: radial-gradient(
-      circle 60px at 0% 100%,
-      #00e1ff1a,
-      #0000ff11,
-      transparent
-    );
-    position: absolute;
-    transition: opacity 0.3s;
-    z-index: -1;
-  }
-
-  .btn-realism:hover .inner::before {
-    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
   }
 }

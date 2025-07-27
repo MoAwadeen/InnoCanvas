@@ -25,7 +25,7 @@ export default function Pricing() {
       ],
       cta: "Start for Free",
       href: "/register",
-      variant: "outline"
+      variant: "secondary"
     },
     {
       name: "Pro",
@@ -84,8 +84,8 @@ export default function Pricing() {
           <div
             key={plan.name}
             className={cn(
-              "bg-card border p-8 flex flex-col transition-all duration-300 rounded-2xl relative",
-              plan.popular ? "border-primary/50 shadow-lg" : ""
+              "bg-card border-border border p-8 flex flex-col transition-all duration-300 rounded-2xl relative",
+              plan.popular ? "shadow-lg" : ""
             )}
           >
             {plan.popular && (
@@ -96,17 +96,17 @@ export default function Pricing() {
                 </div>
               </div>
             )}
-            <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+            <h3 className="text-2xl font-bold mb-2 text-card-foreground">{plan.name}</h3>
             <p className="text-muted-foreground mb-6 h-10">{plan.description}</p>
             <div className="mb-8">
-              <span className="text-5xl font-extrabold">
+              <span className="text-5xl font-extrabold text-card-foreground">
                 ${isYearly ? (plan.price.yearly / 12).toFixed(0) : plan.price.monthly}
               </span>
               <span className="text-muted-foreground text-lg">/month</span>
             </div>
             <ul className="space-y-4 mb-10 flex-1">
               {plan.features.map((feature) => (
-                <li key={feature} className="flex items-center gap-3 text-left">
+                <li key={feature} className="flex items-center gap-3 text-left text-card-foreground">
                   <CheckCircle className="w-5 h-5 text-green-500" />
                   <span>{feature}</span>
                 </li>

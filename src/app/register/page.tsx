@@ -27,7 +27,7 @@ export default function RegisterPage() {
             <span className="font-bold text-2xl">InnoCanvas</span>
           </Link>
         </div>
-      <Card className="mx-auto max-w-md w-full">
+      <Card className="mx-auto max-w-md w-full border-border">
         <CardHeader>
           <CardTitle className="text-xl">Sign Up</CardTitle>
           <CardDescription>
@@ -113,7 +113,7 @@ export default function RegisterPage() {
                 Create an account
               </Button>
             </Link>
-            <Button variant="outline" className="w-full">
+            <Button variant="secondary" className="w-full">
               Sign up with Google
             </Button>
           </div>
