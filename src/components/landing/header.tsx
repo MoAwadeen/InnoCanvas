@@ -46,7 +46,7 @@ export default function Header() {
 
         <div className="hidden md:flex items-center gap-4">
             <Link href="/login">
-                <Button variant="ghost">Log In</Button>
+                <Button variant="outline">Log In</Button>
             </Link>
             <Link href="/register">
                 <Button variant="gradient">
@@ -86,7 +86,7 @@ export default function Header() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                   <Link href="/login" className="w-full">
-                    <Button variant="ghost" className="w-full">Log In</Button>
+                    <Button variant="outline" className="w-full">Log In</Button>
                   </Link>
                   <Link href="/register" className="w-full">
                     <Button variant="gradient" className="w-full">
