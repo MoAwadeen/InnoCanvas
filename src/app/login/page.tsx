@@ -21,9 +21,9 @@ export default function LoginPage() {
             <span className="font-bold text-2xl">InnoCanvas</span>
           </Link>
         </div>
-      <Card className="mx-auto max-w-md w-full border-border bg-bright-cyan/20 backdrop-blur-lg">
+      <Card className="mx-auto max-w-md w-full card-glass bg-bright-cyan/20 backdrop-blur-lg">
         <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardTitle className="text-2xl headline-glow">Login</CardTitle>
           <CardDescription>
             Enter your email below to login to your account
           </CardDescription>
@@ -42,14 +42,14 @@ export default function LoginPage() {
             <div className="grid gap-2">
               <div className="flex items-center">
                 <Label htmlFor="password">Password</Label>
-                <Link href="#" className="ml-auto inline-block text-sm underline">
+                <Link href="#" className="ml-auto inline-block text-sm underline hover:text-vivid-pink">
                   Forgot your password?
                 </Link>
               </div>
               <Input id="password" type="password" required />
             </div>
             <Link href="/my-canvases" className="w-full">
-                <Button variant="gradient" type="submit" className="w-full">
+                <Button variant="gradient" type="submit" className="w-full btn-glow">
                 Login
                 </Button>
             </Link>
@@ -59,7 +59,7 @@ export default function LoginPage() {
           </div>
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="underline">
+            <Link href="/register" className="underline hover:text-vivid-pink">
               Sign up
             </Link>
           </div>
@@ -68,5 +68,3 @@ export default function LoginPage() {
     </div>
   )
 }
-
-    
