@@ -29,7 +29,7 @@ export default function Hero() {
           </Button>
         </div>
       </div>
-      <div className="relative breathing-rounded-lines">
+      <div className="relative">
         <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent rounded-full -inset-4 blur-3xl opacity-20"></div>
         <Image
           src="https://placehold.co/1200x800.png"
