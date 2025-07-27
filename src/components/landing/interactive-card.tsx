@@ -3,9 +3,10 @@ import React from 'react';
 type InteractiveCardProps = {
   title: string;
   description: string;
+  icon: React.ReactNode;
 };
 
-const InteractiveCard = ({ title, description }: InteractiveCardProps) => {
+const InteractiveCard = ({ title, description, icon }: InteractiveCardProps) => {
   return (
     <div className="interactive-card-container noselect">
       <div className="interactive-card-canvas">
@@ -15,7 +16,10 @@ const InteractiveCard = ({ title, description }: InteractiveCardProps) => {
         ))}
         <div className="interactive-card">
           <p className="interactive-card-prompt">{description}</p>
-          <div className="title">{title}</div>
+          <div className="interactive-card-content">
+            <div className="interactive-card-icon">{icon}</div>
+            <div className="title">{title}</div>
+          </div>
         </div>
       </div>
     </div>
