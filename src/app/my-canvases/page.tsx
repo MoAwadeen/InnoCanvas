@@ -232,9 +232,8 @@ export default function MyCanvasesPage() {
               It looks like your workspace is empty. Let's create your first Business Model Canvas and bring your ideas to life.
             </p>
             <Link href="/generate">
-                <Button variant="gradient">
-                <PlusCircle className="mr-2" />
-                Create Your First Canvas
+                <Button variant="gradient" size="icon" className="h-24 w-24 rounded-full">
+                  <PlusCircle className="h-12 w-12" />
                 </Button>
             </Link>
           </div>
