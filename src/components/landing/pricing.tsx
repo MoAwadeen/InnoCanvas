@@ -37,7 +37,6 @@ export default function Pricing() {
         "Priority support",
       ],
       cta: "Go Pro",
-      popular: true,
       href: "/payment"
     },
     {
@@ -50,7 +49,8 @@ export default function Pricing() {
         "Team access & collaboration",
         "Premium templates",
       ],
-      cta: "Contact Sales",
+      cta: "Go Premium",
+      popular: true,
       href: "/payment"
     },
   ];

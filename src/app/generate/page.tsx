@@ -419,7 +419,7 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
       />
     ) : (
       <div className={cn(
-        "text-base flex-grow whitespace-pre-wrap",
+        "text-base flex-grow whitespace-pre-wrap overflow-hidden",
         // Glass Template
         `data-[template=glass]:text-white/80`,
         // Minimal Light Template
@@ -432,4 +432,3 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
     )}
   </div>
 );
-    

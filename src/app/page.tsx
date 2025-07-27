@@ -13,7 +13,7 @@ export default function LandingPage() {
         <div className="absolute left-0 right-0 top-0 h-[40rem] w-full bg-[radial-gradient(circle_500px_at_50%_200px,hsl(var(--primary)/0.1),transparent)]"></div>
       </div>
       <Header />
-      <main className="flex-1">
+      <main className="flex-1 container">
         <Hero />
         <Features />
         <Testimonials />
