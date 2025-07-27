@@ -43,8 +43,10 @@ export default function Header() {
             </ul>
           </nav>
           <div className="hidden md:flex items-center gap-2">
-            <Button variant="ghost">Log In</Button>
-            <Link href="/generate">
+            <Link href="/login">
+                <Button variant="ghost">Log In</Button>
+            </Link>
+            <Link href="/register">
                 <Button className="bg-gradient-to-r from-primary to-accent text-primary-foreground">
                     Get Started Free
                 </Button>
@@ -78,8 +80,10 @@ export default function Header() {
                 ))}
               </div>
               <div className="grid grid-cols-2 gap-4">
-                  <Button variant="ghost">Log In</Button>
-                  <Link href="/generate">
+                  <Link href="/login">
+                    <Button variant="ghost" className="w-full">Log In</Button>
+                  </Link>
+                  <Link href="/register">
                     <Button className="bg-gradient-to-r from-primary to-accent text-primary-foreground w-full">
                         Get Started Free
                     </Button>
