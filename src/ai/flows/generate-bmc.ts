@@ -72,25 +72,28 @@ const prompt = ai.definePrompt({
   name: 'generateBmcPrompt',
   input: {schema: GenerateBMCInputSchema},
   output: {schema: GenerateBMCOutputSchema},
-  prompt: `You are an expert business consultant specializing in creating Business Model Canvases (BMCs).
+  prompt: `You are a business expert and strategist. Based on the following input, generate a complete Business Model Canvas (BMC) with clear, insightful, and non-generic content for each of the 9 blocks. Use relevant startup and industry knowledge.
 
-You will use the provided business description and answers to clarifying questions to populate a BMC.
+1. Use the business description and answers to multiple-choice questions to infer logical business decisions.
+2. Expand briefly in each section (1–3 short bullet points).
+3. Ensure all blocks are filled with unique, startup-relevant data.
+4. The output should be a JSON object with 9 labeled fields: keyPartnerships, keyActivities, valuePropositions, customerRelationships, customerSegments, keyResources, channels, costStructure, revenueStreams.
 
-Business Description: {{{businessDescription}}}
+---
 
-Customer Segments: {{{customerSegments}}}
-Value Propositions: {{{valuePropositions}}}
+Business Idea:
+{{{businessDescription}}}
+
+Customer Segment: {{{customerSegments}}}
+Value Proposition: {{{valuePropositions}}}
 Channels: {{{channels}}}
 Customer Relationships: {{{customerRelationships}}}
-Revenue Streams: {{{revenueStreams}}}
+Revenue Model: {{{revenueStreams}}}
 Key Activities: {{{keyActivities}}}
 Key Resources: {{{keyResources}}}
 Key Partnerships: {{{keyPartnerships}}}
 Cost Structure: {{{costStructure}}}
-
-Populate the BMC sections with concise and informative content based on the above information.
-
-Ensure each section is well-defined and relevant to the business.
+---
 `,
 });
 
