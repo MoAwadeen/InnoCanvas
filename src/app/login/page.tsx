@@ -21,7 +21,7 @@ export default function LoginPage() {
             <span className="font-bold text-2xl">InnoCanvas</span>
           </Link>
         </div>
-      <Card className="mx-auto max-w-md w-full border-border">
+      <Card className="mx-auto max-w-md w-full border-border bg-bright-cyan/20 backdrop-blur-lg">
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>

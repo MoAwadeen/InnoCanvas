@@ -27,7 +27,7 @@ export default function RegisterPage() {
             <span className="font-bold text-2xl">InnoCanvas</span>
           </Link>
         </div>
-      <Card className="mx-auto max-w-md w-full border-border">
+      <Card className="mx-auto max-w-md w-full border-border bg-bright-cyan/20 backdrop-blur-lg">
         <CardHeader>
           <CardTitle className="text-xl">Sign Up</CardTitle>
           <CardDescription>
@@ -74,7 +74,7 @@ export default function RegisterPage() {
                  <Select>
                     <SelectTrigger id="country">
                         <SelectValue placeholder="Select your country" />
-                    </SelectTrigger>
+                    </Trigger>
                     <SelectContent>
                         <ScrollArea className="h-72">
                         {countries.map((country) => (
@@ -128,5 +128,3 @@ export default function RegisterPage() {
     </div>
   )
 }
-
-    
