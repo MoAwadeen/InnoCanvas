@@ -16,19 +16,20 @@
     --secondary-foreground: 210 40% 98%;
     --muted: 217 33% 25%;
     --muted-foreground: 215 20% 65%;
-    --accent: 330 90% 60%;
+    --accent: 322 100% 60%;
     --accent-foreground: 222 47% 11%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
     --border: 217 33% 25%;
     --input: 217 33% 25%;
     --ring: 205 90% 48%;
-    --radius: 1.5rem;
     --vivid-pink: 322 100% 60%; /* #FF33AF */
     --soft-magenta: 316 100% 71%; /* #FF6EDF */
     --light-coral: 350 63% 78%; /* #F0A6B6 */
     --peach: 24 100% 79%; /* #FFC398 */
     --deep-navy: 241 100% 27%; /* #000987 */
+    --bright-cyan: 183 100% 45%; /* #00D7E5 */
+    --vibrant-orange: 16 94% 49%; /* #F6540F */
   }
 }
 

@@ -58,6 +58,7 @@ export default {
         ring: 'hsl(var(--ring))',
         'vivid-pink': 'hsl(var(--vivid-pink))',
         'soft-magenta': 'hsl(var(--soft-magenta))',
+        'bright-cyan': 'hsl(var(--bright-cyan))',
         peach: 'hsl(var(--peach))',
         chart: {
           '1': 'hsl(var(--chart-1))',

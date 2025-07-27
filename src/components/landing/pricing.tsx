@@ -91,7 +91,7 @@ export default function Pricing() {
           >
             {plan.popular && (
               <div className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2">
-                <div className="px-4 py-1 text-sm font-semibold text-accent-foreground bg-accent rounded-full shadow-md flex items-center gap-2">
+                <div className="px-4 py-1 text-sm font-semibold text-bright-cyan bg-vivid-pink rounded-full shadow-md flex items-center gap-2">
                   <Zap className="w-4 h-4" />
                   Recommended
                 </div>
