@@ -40,7 +40,6 @@ export default function Pricing() {
       cta: "Go Pro",
       href: "/payment",
       variant: "gradient",
-      popular: true,
     },
     {
       name: "Premium",
@@ -54,7 +53,8 @@ export default function Pricing() {
       ],
       cta: "Go Premium",
       href: "/payment",
-      variant: "gradient"
+      variant: "gradient",
+      popular: true,
     },
   ];
 

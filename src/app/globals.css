@@ -80,12 +80,12 @@
 
   /* Pricing Switch Color */
   [data-state='checked']#billing-cycle {
-    @apply bg-accent;
+    background-color: hsl(var(--vivid-pink));
   }
 
   /* Pricing Color Transition */
   [data-state='yearly'] .price-container span {
-      @apply text-primary;
+      color: hsl(var(--vivid-pink));
   }
 }
 
