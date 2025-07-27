@@ -181,7 +181,7 @@ export default function BmcGeneratorPage() {
                 // Revert to original template on error
                 setCurrentTemplate(originalTemplate);
             });
-        }, 200); // Increased delay to ensure DOM update
+        }, 500); // Increased delay to ensure DOM update
     } else {
         toast({
             title: 'Error exporting',
