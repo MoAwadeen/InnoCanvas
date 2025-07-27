@@ -65,13 +65,13 @@ export default function Pricing() {
       </div>
 
       <div className="flex justify-center items-center gap-4 mb-10">
-        <Label htmlFor="billing-cycle" className={cn(!isYearly && "text-primary")}>Monthly</Label>
+        <Label htmlFor="billing-cycle" className={cn("transition-colors", !isYearly && "text-primary")}>Monthly</Label>
         <Switch
           id="billing-cycle"
           checked={isYearly}
           onCheckedChange={setIsYearly}
         />
-        <Label htmlFor="billing-cycle" className={cn(isYearly && "text-primary")}>
+        <Label htmlFor="billing-cycle" className={cn("transition-colors", isYearly && "text-primary")}>
             Yearly <span className="text-sm font-medium text-accent">(Save 25%)</span>
         </Label>
       </div>
@@ -81,15 +81,15 @@ export default function Pricing() {
           <div
             key={plan.name}
             className={cn(
-              "rounded-2xl p-px relative",
+              "rounded-lg p-px relative",
               plan.popular ? "bg-gradient-to-tr from-primary to-accent" : "bg-border/20"
             )}
           >
-            <div className="p-8 h-full bg-background/80 backdrop-blur-sm rounded-[15px] flex flex-col border border-white/10 shadow-lg">
+            <div className="p-8 h-full bg-background/80 backdrop-blur-sm rounded-md flex flex-col border border-white/10 shadow-lg">
               {plan.popular && (
                 <div className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2">
                   <div className="px-3 py-1 text-sm font-semibold text-primary-foreground bg-gradient-to-r from-primary to-accent rounded-full shadow-md">
-                    Most Popular
+                    Recommended
                   </div>
                 </div>
               )}
@@ -112,7 +112,11 @@ export default function Pricing() {
               <Link href={plan.href} className="w-full">
                 <Button
                   size="lg"
-                  className={cn("w-full", !plan.popular && "bg-primary/80")}
+                  className={cn(
+                    "w-full", 
+                    !plan.popular && "bg-primary/80",
+                    plan.popular && "animate-gradient-bg"
+                  )}
                 >
                   {plan.cta}
                 </Button>
