@@ -136,9 +136,9 @@
   .interactive-card-prompt {
     opacity: 0;
     bottom: 8px;
-    left: 12px;
     z-index: 20;
     font-size: 0.875rem;
+    font-weight: bold;
     line-height: 1.25;
     transition: all 300ms ease-in-out 100ms;
     position: absolute;
