@@ -68,14 +68,14 @@ export default function Pricing() {
       </div>
 
       <div className="flex justify-center items-center gap-4 mb-10">
-        <Label htmlFor="billing-cycle" className={cn("transition-colors font-medium", !isYearly ? "text-primary" : "text-muted-foreground")}>Monthly</Label>
+        <Label htmlFor="billing-cycle" className={cn("transition-colors font-medium", !isYearly ? "text-peach" : "text-muted-foreground")}>Monthly</Label>
         <Switch
           id="billing-cycle"
           checked={isYearly}
           onCheckedChange={setIsYearly}
           data-state={isYearly ? 'checked' : 'unchecked'}
         />
-        <Label htmlFor="billing-cycle" className={cn("transition-colors font-medium", isYearly ? "text-primary" : "text-muted-foreground")}>
+        <Label htmlFor="billing-cycle" className={cn("transition-colors font-medium", isYearly ? "text-vivid-pink" : "text-muted-foreground")}>
             Yearly <span className="text-sm font-medium text-green-400">(Save 25%)</span>
         </Label>
       </div>
