@@ -21,7 +21,7 @@ export default function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-lg">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-lg">
       <div className="container flex h-16 items-center">
         <Link href="/" className="mr-6 flex items-center gap-2">
           <Bot className="h-6 w-6 text-primary" />
@@ -53,7 +53,7 @@ export default function Header() {
                 <Button variant="outline">Log In</Button>
             </Link>
             <Link href="/register">
-                <Button className="bg-gradient-to-r from-primary to-accent text-primary-foreground">
+                <Button className="bg-primary text-primary-foreground">
                     Get Started Free
                 </Button>
             </Link>
@@ -96,7 +96,7 @@ export default function Header() {
                     <Button variant="ghost" className="w-full">Log In</Button>
                   </Link>
                   <Link href="/register">
-                    <Button className="bg-gradient-to-r from-primary to-accent text-primary-foreground w-full">
+                    <Button className="bg-primary text-primary-foreground w-full">
                         Get Started Free
                     </Button>
                   </Link>

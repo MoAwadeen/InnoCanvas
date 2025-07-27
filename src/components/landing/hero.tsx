@@ -19,7 +19,7 @@ export default function Hero() {
           <Link href="/generate">
             <Button
               size="lg"
-              className="bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg hover:shadow-xl transition-shadow hover:animate-gradient-bg"
+              className="bg-primary text-primary-foreground shadow-lg hover:shadow-xl transition-shadow hover:animate-gradient-bg"
             >
               Get Started Free
             </Button>

@@ -47,7 +47,7 @@ const mockCanvases = [
 
 export default function MyCanvasesPage() {
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-background to-primary/30 text-white p-4 md:p-8">
+    <div className="min-h-screen w-full bg-background text-foreground p-4 md:p-8">
       <header className="flex justify-between items-center mb-12">
         <Link href="/" className="flex items-center gap-2">
           <Bot className="h-8 w-8 text-primary" />
@@ -55,9 +55,9 @@ export default function MyCanvasesPage() {
         </Link>
         <div className="flex items-center gap-4">
            <Link href="/profile">
-            <Button variant="outline" className="bg-transparent hover:bg-white/10 border-border/30 hover:text-white"><User className="mr-2"/>Profile</Button>
+            <Button variant="outline"><User className="mr-2"/>Profile</Button>
            </Link>
-          <Button variant="outline" className="bg-transparent hover:bg-white/10 border-border/30 hover:text-white">Logout</Button>
+          <Button variant="outline">Logout</Button>
         </div>
       </header>
 
@@ -75,7 +75,7 @@ export default function MyCanvasesPage() {
         <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-bold">Your Canvases</h2>
             <Link href="/generate">
-                <Button className="bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg hover:shadow-xl transition-shadow">
+                <Button className="bg-primary text-primary-foreground shadow-lg hover:shadow-xl transition-shadow">
                 <PlusCircle className="mr-2" />
                 Create New Canvas
                 </Button>
@@ -93,7 +93,7 @@ export default function MyCanvasesPage() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
                 <Card
-                  className="bg-card/50 backdrop-blur-lg border-border/20 text-white flex flex-col h-full hover:border-primary/50 transition-all"
+                  className="bg-card text-card-foreground flex flex-col h-full hover:border-primary/50 transition-all"
                 >
                   <CardHeader>
                     <CardTitle>{canvas.title}</CardTitle>

@@ -72,7 +72,7 @@ export default function Pricing() {
           onCheckedChange={setIsYearly}
         />
         <Label htmlFor="billing-cycle" className={cn("transition-colors", isYearly && "text-primary")}>
-            Yearly <span className="text-sm font-medium text-accent">(Save 25%)</span>
+            Yearly <span className="text-sm font-medium text-green-600">(Save 25%)</span>
         </Label>
       </div>
 
@@ -82,13 +82,13 @@ export default function Pricing() {
             key={plan.name}
             className={cn(
               "rounded-lg p-px relative",
-              plan.popular ? "bg-gradient-to-tr from-primary to-accent" : "bg-border/20"
+              plan.popular ? "bg-gradient-to-tr from-primary to-primary/50" : "bg-border/50"
             )}
           >
-            <div className="p-8 h-full bg-background/80 backdrop-blur-sm rounded-md flex flex-col border border-white/10 shadow-lg">
+            <div className="p-8 h-full bg-card rounded-md flex flex-col border shadow-sm">
               {plan.popular && (
                 <div className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2">
-                  <div className="px-3 py-1 text-sm font-semibold text-primary-foreground bg-gradient-to-r from-primary to-accent rounded-full shadow-md">
+                  <div className="px-3 py-1 text-sm font-semibold text-primary-foreground bg-primary rounded-full shadow-md">
                     Recommended
                   </div>
                 </div>
@@ -98,7 +98,7 @@ export default function Pricing() {
               <div className="mb-8">
                 <span className={cn(
                   "text-5xl font-extrabold transition-colors",
-                  isYearly && (plan.price.yearly > 0 || plan.price.monthly > 0) && "text-accent"
+                  isYearly && (plan.price.yearly > 0 || plan.price.monthly > 0) ? "text-primary" : "text-foreground"
                   )}>
                   ${isYearly ? plan.price.yearly / 12 : plan.price.monthly}
                 </span>
@@ -115,9 +115,9 @@ export default function Pricing() {
               <Link href={plan.href} className="w-full">
                 <Button
                   size="lg"
+                  variant={plan.popular ? 'default' : 'outline'}
                   className={cn(
-                    "w-full hover:animate-gradient-bg", 
-                    !plan.popular && "bg-primary/80"
+                    "w-full hover:animate-gradient-bg"
                   )}
                 >
                   {plan.cta}

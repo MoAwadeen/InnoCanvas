@@ -82,7 +82,7 @@ export default function BmcGeneratorPage() {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [currentTemplate, setCurrentTemplate] = useState<Template>('glass');
+  const [currentTemplate, setCurrentTemplate] = useState<Template>('minimal');
   const [formData, setFormData] = useState<Partial<GenerateBMCInput>>({
     businessDescription: '',
     customerSegments: '',
@@ -227,7 +227,7 @@ export default function BmcGeneratorPage() {
             exit={{ opacity: 0, y: -20 }}
             className="w-full max-w-4xl"
           >
-            <div className="bg-card/50 backdrop-blur-lg border-border/20 rounded-2xl p-8 shadow-2xl text-center">
+            <div className="bg-card rounded-2xl p-8 shadow-2xl text-center border">
               <h1 className="text-4xl font-bold mb-4">Tell Us About Your Idea</h1>
               <p className="text-muted-foreground mb-8">
                 Start with your business name and a brief description. The more detail, the better!
@@ -258,7 +258,7 @@ export default function BmcGeneratorPage() {
             exit={{ opacity: 0, y: -20 }}
             className="w-full max-w-4xl"
           >
-            <div className="bg-card/50 backdrop-blur-lg border-border/20 rounded-2xl p-8 shadow-2xl">
+            <div className="bg-card rounded-2xl p-8 shadow-2xl border">
               <h1 className="text-3xl font-bold mb-2 text-center">Refine Your Business Vision</h1>
               <p className="text-muted-foreground mb-8 text-center">
                 Answer these questions to help the AI understand your business better.
@@ -304,7 +304,7 @@ export default function BmcGeneratorPage() {
             className="w-full"
           >
             {isLoading ? (
-              <div className="flex flex-col items-center justify-center h-96 text-white">
+              <div className="flex flex-col items-center justify-center h-96 text-foreground">
                 <Loader className="w-16 h-16 animate-spin mb-4 text-primary" />
                 <h2 className="text-2xl font-semibold">Generating your canvas...</h2>
                 <p className="text-muted-foreground">The AI is working its magic!</p>
@@ -353,7 +353,7 @@ export default function BmcGeneratorPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-background to-[#003CFE]/30 text-white p-4 md:p-8">
+    <div className="min-h-screen w-full bg-background text-foreground p-4 md:p-8">
        <header className="flex justify-between items-center mb-8">
           <Link href="/" className="flex items-center gap-2">
             <Bot className="h-8 w-8 text-primary" />
@@ -396,7 +396,7 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
       "flex items-center gap-2 mb-2",
       "data-[template=minimal]:text-black",
       "data-[template=dark]:text-gray-200",
-      "data-[template=glass]:text-white"
+      "data-[template=glass]:text-black"
       )}>
       {icon}
       <h3 className="font-bold text-lg">{title}</h3>
@@ -409,7 +409,7 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
           "bg-transparent border-0 text-base flex-grow resize-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0",
           "cursor-text",
           // Glass Template
-          `data-[template=glass]:text-white/80`,
+          `data-[template=glass]:text-black/80`,
           // Minimal Light Template
           `data-[template=minimal]:text-gray-800 data-[template=minimal]:placeholder:text-gray-500`,
            // Minimal Dark Template
@@ -421,7 +421,7 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
       <div className={cn(
         "text-base flex-grow whitespace-pre-wrap overflow-hidden",
         // Glass Template
-        `data-[template=glass]:text-white/80`,
+        `data-[template=glass]:text-black/80`,
         // Minimal Light Template
         `data-[template=minimal]:text-gray-800`,
          // Minimal Dark Template

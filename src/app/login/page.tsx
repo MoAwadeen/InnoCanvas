@@ -14,14 +14,14 @@ import { Bot } from "lucide-react"
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-background to-primary/30 text-white flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center justify-center p-4">
        <div className="absolute top-8 left-8">
           <Link href="/" className="flex items-center gap-2">
             <Bot className="h-8 w-8 text-primary" />
             <span className="font-bold text-2xl">InnoCanvas</span>
           </Link>
         </div>
-      <Card className="mx-auto max-w-md w-full bg-card/50 backdrop-blur-lg border-border/20 text-white">
+      <Card className="mx-auto max-w-md w-full bg-card border text-card-foreground">
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>
@@ -37,7 +37,7 @@ export default function LoginPage() {
                 type="email"
                 placeholder="m@example.com"
                 required
-                className="bg-background/50 border-border/30"
+                className="bg-background"
               />
             </div>
             <div className="grid gap-2">
@@ -47,12 +47,12 @@ export default function LoginPage() {
                   Forgot your password?
                 </Link>
               </div>
-              <Input id="password" type="password" required className="bg-background/50 border-border/30" />
+              <Input id="password" type="password" required className="bg-background" />
             </div>
-            <Button type="submit" className="w-full bg-gradient-to-r from-primary to-accent text-primary-foreground">
+            <Button type="submit" className="w-full bg-primary text-primary-foreground">
               Login
             </Button>
-            <Button variant="outline" className="w-full bg-transparent hover:bg-white/10 border-border/30 hover:text-white">
+            <Button variant="outline" className="w-full">
               Login with Google
             </Button>
           </div>

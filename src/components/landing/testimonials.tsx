@@ -63,7 +63,7 @@ export default function Testimonials() {
           {testimonials.map((testimonial, index) => (
             <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
               <div className="p-1">
-                <div className="p-6 rounded-2xl bg-background/50 backdrop-blur-lg border border-white/10 shadow-lg h-full flex flex-col justify-between">
+                <div className="p-6 rounded-2xl bg-card border shadow-sm h-full flex flex-col justify-between">
                   <p className="text-foreground/80 mb-6 italic">"{testimonial.quote}"</p>
                   <div className="flex items-center gap-4">
                     <Avatar>

@@ -43,14 +43,14 @@ export default function PaymentPage() {
     const [selectedPlan, setSelectedPlan] = useState(plans[0]);
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-background to-primary/30 text-white flex flex-col items-center p-4 md:p-8">
+    <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center p-4 md:p-8">
         <header className="w-full max-w-5xl flex justify-between items-center mb-8">
             <Link href="/my-canvases" className="flex items-center gap-2">
                 <Bot className="h-8 w-8 text-primary" />
                 <span className="font-bold text-2xl">InnoCanvas</span>
             </Link>
             <Link href="/my-canvases">
-                <Button variant="outline" className="bg-transparent hover:bg-white/10 border-border/30 hover:text-white">Back to My Canvases</Button>
+                <Button variant="outline">Back to My Canvases</Button>
             </Link>
       </header>
       <main className="w-full max-w-5xl flex-grow">
@@ -64,7 +64,7 @@ export default function PaymentPage() {
                         key={plan.name}
                         onClick={() => setSelectedPlan(plan)}
                         className={cn(
-                            "bg-card/50 backdrop-blur-lg border-border/20 text-white cursor-pointer transition-all",
+                            "bg-card border text-card-foreground cursor-pointer transition-all",
                             selectedPlan.name === plan.name ? 'border-primary ring-2 ring-primary' : 'hover:border-primary/50'
                         )}
                     >
@@ -88,7 +88,7 @@ export default function PaymentPage() {
                  ))}
                 </div>
             </div>
-            <Card className="w-full bg-card/50 backdrop-blur-lg border-border/20 text-white">
+            <Card className="w-full bg-card border text-card-foreground">
                 <CardHeader>
                     <CardTitle className="text-2xl">Payment Details</CardTitle>
                     <CardDescription>
@@ -99,32 +99,32 @@ export default function PaymentPage() {
                 <div className="grid gap-6">
                     <div className="grid gap-2">
                         <Label htmlFor="card-name">Name on Card</Label>
-                        <Input id="card-name" placeholder="Mohamed Awadeen" required className="bg-background/50 border-border/30" />
+                        <Input id="card-name" placeholder="Mohamed Awadeen" required className="bg-background" />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="card-number">Card Number</Label>
                         <div className="relative">
-                            <Input id="card-number" placeholder="**** **** **** 1234" required className="bg-background/50 border-border/30 pr-10" />
+                            <Input id="card-number" placeholder="**** **** **** 1234" required className="bg-background pr-10" />
                             <CreditCard className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="grid gap-2">
                              <Label htmlFor="expiry-date">Expiry Date</Label>
-                             <Input id="expiry-date" placeholder="MM/YY" required className="bg-background/50 border-border/30" />
+                             <Input id="expiry-date" placeholder="MM/YY" required className="bg-background" />
                         </div>
                         <div className="grid gap-2">
                              <Label htmlFor="cvc">CVC</Label>
-                             <Input id="cvc" placeholder="123" required className="bg-background/50 border-border/30" />
+                             <Input id="cvc" placeholder="123" required className="bg-background" />
                         </div>
                     </div>
-                    <div className="border-t border-border/20 pt-4 mt-2">
+                    <div className="border-t border-border pt-4 mt-2">
                         <div className="flex justify-between items-center text-lg font-bold">
                             <span>Total Due Today:</span>
                             <span>${selectedPlan.price}.00</span>
                         </div>
                     </div>
-                    <Button type="submit" className="w-full bg-gradient-to-r from-primary to-accent text-primary-foreground text-lg py-6">
+                    <Button type="submit" className="w-full bg-primary text-primary-foreground text-lg py-6">
                         Confirm Payment
                     </Button>
                 </div>

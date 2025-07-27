@@ -35,7 +35,7 @@ export default function Features() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {features.map((feature) => (
           <div key={feature.title} className="p-px rounded-2xl bg-gradient-to-b from-primary/30 to-transparent">
-            <div className="p-6 h-full bg-background/80 backdrop-blur-sm rounded-[15px] flex flex-col items-start border border-white/10 shadow-lg">
+            <div className="p-6 h-full bg-card rounded-[15px] flex flex-col items-start border shadow-sm">
               <div className="p-3 bg-primary/10 rounded-lg mb-4">
                 {feature.icon}
               </div>

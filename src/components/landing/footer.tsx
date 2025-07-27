@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-background/50 border-t mt-20">
+    <footer className="bg-card border-t mt-20">
       <div className="container py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="flex flex-col gap-4">
@@ -34,7 +34,7 @@ export default function Footer() {
              <p className="text-muted-foreground">Subscribe to our newsletter for the latest updates.</p>
              <form className="flex gap-2">
                 <Input type="email" placeholder="Enter your email" />
-                <Button type="submit" className="bg-gradient-to-r from-primary to-accent text-primary-foreground">Subscribe</Button>
+                <Button type="submit" className="bg-primary text-primary-foreground">Subscribe</Button>
              </form>
           </div>
         </div>

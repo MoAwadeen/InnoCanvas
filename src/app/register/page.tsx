@@ -20,14 +20,14 @@ import { countries } from "@/lib/countries"
 
 export default function RegisterPage() {
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-background to-primary/30 text-white flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center justify-center p-4">
         <div className="absolute top-8 left-8">
           <Link href="/" className="flex items-center gap-2">
             <Bot className="h-8 w-8 text-primary" />
             <span className="font-bold text-2xl">InnoCanvas</span>
           </Link>
         </div>
-      <Card className="mx-auto max-w-md w-full bg-card/50 backdrop-blur-lg border-border/20 text-white">
+      <Card className="mx-auto max-w-md w-full bg-card border text-card-foreground">
         <CardHeader>
           <CardTitle className="text-xl">Sign Up</CardTitle>
           <CardDescription>
@@ -38,7 +38,7 @@ export default function RegisterPage() {
           <div className="grid gap-4">
             <div className="grid gap-2">
                 <Label htmlFor="full-name">Full Name</Label>
-                <Input id="full-name" placeholder="Max Robinson" required className="bg-background/50 border-border/30" />
+                <Input id="full-name" placeholder="Max Robinson" required className="bg-background" />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
@@ -47,18 +47,18 @@ export default function RegisterPage() {
                 type="email"
                 placeholder="m@example.com"
                 required
-                className="bg-background/50 border-border/30"
+                className="bg-background"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
                     <Label htmlFor="age">Age</Label>
-                    <Input id="age" type="number" placeholder="25" required className="bg-background/50 border-border/30" />
+                    <Input id="age" type="number" placeholder="25" required className="bg-background" />
                 </div>
                 <div className="grid gap-2">
                     <Label htmlFor="gender">Gender</Label>
                     <Select>
-                        <SelectTrigger id="gender" className="bg-background/50 border-border/30">
+                        <SelectTrigger id="gender" className="bg-background">
                             <SelectValue placeholder="Select gender" />
                         </SelectTrigger>
                         <SelectContent>
@@ -73,7 +73,7 @@ export default function RegisterPage() {
             <div className="grid gap-2">
                 <Label htmlFor="country">Country</Label>
                  <Select>
-                    <SelectTrigger id="country" className="bg-background/50 border-border/30">
+                    <SelectTrigger id="country" className="bg-background">
                         <SelectValue placeholder="Select your country" />
                     </SelectTrigger>
                     <SelectContent>
@@ -93,7 +93,7 @@ export default function RegisterPage() {
              <div className="grid gap-2">
                 <Label htmlFor="use-case">Primary Use Case</Label>
                 <Select>
-                    <SelectTrigger id="use-case" className="bg-background/50 border-border/30">
+                    <SelectTrigger id="use-case" className="bg-background">
                         <SelectValue placeholder="How will you use InnoCanvas?" />
                     </SelectTrigger>
                     <SelectContent>
@@ -107,12 +107,12 @@ export default function RegisterPage() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" className="bg-background/50 border-border/30" />
+              <Input id="password" type="password" className="bg-background" />
             </div>
-            <Button type="submit" className="w-full bg-gradient-to-r from-primary to-accent text-primary-foreground">
+            <Button type="submit" className="w-full bg-primary text-primary-foreground">
               Create an account
             </Button>
-            <Button variant="outline" className="w-full bg-transparent hover:bg-white/10 border-border/30 hover:text-white">
+            <Button variant="outline" className="w-full">
               Sign up with Google
             </Button>
           </div>
