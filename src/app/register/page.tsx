@@ -1,6 +1,8 @@
 
-import Link from "next/link"
+'use client';
 
+import Link from "next/link"
+import ReactCountryFlag from "react-country-flag"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -13,6 +15,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Bot } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { countries } from "@/lib/countries"
 
 export default function RegisterPage() {
   return (
@@ -68,7 +72,23 @@ export default function RegisterPage() {
             </div>
             <div className="grid gap-2">
                 <Label htmlFor="country">Country</Label>
-                <Input id="country" placeholder="United States" required className="bg-black/20 border-white/30" />
+                 <Select>
+                    <SelectTrigger id="country" className="bg-black/20 border-white/30">
+                        <SelectValue placeholder="Select your country" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <ScrollArea className="h-72">
+                        {countries.map((country) => (
+                            <SelectItem key={country.code} value={country.code}>
+                                <div className="flex items-center gap-2">
+                                    <ReactCountryFlag countryCode={country.code} svg />
+                                    <span>{country.name}</span>
+                                </div>
+                            </SelectItem>
+                        ))}
+                        </ScrollArea>
+                    </SelectContent>
+                </Select>
             </div>
              <div className="grid gap-2">
                 <Label htmlFor="use-case">Primary Use Case</Label>
