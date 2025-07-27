@@ -76,11 +76,11 @@ export default function Pricing() {
           <div
             key={plan.name}
             className={cn(
-              "rounded-2xl p-1 relative",
-              plan.popular ? "bg-gradient-to-tr from-primary to-accent" : "bg-border"
+              "rounded-2xl p-px relative",
+              plan.popular ? "bg-gradient-to-tr from-primary to-accent" : "bg-border/20"
             )}
           >
-            <div className="p-8 h-full bg-background/90 backdrop-blur-sm rounded-[14px] flex flex-col">
+            <div className="p-8 h-full bg-background/80 backdrop-blur-sm rounded-[15px] flex flex-col border border-white/10 shadow-lg">
               {plan.popular && (
                 <div className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2">
                   <div className="px-3 py-1 text-sm font-semibold text-primary-foreground bg-gradient-to-r from-primary to-accent rounded-full shadow-md">
