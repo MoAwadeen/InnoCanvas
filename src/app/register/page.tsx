@@ -94,7 +94,7 @@ export default function RegisterPage() {
                 <Select>
                     <SelectTrigger id="use-case">
                         <SelectValue placeholder="How will you use InnoCanvas?" />
-                    </SelectTrigger>
+                    </Trigger>
                     <SelectContent>
                         <SelectItem value="student">Student</SelectItem>
                         <SelectItem value="entrepreneur">Entrepreneur</SelectItem>
