@@ -75,7 +75,7 @@ const prompt = ai.definePrompt({
   prompt: `You are a business expert and strategist. Based on the following input, generate a complete Business Model Canvas (BMC) with clear, insightful, and non-generic content for each of the 9 blocks. Use relevant startup and industry knowledge.
 
 1. Use the business description and answers to multiple-choice questions to infer logical business decisions.
-2. Expand briefly in each section (1–3 short bullet points).
+2. For all sections except for 'valuePropositions', provide a short list of 1-2 bullet points (using '- ' as the prefix). For the 'valuePropositions' section, provide a descriptive sentence.
 3. Ensure all blocks are filled with unique, startup-relevant data.
 4. The output should be a JSON object with 9 labeled fields: keyPartnerships, keyActivities, valuePropositions, customerRelationships, customerSegments, keyResources, channels, costStructure, revenueStreams.
 
