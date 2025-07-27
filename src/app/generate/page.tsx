@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -403,6 +403,7 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
     </div>
     <Textarea
       value={content}
+      rows={1}
       readOnly={!isEditing}
       onChange={(e) => onContentChange(keyProp, e.target.value)}
       className={cn(
@@ -420,6 +421,4 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
     />
   </div>
 );
-    
-
     
