@@ -41,7 +41,7 @@ type BMCBlock = {
   title: string;
   icon: React.ReactNode;
   content: string;
-  key: keyof GenerateBMCOutput;
+  keyProp: keyof GenerateBMCOutput;
 };
 
 const refinementQuestions = [
@@ -111,15 +111,15 @@ export default function BmcGeneratorPage() {
   };
 
   const initialBmcBlocks: Omit<BMCBlock, 'content'>[] = [
-    { title: 'Key Partners', icon: <Handshake className="w-5 h-5" />, key: 'keyPartnerships' },
-    { title: 'Key Activities', icon: <Wrench className="w-5 h-5" />, key: 'keyActivities' },
-    { title: 'Key Resources', icon: <Package className="w-5 h-5" />, key: 'keyResources' },
-    { title: 'Value Propositions', icon: <Lightbulb className="w-5 h-5" />, key: 'valuePropositions' },
-    { title: 'Customer Relationships', icon: <Heart className="w-5 h-5" />, key: 'customerRelationships' },
-    { title: 'Channels', icon: <Truck className="w-5 h-5" />, key: 'channels' },
-    { title: 'Customer Segments', icon: <Users className="w-5 h-5" />, key: 'customerSegments' },
-    { title: 'Cost Structure', icon: <FileText className="w-5 h-5" />, key: 'costStructure' },
-    { title: 'Revenue Streams', icon: <DollarSign className="w-5 h-5" />, key: 'revenueStreams' },
+    { title: 'Key Partners', icon: <Handshake className="w-5 h-5" />, keyProp: 'keyPartnerships' },
+    { title: 'Key Activities', icon: <Wrench className="w-5 h-5" />, keyProp: 'keyActivities' },
+    { title: 'Key Resources', icon: <Package className="w-5 h-5" />, keyProp: 'keyResources' },
+    { title: 'Value Propositions', icon: <Lightbulb className="w-5 h-5" />, keyProp: 'valuePropositions' },
+    { title: 'Customer Relationships', icon: <Heart className="w-5 h-5" />, keyProp: 'customerRelationships' },
+    { title: 'Channels', icon: <Truck className="w-5 h-5" />, keyProp: 'channels' },
+    { title: 'Customer Segments', icon: <Users className="w-5 h-5" />, keyProp: 'customerSegments' },
+    { title: 'Cost Structure', icon: <FileText className="w-5 h-5" />, keyProp: 'costStructure' },
+    { title: 'Revenue Streams', icon: <DollarSign className="w-5 h-5" />, keyProp: 'revenueStreams' },
   ];
 
   const renderStep = () => {
@@ -227,20 +227,20 @@ export default function BmcGeneratorPage() {
                     </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
                     {/* Top Row */}
-                    <BmcCard {...initialBmcBlocks[0]} content={bmcData.keyPartnerships} className="lg:col-span-1" />
+                    <BmcCard key={initialBmcBlocks[0].keyProp} {...initialBmcBlocks[0]} content={bmcData.keyPartnerships} className="lg:col-span-1" />
                     <div className="lg:col-span-1 grid grid-rows-2 gap-4">
-                      <BmcCard {...initialBmcBlocks[1]} content={bmcData.keyActivities} />
-                      <BmcCard {...initialBmcBlocks[2]} content={bmcData.keyResources} />
+                      <BmcCard key={initialBmcBlocks[1].keyProp} {...initialBmcBlocks[1]} content={bmcData.keyActivities} />
+                      <BmcCard key={initialBmcBlocks[2].keyProp} {...initialBmcBlocks[2]} content={bmcData.keyResources} />
                     </div>
-                    <BmcCard {...initialBmcBlocks[3]} content={bmcData.valuePropositions} className="lg:col-span-1" />
+                    <BmcCard key={initialBmcBlocks[3].keyProp} {...initialBmcBlocks[3]} content={bmcData.valuePropositions} className="lg:col-span-1" />
                     <div className="lg:col-span-1 grid grid-rows-2 gap-4">
-                      <BmcCard {...initialBmcBlocks[4]} content={bmcData.customerRelationships} />
-                      <BmcCard {...initialBmcBlocks[5]} content={bmcData.channels} />
+                      <BmcCard key={initialBmcBlocks[4].keyProp} {...initialBmcBlocks[4]} content={bmcData.customerRelationships} />
+                      <BmcCard key={initialBmcBlocks[5].keyProp} {...initialBmcBlocks[5]} content={bmcData.channels} />
                     </div>
-                    <BmcCard {...initialBmcBlocks[6]} content={bmcData.customerSegments} className="lg:col-span-1" />
+                    <BmcCard key={initialBmcBlocks[6].keyProp} {...initialBmcBlocks[6]} content={bmcData.customerSegments} className="lg:col-span-1" />
                     {/* Bottom Row */}
-                    <BmcCard {...initialBmcBlocks[7]} content={bmcData.costStructure} className="lg:col-span-2" />
-                    <BmcCard {...initialBmcBlocks[8]} content={bmcData.revenueStreams} className="lg:col-span-3" />
+                    <BmcCard key={initialBmcBlocks[7].keyProp} {...initialBmcBlocks[7]} content={bmcData.costStructure} className="lg:col-span-2" />
+                    <BmcCard key={initialBmcBlocks[8].keyProp} {...initialBmcBlocks[8]} content={bmcData.revenueStreams} className="lg:col-span-3" />
                   </div>
                 </div>
               )
