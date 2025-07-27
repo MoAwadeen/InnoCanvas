@@ -98,7 +98,7 @@ export default function Pricing() {
               <div className="mb-8">
                 <span className={cn(
                   "text-5xl font-extrabold transition-colors",
-                  ((isYearly && plan.price.yearly > 0) || (!isYearly && plan.price.monthly > 0)) && "text-primary"
+                  isYearly && (plan.price.yearly > 0 || plan.price.monthly > 0) && "text-accent"
                   )}>
                   ${isYearly ? plan.price.yearly / 12 : plan.price.monthly}
                 </span>
@@ -116,9 +116,8 @@ export default function Pricing() {
                 <Button
                   size="lg"
                   className={cn(
-                    "w-full", 
-                    !plan.popular && "bg-primary/80",
-                    plan.popular && "hover:animate-gradient-bg"
+                    "w-full hover:animate-gradient-bg", 
+                    !plan.popular && "bg-primary/80"
                   )}
                 >
                   {plan.cta}
@@ -131,4 +130,3 @@ export default function Pricing() {
     </section>
   );
 }
-
