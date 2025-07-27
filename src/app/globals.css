@@ -5,33 +5,33 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 210 10% 23%;
+    --background: 210 20% 98%; /* Light gray */
+    --foreground: 210 10% 23%; /* Dark Gray */
 
-    --card: 210 20% 98%;
+    --card: 210 20% 96%; /* Slightly darker card */
     --card-foreground: 210 10% 23%;
 
     --popover: 210 20% 98%;
     --popover-foreground: 210 10% 23%;
 
-    --primary: 226 92% 58%;
+    --primary: 206 90% 50%; /* A modern, saturated blue */
     --primary-foreground: 210 20% 98%;
     
-    --secondary: 210 20% 95%;
+    --secondary: 210 20% 93%;
     --secondary-foreground: 210 10% 23%;
 
-    --muted: 210 20% 95%;
+    --muted: 210 20% 93%;
     --muted-foreground: 210 20% 65%;
 
-    --accent: 332 73% 66%;
+    --accent: 320 80% 60%; /* A vibrant pink/purple */
     --accent-foreground: 210 20% 98%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 20% 98%;
     
-    --border: 210 20% 90%;
-    --input: 210 20% 90%;
-    --ring: 226 92% 58%;
+    --border: 210 20% 88%;
+    --input: 210 20% 88%;
+    --ring: 206 90% 50%;
 
     --radius: 1.5rem;
   }
@@ -52,7 +52,7 @@
 }
 
 @layer components {
-  /* New Realism Button Styles */
+  /* Realism Button Style */
   .btn-realism {
     cursor: pointer;
     font-size: 1.1rem; /* Adjusted for consistency */

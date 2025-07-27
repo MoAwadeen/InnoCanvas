@@ -24,7 +24,8 @@ export default function Pricing() {
         "Standard templates",
       ],
       cta: "Start for Free",
-      href: "/register"
+      href: "/register",
+      variant: "outline"
     },
     {
       name: "Pro",
@@ -37,7 +38,8 @@ export default function Pricing() {
         "Priority support",
       ],
       cta: "Go Pro",
-      href: "/payment"
+      href: "/payment",
+      variant: "gradient"
     },
     {
       name: "Premium",
@@ -51,7 +53,8 @@ export default function Pricing() {
       ],
       cta: "Go Premium",
       popular: true,
-      href: "/payment"
+      href: "/payment",
+      variant: "gradient"
     },
   ];
 
@@ -81,7 +84,7 @@ export default function Pricing() {
           <div
             key={plan.name}
             className={cn(
-              "bg-card border p-8 flex flex-col transition-all duration-300 rounded-2xl",
+              "bg-card border p-8 flex flex-col transition-all duration-300 rounded-2xl relative",
               plan.popular ? "border-primary/50 shadow-lg" : ""
             )}
           >
@@ -112,11 +115,8 @@ export default function Pricing() {
             <Link href={plan.href} className="w-full">
               <Button
                 size="lg"
-                variant={plan.popular ? "gradient" : "default"}
-                className={cn(
-                  "w-full text-lg",
-                  plan.popular ? "" : "bg-primary text-primary-foreground hover:bg-primary/90"
-                )}
+                variant={plan.variant as any}
+                className="w-full text-lg"
               >
                 {plan.cta}
               </Button>
