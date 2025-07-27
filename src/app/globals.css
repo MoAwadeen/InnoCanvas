@@ -1,13 +1,12 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 222 89% 11%;
+    --background: 241 100% 27%; /* #000987 */
     --foreground: 210 40% 98%;
-    --card: 222 47% 16%;
+    --card: 322 100% 60%;
     --card-foreground: 210 40% 98%;
     --popover: 222 47% 11%;
     --popover-foreground: 210 40% 98%;
@@ -25,6 +24,11 @@
     --input: 217 33% 25%;
     --ring: 205 90% 48%;
     --radius: 1.5rem;
+    --vivid-pink: 322 100% 60%; /* #FF33AF */
+    --soft-magenta: 316 100% 71%; /* #FF6EDF */
+    --light-coral: 350 63% 78%; /* #F0A6B6 */
+    --peach: 24 100% 79%; /* #FFC398 */
+    --deep-navy: 241 100% 27%; /* #000987 */
   }
 }
 
@@ -54,7 +58,8 @@
 
   /* Headline with Glow */
   .headline-glow {
-    @apply text-foreground drop-shadow-[0_0_15px_hsl(var(--primary)/0.5)];
+    @apply text-foreground drop-shadow-[0_0_10px_hsl(var(--vivid-pink)/0.5)] shadow-[0_0_2px_hsl(var(--background))];
+    animation: glow-pulse 2s ease-in-out infinite;
   }
 
   /* Liquid Button */
@@ -62,16 +67,26 @@
     position: relative;
     overflow: hidden;
     z-index: 1;
-    background: linear-gradient(45deg, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--primary)));
+    background: linear-gradient(45deg, hsl(var(--vivid-pink)), hsl(var(--soft-magenta)), hsl(var(--light-coral)), hsl(var(--peach)), hsl(var(--vivid-pink)));
     background-size: 200% 200%;
     animation: gradient-animation 5s ease infinite;
     transition: background-position 0.4s ease-in-out;
+    @apply text-foreground rounded-lg px-4 py-2;
   }
   
   .btn-glow:hover {
     background-position: 100% 100%;
   }
 
+  /* Pricing Switch Color */
+  [data-state='checked']#billing-cycle {
+    @apply bg-accent;
+  }
+
+  /* Pricing Color Transition */
+  [data-state='yearly'] .price-container span {
+      @apply text-primary;
+  }
 }
 
 @keyframes gradient-animation {
@@ -83,5 +98,14 @@
   }
   100% {
     background-position: 0% 50%;
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    drop-shadow: 0 0 20px hsl(var(--vivid-pink) / 0.9);
+  }
+  50% {
+    drop-shadow: 0 0 30px hsl(var(--vivid-pink) / 1);
   }
 }

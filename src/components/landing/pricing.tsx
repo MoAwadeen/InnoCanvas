@@ -54,7 +54,7 @@ export default function Pricing() {
       ],
       cta: "Go Premium",
       href: "/payment",
-      variant: "secondary"
+      variant: "gradient"
     },
   ];
 
@@ -73,6 +73,7 @@ export default function Pricing() {
           id="billing-cycle"
           checked={isYearly}
           onCheckedChange={setIsYearly}
+          data-state={isYearly ? 'checked' : 'unchecked'}
         />
         <Label htmlFor="billing-cycle" className={cn("transition-colors font-medium", isYearly ? "text-primary" : "text-muted-foreground")}>
             Yearly <span className="text-sm font-medium text-green-400">(Save 25%)</span>
@@ -98,11 +99,13 @@ export default function Pricing() {
             )}
             <h3 className="text-2xl font-bold text-foreground mb-2">{plan.name}</h3>
             <p className="text-muted-foreground mb-6 h-10">{plan.description}</p>
-            <div className="mb-8">
-              <span className="text-5xl font-extrabold text-foreground">
-                ${isYearly ? (plan.price.yearly / 12).toFixed(0) : plan.price.monthly}
-              </span>
-              <span className="text-muted-foreground text-lg">/month</span>
+            <div className="mb-8" data-state={isYearly ? 'yearly' : 'monthly'}>
+              <div className="price-container transition-colors duration-300">
+                <span className="text-5xl font-extrabold text-foreground">
+                  ${isYearly ? (plan.price.yearly / 12).toFixed(0) : plan.price.monthly}
+                </span>
+                <span className="text-muted-foreground text-lg">/month</span>
+              </div>
             </div>
             <ul className="space-y-4 mb-10 flex-1">
               {plan.features.map((feature) => (
