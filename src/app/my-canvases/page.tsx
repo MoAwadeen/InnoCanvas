@@ -21,7 +21,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Bot, PlusCircle, Trash2, User, LogOut } from 'lucide-react';
+import { Bot, PlusCircle, Trash2, User, LogOut, Loader } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { auth, db } from '@/lib/firebase';
@@ -29,7 +29,7 @@ import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
-import { collection, query, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
+import { collection, query, onSnapshot, deleteDoc, doc, orderBy } from 'firebase/firestore';
 
 interface Canvas {
   id: string;
@@ -52,19 +52,23 @@ export default function MyCanvasesPage() {
     }
 
     setIsLoading(true);
-    const q = query(collection(db, 'users', user.uid, 'canvases'));
+    const q = query(collection(db, 'users', user.uid, 'canvases'), orderBy('createdAt', 'desc'));
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const userCanvases = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        title: doc.data().businessDescription,
-        preview: Object.values(doc.data()).slice(0, 3).join(' '),
-        date: doc.data().createdAt?.toDate().toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        }) || new Date().toLocaleDateString(),
-      }));
+      const userCanvases = querySnapshot.docs.map(doc => {
+          const data = doc.data();
+          const previewContent = [data.valuePropositions, data.customerSegments, data.revenueStreams].filter(Boolean).join(' · ');
+          return {
+            id: doc.id,
+            title: data.businessDescription || 'Untitled Canvas',
+            preview: previewContent,
+            date: data.createdAt?.toDate().toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            }) || new Date().toLocaleDateString(),
+          }
+      });
       setCanvases(userCanvases);
       setIsLoading(false);
     }, (error) => {
@@ -158,9 +162,9 @@ export default function MyCanvasesPage() {
 
 
         {isLoading ? (
-           <div className="text-center py-20">
-             <p>Loading your canvases...</p>
-           </div>
+            <div className="flex justify-center items-center py-20">
+              <Loader className="w-12 h-12 animate-spin text-primary" />
+            </div>
         ) : canvases.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {canvases.map((canvas, index) => (
@@ -174,10 +178,10 @@ export default function MyCanvasesPage() {
                   className="flex flex-col h-full hover:border-primary/50 transition-all border-border"
                 >
                   <CardHeader>
-                    <CardTitle>{canvas.title}</CardTitle>
+                    <CardTitle className="line-clamp-2">{canvas.title}</CardTitle>
                   </CardHeader>
                   <CardContent className="flex-grow">
-                    <p className="text-muted-foreground line-clamp-3">{canvas.preview}</p>
+                    <p className="text-muted-foreground text-sm line-clamp-3 h-16">{canvas.preview}</p>
                   </CardContent>
                   <CardFooter className="flex justify-between items-center">
                     <p className="text-sm text-muted-foreground">{canvas.date}</p>

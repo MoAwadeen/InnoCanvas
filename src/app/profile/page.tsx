@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Bot, LogOut, User } from "lucide-react"
+import { Bot, LogOut, User, Loader } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { countries } from "@/lib/countries"
@@ -25,8 +25,6 @@ import { signOut, updateProfile as updateAuthProfile } from "firebase/auth"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { useState, useEffect } from "react"
-import { Loader } from "lucide-react"
-
 
 export default function ProfilePage() {
     const { user, userData, loading: authLoading } = useAuth();
@@ -139,7 +137,7 @@ export default function ProfilePage() {
                         <AvatarFallback>{profileData.fullName ? profileData.fullName.charAt(0).toUpperCase() : 'U'}</AvatarFallback>
                     </Avatar>
                     <div>
-                        <CardTitle className="text-2xl">{profileData.fullName}</CardTitle>
+                        <CardTitle className="text-2xl">{profileData.fullName || 'Innovator'}</CardTitle>
                         <CardDescription>{user.email}</CardDescription>
                     </div>
                 </div>
