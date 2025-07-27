@@ -5,48 +5,47 @@
 
 @layer base {
   :root {
-    --background: 225 100% 4%;
-    --foreground: 210 20% 98%;
-    --card: 215 25% 23%;
-    --card-foreground: 210 20% 98%;
-    --popover: 215 25% 23%;
-    --popover-foreground: 210 20% 98%;
-    --primary: 233 100% 66%;
-    --primary-foreground: 210 20% 98%;
-    --secondary: 215 28% 17%;
-    --secondary-foreground: 210 20% 98%;
-    --muted: 215 28% 17%;
+    --background: 222 84% 4%; /* A deep, dark blue */
+    --foreground: 210 40% 98%;
+    --card: 222 84% 10%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 84% 4%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 226 100% 50%; /* palatinate-blue */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 17%;
     --muted-foreground: 215 20% 65%;
-    --accent: 262 51% 52%;
-    --accent-foreground: 210 20% 98%;
+    --accent: 314 64% 45%; /* fandango */
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 63% 31%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 215 28% 17%;
-    --input: 215 28% 17%;
-    --ring: 233 100% 66%;
-    --radius: 0.75rem;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 33% 25%;
+    --input: 217 33% 20%;
+    --ring: 216 92% 58%; /* azure */
   }
 
   .dark {
-    --background: 225 100% 4%;
-    --foreground: 210 20% 98%;
-    --card: 215 25% 23%;
-    --card-foreground: 210 20% 98%;
-    --popover: 215 25% 23%;
-    --popover-foreground: 210 20% 98%;
-    --primary: 233 100% 66%;
-    --primary-foreground: 210 20% 98%;
-    --secondary: 215 28% 17%;
-    --secondary-foreground: 210 20% 98%;
-    --muted: 215 28% 17%;
+    --background: 222 84% 4%; /* A deep, dark blue */
+    --foreground: 210 40% 98%;
+    --card: 222 84% 10%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 84% 4%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 226 100% 50%; /* palatinate-blue */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 17%;
     --muted-foreground: 215 20% 65%;
-    --accent: 262 51% 52%;
-    --accent-foreground: 210 20% 98%;
+    --accent: 314 64% 45%; /* fandango */
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 63% 31%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 215 28% 17%;
-    --input: 215 28% 17%;
-    --ring: 233 100% 66%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 33% 25%;
+    --input: 217 33% 20%;
+    --ring: 216 92% 58%; /* azure */
   }
 }
 
@@ -65,7 +64,4 @@
       @apply text-gray-300;
   }
 }
-
     
-
-

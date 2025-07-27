@@ -37,7 +37,6 @@ import html2canvas from 'html2canvas';
 type BMCBlock = {
   title: string;
   icon: React.ReactNode;
-  content: string;
   keyProp: keyof GenerateBMCOutput;
 };
 
@@ -354,7 +353,7 @@ export default function BmcGeneratorPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-background to-[#003CFE] text-white p-4 md:p-8">
+    <div className="min-h-screen w-full bg-gradient-to-br from-background to-primary/30 text-white p-4 md:p-8">
        <header className="flex justify-between items-center mb-8">
           <Link href="/" className="flex items-center gap-2">
             <Bot className="h-8 w-8 text-primary" />
@@ -422,9 +421,3 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
   </div>
 );
     
-
-    
-
-    
-
-
