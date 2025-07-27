@@ -5,7 +5,7 @@
 
 @layer base {
   :root {
-    --background: 222 84% 4%; /* A deep, dark blue */
+    --background: 226 100% 50%; /* #003CFE */
     --foreground: 210 40% 98%;
     --card: 222 84% 10%;
     --card-foreground: 210 40% 98%;
@@ -24,10 +24,11 @@
     --border: 217 33% 25%;
     --input: 217 33% 20%;
     --ring: 216 92% 58%; /* azure */
+    --radius: 0.5rem;
   }
 
   .dark {
-    --background: 222 84% 4%; /* A deep, dark blue */
+    --background: 226 100% 50%; /* #003CFE */
     --foreground: 210 40% 98%;
     --card: 222 84% 10%;
     --card-foreground: 210 40% 98%;
@@ -77,7 +78,23 @@
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
+
+@keyframes breathing-border {
+  0%, 100% {
+    box-shadow: 0 0 5px 0px hsla(var(--primary), 0.5), 0 0 10px 0px hsla(var(--accent), 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px 5px hsla(var(--primary), 0.7), 0 0 30px 10px hsla(var(--accent), 0.7);
+  }
+}
+
+.breathing-rounded-lines {
+  animation: breathing-border 4s ease-in-out infinite;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+}
     
+
 
 
 
