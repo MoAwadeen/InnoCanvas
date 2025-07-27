@@ -211,11 +211,17 @@ export default function MyCanvasesPage() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 border-2 border-dashed border-border/20 rounded-2xl bg-secondary">
+          <div className="text-center py-20 border-2 border-dashed border-border/20 rounded-2xl bg-secondary flex flex-col items-center">
             <h2 className="text-2xl font-semibold mb-4">No Canvases Yet</h2>
-            <p className="text-muted-foreground mb-6">
-              Click the button above to start creating your first Business Model Canvas.
+            <p className="text-muted-foreground mb-6 max-w-md">
+              It looks like your workspace is empty. Let's create your first Business Model Canvas and bring your ideas to life.
             </p>
+            <Link href="/generate">
+                <Button variant="gradient">
+                <PlusCircle className="mr-2" />
+                Create Your First Canvas
+                </Button>
+            </Link>
           </div>
         )}
       </main>
