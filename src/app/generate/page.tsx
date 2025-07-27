@@ -32,6 +32,11 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { useAuth } from '@/hooks/useAuth';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { db } from '@/lib/firebase';
+import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc } from 'firebase/firestore';
+
 
 type BMCBlock = {
   title: string;
@@ -68,6 +73,11 @@ const refinementQuestions = [
 ];
 
 export default function BmcGeneratorPage() {
+  const { user } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const canvasId = searchParams.get('canvasId');
+
   const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -84,6 +94,50 @@ export default function BmcGeneratorPage() {
   });
   const [bmcData, setBmcData] = useState<GenerateBMCOutput | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    if (!user) {
+      router.push('/login');
+    }
+  }, [user, router]);
+
+  useEffect(() => {
+      const loadCanvas = async () => {
+        if (canvasId && user) {
+            setIsLoading(true);
+            try {
+                const canvasDocRef = doc(db, 'users', user.uid, 'canvases', canvasId);
+                const canvasDoc = await getDoc(canvasDocRef);
+                if (canvasDoc.exists()) {
+                    const data = canvasDoc.data() as GenerateBMCOutput & GenerateBMCInput;
+                    setBmcData({
+                        customerSegments: data.customerSegments,
+                        valuePropositions: data.valuePropositions,
+                        channels: data.channels,
+                        customerRelationships: data.customerRelationships,
+                        revenueStreams: data.revenueStreams,
+                        keyActivities: data.keyActivities,
+                        keyResources: data.keyResources,
+                        keyPartnerships: data.keyPartnerships,
+                        costStructure: data.costStructure,
+                    });
+                     setFormData({ businessDescription: data.businessDescription });
+                    setStep(3);
+                } else {
+                     toast({ title: 'Error', description: 'Canvas not found.', variant: 'destructive' });
+                     router.push('/my-canvases');
+                }
+            } catch (error) {
+                console.error("Error loading canvas:", error)
+                toast({ title: 'Error', description: 'Failed to load canvas.', variant: 'destructive' });
+            } finally {
+                setIsLoading(false);
+            }
+        }
+      };
+
+      loadCanvas();
+  }, [canvasId, user, router, toast]);
 
   const handleInputChange = (
     key: keyof GenerateBMCInput,
@@ -118,12 +172,41 @@ export default function BmcGeneratorPage() {
     }
   };
 
-  const handleSave = () => {
-    // Firestore saving logic would go here
-    toast({
-      title: 'Canvas Saved!',
-      description: 'Your masterpiece is safe in "My Canvases".',
-    });
+  const handleSave = async () => {
+    if (!user || !bmcData || !formData.businessDescription) {
+        toast({ title: 'Error', description: 'Cannot save. Missing data or user not logged in.', variant: 'destructive' });
+        return;
+    }
+    
+    setIsLoading(true);
+    try {
+        const canvasData = {
+            ...bmcData,
+            businessDescription: formData.businessDescription,
+            createdAt: serverTimestamp(),
+            userId: user.uid,
+        };
+
+        if (canvasId) {
+            // Update existing document
+            const canvasDocRef = doc(db, 'users', user.uid, 'canvases', canvasId);
+            await setDoc(canvasDocRef, canvasData, { merge: true });
+        } else {
+            // Create new document
+            const newCanvasRef = await addDoc(collection(db, 'users', user.uid, 'canvases'), canvasData);
+            router.replace(`/generate?canvasId=${newCanvasRef.id}`); // Update URL to reflect new ID
+        }
+
+        toast({
+            title: 'Canvas Saved!',
+            description: 'Your masterpiece is safe in "My Canvases".',
+        });
+    } catch (error) {
+        console.error("Error saving canvas:", error);
+        toast({ title: 'Error', description: 'Failed to save canvas.', variant: 'destructive' });
+    } finally {
+        setIsLoading(false);
+    }
   };
   
   const handleExport = () => {
@@ -286,7 +369,7 @@ export default function BmcGeneratorPage() {
             animate={{ opacity: 1, scale: 1 }}
             className="w-full"
           >
-            {isLoading ? (
+            {isLoading && !bmcData ? (
               <div className="flex flex-col items-center justify-center h-96 text-foreground">
                 <Loader className="w-16 h-16 animate-spin mb-4 text-foreground" />
                 <h2 className="text-2xl font-semibold">Generating your canvas...</h2>
@@ -303,7 +386,7 @@ export default function BmcGeneratorPage() {
                         <Button variant="secondary" onClick={() => setIsEditing(!isEditing)}>
                             <Edit className="mr-2" /> {isEditing ? 'Done Editing' : 'Edit'}
                         </Button>
-                        <Button variant="secondary" onClick={handleSave}><Save className="mr-2" /> Save to My Canvases</Button>
+                        <Button variant="secondary" onClick={handleSave} disabled={isLoading}><Save className="mr-2" /> Save to My Canvases</Button>
                         <Button variant="secondary" onClick={handleExport}><Download className="mr-2" /> Export as PDF</Button>
                         <Button variant="secondary" onClick={handleShare}><Share2 className="mr-2" /> Share Public Link</Button>
                     </div>
@@ -391,5 +474,3 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
     )}
   </div>
 );
-
-    

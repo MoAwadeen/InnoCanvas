@@ -13,13 +13,108 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Bot, User } from "lucide-react"
+import { Bot, LogOut, User } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { countries } from "@/lib/countries"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import { useAuth } from "@/hooks/useAuth"
+import { auth, db } from "@/lib/firebase"
+import { doc, updateDoc } from "firebase/firestore"
+import { signOut, updateProfile as updateAuthProfile } from "firebase/auth"
+import { useRouter } from "next/navigation"
+import { useToast } from "@/hooks/use-toast"
+import { useState, useEffect } from "react"
+import { Loader } from "lucide-react"
+
 
 export default function ProfilePage() {
+    const { user, userData, loading: authLoading } = useAuth();
+    const [profileData, setProfileData] = useState({
+        fullName: '',
+        age: '',
+        gender: '',
+        country: '',
+        useCase: '',
+    });
+    const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
+    const { toast } = useToast();
+
+    useEffect(() => {
+        if (userData) {
+            setProfileData({
+                fullName: userData.fullName || '',
+                age: userData.age || '',
+                gender: userData.gender || '',
+                country: userData.country || '',
+                useCase: userData.useCase || '',
+            });
+        }
+    }, [userData]);
+    
+    const handleInputChange = (field: keyof typeof profileData, value: string) => {
+        setProfileData(prev => ({...prev, [field]: value}))
+    }
+
+    const handleSaveChanges = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!user) return;
+        setIsLoading(true);
+        try {
+            const userRef = doc(db, 'users', user.uid);
+            await updateDoc(userRef, profileData);
+            
+            if (auth.currentUser && auth.currentUser.displayName !== profileData.fullName) {
+                await updateAuthProfile(auth.currentUser, { displayName: profileData.fullName });
+            }
+
+            toast({
+                title: 'Profile Updated',
+                description: 'Your changes have been saved successfully.',
+            });
+
+        } catch(error: any) {
+            toast({
+                title: 'Update Failed',
+                description: error.message,
+                variant: 'destructive',
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    
+    const handleLogout = async () => {
+        try {
+        await signOut(auth);
+        toast({
+            title: 'Logged Out',
+            description: 'You have been successfully logged out.',
+        });
+        router.push('/login');
+        } catch (error) {
+        toast({
+            title: 'Logout Failed',
+            description: 'There was an error logging you out.',
+            variant: 'destructive',
+        });
+        }
+    };
+    
+    if (authLoading) {
+        return (
+            <div className="min-h-screen w-full flex items-center justify-center bg-background">
+                <Loader className="w-16 h-16 animate-spin text-primary" />
+            </div>
+        );
+    }
+    
+    if (!user) {
+        router.push('/login');
+        return null;
+    }
+
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center p-4 md:p-8">
         <header className="w-full max-w-5xl flex justify-between items-center mb-8">
@@ -31,9 +126,7 @@ export default function ProfilePage() {
                 <Link href="/my-canvases">
                     <Button variant="secondary">My Canvases</Button>
                 </Link>
-                <Link href="/">
-                  <Button variant="secondary">Logout</Button>
-                </Link>
+                 <Button variant="secondary" onClick={handleLogout}><LogOut className="mr-2"/>Logout</Button>
             </div>
       </header>
       <main className="w-full max-w-5xl flex-grow">
@@ -42,98 +135,98 @@ export default function ProfilePage() {
             <CardHeader>
                 <div className="flex items-center gap-4">
                     <Avatar className="w-20 h-20 border-2 border-primary">
-                        <AvatarImage src="https://placehold.co/100x100.png" alt="Mohamed Awadeen" data-ai-hint="man portrait"/>
-                        <AvatarFallback>MA</AvatarFallback>
+                        <AvatarImage src={user.photoURL || "https://placehold.co/100x100.png"} alt={profileData.fullName} data-ai-hint="man portrait"/>
+                        <AvatarFallback>{profileData.fullName ? profileData.fullName.charAt(0).toUpperCase() : 'U'}</AvatarFallback>
                     </Avatar>
                     <div>
-                        <CardTitle className="text-2xl">Mohamed Awadeen</CardTitle>
-                        <CardDescription>mohamed.awadeen@example.com</CardDescription>
+                        <CardTitle className="text-2xl">{profileData.fullName}</CardTitle>
+                        <CardDescription>{user.email}</CardDescription>
                     </div>
                 </div>
             </CardHeader>
             <CardContent>
-            <div className="grid gap-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="grid gap-2">
-                        <Label htmlFor="full-name">Full Name</Label>
-                        <Input id="full-name" defaultValue="Mohamed Awadeen" required />
+            <form onSubmit={handleSaveChanges}>
+                <div className="grid gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid gap-2">
+                            <Label htmlFor="full-name">Full Name</Label>
+                            <Input id="full-name" value={profileData.fullName} onChange={(e) => handleInputChange('fullName', e.target.value)} required />
+                        </div>
+                        <div className="grid gap-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                            id="email"
+                            type="email"
+                            defaultValue={user.email || ''}
+                            required
+                            disabled
+                        />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid gap-2">
+                            <Label htmlFor="age">Age</Label>
+                            <Input id="age" type="number" placeholder="25" value={profileData.age} onChange={(e) => handleInputChange('age', e.target.value)} required />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="gender">Gender</Label>
+                            <Select value={profileData.gender} onValueChange={(value) => handleInputChange('gender', value)}>
+                                <SelectTrigger id="gender">
+                                    <SelectValue placeholder="Select gender" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="male">Male</SelectItem>
+                                    <SelectItem value="female">Female</SelectItem>
+                                    <SelectItem value="non-binary">Non-binary</SelectItem>
+                                    <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
                     <div className="grid gap-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                        id="email"
-                        type="email"
-                        defaultValue="mohamed.awadeen@example.com"
-                        required
-                        disabled
-                    />
-                    </div>
-                </div>
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="grid gap-2">
-                        <Label htmlFor="age">Age</Label>
-                        <Input id="age" type="number" placeholder="25" required />
-                    </div>
-                    <div className="grid gap-2">
-                        <Label htmlFor="gender">Gender</Label>
-                        <Select>
-                            <SelectTrigger id="gender">
-                                <SelectValue placeholder="Select gender" />
+                        <Label htmlFor="country">Country</Label>
+                        <Select value={profileData.country} onValueChange={(value) => handleInputChange('country', value)}>
+                            <SelectTrigger id="country">
+                                <SelectValue placeholder="Select your country" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="male">Male</SelectItem>
-                                <SelectItem value="female">Female</SelectItem>
-                                <SelectItem value="non-binary">Non-binary</SelectItem>
-                                <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
+                                <ScrollArea className="h-72">
+                                {countries.map((country) => (
+                                    <SelectItem key={country.code} value={country.name}>
+                                        <div className="flex items-center gap-2">
+                                            <ReactCountryFlag countryCode={country.code} svg />
+                                            <span>{country.name}</span>
+                                        </div>
+                                    </SelectItem>
+                                ))}
+                                </ScrollArea>
                             </SelectContent>
                         </Select>
                     </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="use-case">Primary Use Case</Label>
+                        <Select value={profileData.useCase} onValueChange={(value) => handleInputChange('useCase', value)}>
+                            <SelectTrigger id="use-case">
+                                <SelectValue placeholder="How will you use InnoCanvas?" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="student">Student</SelectItem>
+                                <SelectItem value="entrepreneur">Entrepreneur</SelectItem>
+                                <SelectItem value="accelerator">Accelerator</SelectItem>
+                                <SelectItem value="consultant">Consultant</SelectItem>
+                                <SelectItem value="other">Other</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    
+                    <Button variant="gradient" type="submit" className="w-full" disabled={isLoading}>
+                      {isLoading ? <Loader className="animate-spin"/> : 'Save Changes'}
+                    </Button>
                 </div>
-                <div className="grid gap-2">
-                    <Label htmlFor="country">Country</Label>
-                    <Select>
-                        <SelectTrigger id="country">
-                            <SelectValue placeholder="Select your country" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <ScrollArea className="h-72">
-                            {countries.map((country) => (
-                                <SelectItem key={country.code} value={country.code}>
-                                    <div className="flex items-center gap-2">
-                                        <ReactCountryFlag countryCode={country.code} svg />
-                                        <span>{country.name}</span>
-                                    </div>
-                                </SelectItem>
-                            ))}
-                            </ScrollArea>
-                        </SelectContent>
-                    </Select>
-                </div>
-                <div className="grid gap-2">
-                    <Label htmlFor="use-case">Primary Use Case</Label>
-                    <Select>
-                        <SelectTrigger id="use-case">
-                            <SelectValue placeholder="How will you use InnoCanvas?" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="student">Student</SelectItem>
-                            <SelectItem value="entrepreneur">Entrepreneur</SelectItem>
-                            <SelectItem value="accelerator">Accelerator</SelectItem>
-                            <SelectItem value="consultant">Consultant</SelectItem>
-                            <SelectItem value="other">Other</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-                
-                <Button variant="gradient" type="submit" className="w-full">
-                Save Changes
-                </Button>
-            </div>
+            </form>
             </CardContent>
         </Card>
       </main>
     </div>
   )
 }
-
-    

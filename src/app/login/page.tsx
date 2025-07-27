@@ -1,26 +1,82 @@
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
+'use client';
+
+import Link from "next/link";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Bot } from "lucide-react"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Bot, Loader } from "lucide-react";
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import { useToast } from '@/hooks/use-toast';
 
 export default function LoginPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      toast({
+        title: 'Login Successful!',
+        description: "Welcome back to InnoCanvas.",
+      });
+      router.push('/my-canvases');
+    } catch (error: any) {
+      toast({
+        title: 'Login Failed',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setIsLoading(true);
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+       toast({
+        title: 'Login Successful!',
+        description: "Welcome back to InnoCanvas.",
+      });
+      router.push('/my-canvases');
+    } catch (error: any) {
+       toast({
+        title: 'Login Failed',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center justify-center p-4">
-       <div className="absolute top-8 left-8">
-          <Link href="/" className="flex items-center gap-2">
-            <Bot className="h-8 w-8 text-primary" />
-            <span className="font-bold text-2xl">InnoCanvas</span>
-          </Link>
-        </div>
+      <div className="absolute top-8 left-8">
+        <Link href="/" className="flex items-center gap-2">
+          <Bot className="h-8 w-8 text-primary" />
+          <span className="font-bold text-2xl">InnoCanvas</span>
+        </Link>
+      </div>
       <Card className="mx-auto max-w-md w-full card-glass bg-bright-cyan/20 backdrop-blur-lg">
         <CardHeader>
           <CardTitle className="text-2xl headline-glow">Login</CardTitle>
@@ -29,34 +85,50 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-                <Link href="#" className="ml-auto inline-block text-sm underline hover:text-vivid-pink">
-                  Forgot your password?
-                </Link>
+          <form onSubmit={handleLogin}>
+            <div className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </div>
-              <Input id="password" type="password" required />
+              <div className="grid gap-2">
+                <div className="flex items-center">
+                  <Label htmlFor="password">Password</Label>
+                  <Link href="#" className="ml-auto inline-block text-sm underline hover:text-vivid-pink">
+                    Forgot your password?
+                  </Link>
+                </div>
+                <Input 
+                  id="password" 
+                  type="password" 
+                  required 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              <Button variant="gradient" type="submit" className="w-full btn-glow" disabled={isLoading}>
+                {isLoading ? <Loader className="animate-spin" /> : 'Login'}
+              </Button>
             </div>
-            <Link href="/my-canvases" className="w-full">
-                <Button variant="gradient" type="submit" className="w-full btn-glow">
-                Login
-                </Button>
-            </Link>
-            <Button variant="secondary" className="w-full">
+          </form>
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+            </div>
+          </div>
+           <Button variant="secondary" className="w-full" onClick={handleGoogleLogin} disabled={isLoading}>
               Login with Google
             </Button>
-          </div>
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}
             <Link href="/register" className="underline hover:text-vivid-pink">
@@ -66,5 +138,5 @@ export default function LoginPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

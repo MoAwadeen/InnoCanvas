@@ -21,31 +21,105 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Bot, PlusCircle, Trash2, User } from 'lucide-react';
+import { Bot, PlusCircle, Trash2, User, LogOut } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/hooks/useAuth';
+import { auth, db } from '@/lib/firebase';
+import { signOut } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
+import { useEffect, useState } from 'react';
+import { collection, query, where, getDocs, deleteDoc, doc } from 'firebase/firestore';
 
-const mockCanvases = [
-  {
-    id: '1',
-    title: 'AR History Tourist App',
-    date: 'October 25, 2023',
-    preview: 'A mobile app that helps tourists explore historical places using AR...',
-  },
-  {
-    id: '2',
-    title: 'AI-Powered Meal Planner',
-    date: 'November 02, 2023',
-    preview: 'A subscription service that creates custom meal plans based on dietary needs...',
-  },
-  {
-    id: '3',
-    title: 'Sustainable Fashion Marketplace',
-    date: 'November 15, 2023',
-    preview: 'An e-commerce platform connecting consumers with sustainable clothing brands...',
-  },
-];
+interface Canvas {
+  id: string;
+  title: string;
+  preview: string;
+  date: string;
+}
 
 export default function MyCanvasesPage() {
+  const { user, userData } = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
+  const [canvases, setCanvases] = useState<Canvas[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      const fetchCanvases = async () => {
+        setIsLoading(true);
+        try {
+          const q = query(collection(db, 'users', user.uid, 'canvases'));
+          const querySnapshot = await getDocs(q);
+          const userCanvases = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            title: doc.data().businessDescription,
+            preview: Object.values(doc.data()).slice(0, 3).join(' '),
+            date: doc.data().createdAt?.toDate().toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            }) || new Date().toLocaleDateString(),
+          }));
+          setCanvases(userCanvases);
+        } catch (error) {
+          console.error("Error fetching canvases: ", error);
+          toast({
+            title: 'Error',
+            description: 'Could not fetch your canvases.',
+            variant: 'destructive'
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchCanvases();
+    } else {
+        router.push('/login');
+    }
+  }, [user, router, toast]);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast({
+        title: 'Logged Out',
+        description: 'You have been successfully logged out.',
+      });
+      router.push('/login');
+    } catch (error) {
+      toast({
+        title: 'Logout Failed',
+        description: 'There was an error logging you out.',
+        variant: 'destructive',
+      });
+    }
+  };
+  
+  const handleDelete = async (canvasId: string) => {
+    if (!user) return;
+    try {
+      await deleteDoc(doc(db, 'users', user.uid, 'canvases', canvasId));
+      setCanvases(canvases.filter(canvas => canvas.id !== canvasId));
+      toast({
+        title: 'Canvas Deleted',
+        description: 'Your canvas has been successfully deleted.',
+      });
+    } catch (error) {
+       toast({
+        title: 'Error',
+        description: 'Failed to delete canvas.',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  if (!user) {
+    return null; // or a loading spinner
+  }
+
   return (
     <div className="min-h-screen w-full bg-background text-foreground p-4 md:p-8">
       <header className="flex justify-between items-center mb-12">
@@ -57,9 +131,7 @@ export default function MyCanvasesPage() {
            <Link href="/profile">
             <Button variant="secondary"><User className="mr-2"/>Profile</Button>
            </Link>
-           <Link href="/">
-            <Button variant="secondary">Logout</Button>
-          </Link>
+           <Button variant="secondary" onClick={handleLogout}><LogOut className="mr-2"/>Logout</Button>
         </div>
       </header>
 
@@ -70,7 +142,7 @@ export default function MyCanvasesPage() {
           transition={{ duration: 0.5 }}
           className="mb-12"
         >
-          <h1 className="text-4xl md:text-5xl font-bold">Welcome back, Mohamed Awadeen 👋</h1>
+          <h1 className="text-4xl md:text-5xl font-bold">Welcome back, {userData?.fullName || user.displayName || 'Innovator'} 👋</h1>
           <p className="text-muted-foreground mt-2 text-lg">Here’s your latest business canvas progress.</p>
         </motion.div>
         
@@ -85,9 +157,13 @@ export default function MyCanvasesPage() {
         </div>
 
 
-        {mockCanvases.length > 0 ? (
+        {isLoading ? (
+           <div className="text-center py-20">
+             <p>Loading your canvases...</p>
+           </div>
+        ) : canvases.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockCanvases.map((canvas, index) => (
+            {canvases.map((canvas, index) => (
               <motion.div
                 key={canvas.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -124,7 +200,7 @@ export default function MyCanvasesPage() {
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction>Delete</AlertDialogAction>
+                              <AlertDialogAction onClick={() => handleDelete(canvas.id)}>Delete</AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>
@@ -146,5 +222,3 @@ export default function MyCanvasesPage() {
     </div>
   );
 }
-
-    
