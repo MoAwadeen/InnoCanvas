@@ -14,14 +14,14 @@ import { Bot } from "lucide-react"
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-[#0a0a23] via-[#000428] to-[#004e92] text-white flex flex-col items-center justify-center p-4 md:p-8">
+    <div className="min-h-screen w-full bg-gradient-to-br from-background to-accent/20 text-white flex flex-col items-center justify-center p-4 md:p-8">
        <div className="absolute top-8 left-8">
           <Link href="/" className="flex items-center gap-2">
             <Bot className="h-8 w-8 text-primary" />
             <span className="font-bold text-2xl">InnoCanvas</span>
           </Link>
         </div>
-      <Card className="mx-auto max-w-md bg-white/10 backdrop-blur-lg border-border/20 text-white">
+      <Card className="mx-auto max-w-md bg-white/10 backdrop-blur-lg border-border/20 text-white w-full">
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>
@@ -52,7 +52,7 @@ export default function LoginPage() {
             <Button type="submit" className="w-full bg-gradient-to-r from-primary to-accent text-primary-foreground">
               Login
             </Button>
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full bg-transparent hover:bg-white/10 border-white/20 hover:text-white">
               Login with Google
             </Button>
           </div>
