@@ -38,7 +38,7 @@ export default function Footer() {
              <h4 className="font-semibold">Stay Updated</h4>
              <p className="text-muted-foreground">Subscribe to our newsletter for the latest updates.</p>
              <form className="flex gap-2 w-full">
-                <Input type="email" placeholder="Enter your email" />
+                <Input type="email" placeholder="Enter your email" className="focus:text-vivid-pink" />
                 <Button type="submit" variant="gradient">Subscribe</Button>
              </form>
           </div>
