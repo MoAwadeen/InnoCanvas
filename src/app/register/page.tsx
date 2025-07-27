@@ -27,7 +27,7 @@ export default function RegisterPage() {
             <span className="font-bold text-2xl">InnoCanvas</span>
           </Link>
         </div>
-      <Card className="mx-auto max-w-sm bg-white/10 backdrop-blur-lg border-white/20 text-white">
+      <Card className="mx-auto max-w-md bg-white/10 backdrop-blur-lg border-border/20 text-white">
         <CardHeader>
           <CardTitle className="text-xl">Sign Up</CardTitle>
           <CardDescription>
@@ -38,7 +38,7 @@ export default function RegisterPage() {
           <div className="grid gap-4">
             <div className="grid gap-2">
                 <Label htmlFor="full-name">Full Name</Label>
-                <Input id="full-name" placeholder="Max Robinson" required className="bg-black/20 border-white/30" />
+                <Input id="full-name" placeholder="Max Robinson" required className="bg-black/20 border-border/30" />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
@@ -47,18 +47,18 @@ export default function RegisterPage() {
                 type="email"
                 placeholder="m@example.com"
                 required
-                className="bg-black/20 border-white/30"
+                className="bg-black/20 border-border/30"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
                     <Label htmlFor="age">Age</Label>
-                    <Input id="age" type="number" placeholder="25" required className="bg-black/20 border-white/30" />
+                    <Input id="age" type="number" placeholder="25" required className="bg-black/20 border-border/30" />
                 </div>
                 <div className="grid gap-2">
                     <Label htmlFor="gender">Gender</Label>
                     <Select>
-                        <SelectTrigger id="gender" className="bg-black/20 border-white/30">
+                        <SelectTrigger id="gender" className="bg-black/20 border-border/30">
                             <SelectValue placeholder="Select gender" />
                         </SelectTrigger>
                         <SelectContent>
@@ -73,7 +73,7 @@ export default function RegisterPage() {
             <div className="grid gap-2">
                 <Label htmlFor="country">Country</Label>
                  <Select>
-                    <SelectTrigger id="country" className="bg-black/20 border-white/30">
+                    <SelectTrigger id="country" className="bg-black/20 border-border/30">
                         <SelectValue placeholder="Select your country" />
                     </SelectTrigger>
                     <SelectContent>
@@ -93,7 +93,7 @@ export default function RegisterPage() {
              <div className="grid gap-2">
                 <Label htmlFor="use-case">Primary Use Case</Label>
                 <Select>
-                    <SelectTrigger id="use-case" className="bg-black/20 border-white/30">
+                    <SelectTrigger id="use-case" className="bg-black/20 border-border/30">
                         <SelectValue placeholder="How will you use InnoCanvas?" />
                     </SelectTrigger>
                     <SelectContent>
@@ -107,7 +107,7 @@ export default function RegisterPage() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" className="bg-black/20 border-white/30" />
+              <Input id="password" type="password" className="bg-black/20 border-border/30" />
             </div>
             <Button type="submit" className="w-full bg-gradient-to-r from-primary to-accent text-primary-foreground">
               Create an account
@@ -127,5 +127,7 @@ export default function RegisterPage() {
     </div>
   )
 }
+
+    
 
     

@@ -228,14 +228,14 @@ export default function BmcGeneratorPage() {
             exit={{ opacity: 0, y: -20 }}
             className="w-full max-w-2xl"
           >
-            <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8 shadow-2xl text-center">
+            <div className="bg-white/10 backdrop-blur-lg border border-border/20 rounded-2xl p-8 shadow-2xl text-center">
               <h1 className="text-4xl font-bold mb-4">Tell Us About Your Idea</h1>
               <p className="text-muted-foreground mb-8">
                 Start with your business name and a brief description. The more detail, the better!
               </p>
               <Textarea
                 placeholder="Ex: A mobile app that helps tourists explore historical places using AR…"
-                className="min-h-[150px] bg-black/20 border-white/30 text-lg"
+                className="min-h-[150px] bg-black/20 border-border/30 text-lg"
                 value={formData.businessDescription}
                 onChange={(e) => handleInputChange('businessDescription', e.target.value)}
               />
@@ -259,7 +259,7 @@ export default function BmcGeneratorPage() {
             exit={{ opacity: 0, y: -20 }}
             className="w-full max-w-3xl"
           >
-            <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8 shadow-2xl">
+            <div className="bg-white/10 backdrop-blur-lg border border-border/20 rounded-2xl p-8 shadow-2xl">
               <h1 className="text-3xl font-bold mb-2 text-center">Refine Your Business Vision</h1>
               <p className="text-muted-foreground mb-8 text-center">
                 Answer these questions to help the AI understand your business better.
@@ -386,7 +386,7 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
   <div className={cn(
     `rounded-2xl p-4 shadow-lg flex flex-col transition-all`,
     // Glass Template
-    `data-[template=glass]:bg-white/10 data-[template=glass]:backdrop-blur-lg data-[template=glass]:border data-[template=glass]:border-white/20`,
+    `data-[template=glass]:bg-white/10 data-[template=glass]:backdrop-blur-lg data-[template=glass]:border data-[template=glass]:border-border/20`,
     // Minimal Light Template
     `data-[template=minimal]:bg-gray-50 data-[template=minimal]:text-gray-800 data-[template=minimal]:border-gray-900 data-[template=minimal]:border`,
     // Minimal Dark Template
@@ -421,6 +421,8 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
     />
   </div>
 );
+    
+
     
 
     

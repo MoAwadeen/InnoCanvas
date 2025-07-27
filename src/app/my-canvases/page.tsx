@@ -51,7 +51,7 @@ export default function MyCanvasesPage() {
             {mockCanvases.map((canvas) => (
               <Card
                 key={canvas.id}
-                className="bg-white/10 backdrop-blur-lg border-white/20 text-white flex flex-col"
+                className="bg-white/10 backdrop-blur-lg border-border/20 text-white flex flex-col"
               >
                 <CardHeader>
                   <CardTitle>{canvas.title}</CardTitle>
@@ -69,7 +69,7 @@ export default function MyCanvasesPage() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 border-2 border-dashed border-white/20 rounded-2xl">
+          <div className="text-center py-20 border-2 border-dashed border-border/20 rounded-2xl">
             <h2 className="text-2xl font-semibold mb-4">No Canvases Yet</h2>
             <p className="text-muted-foreground mb-6">
               Click the button below to start creating your first Business Model Canvas.
@@ -85,5 +85,7 @@ export default function MyCanvasesPage() {
     </div>
   );
 }
+
+    
 
     
