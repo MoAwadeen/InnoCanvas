@@ -202,7 +202,7 @@ export default function MyCanvasesPage() {
                         </Link>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button variant="destructive" size="icon">
+                            <Button variant="outline" size="icon">
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </AlertDialogTrigger>
@@ -215,7 +215,7 @@ export default function MyCanvasesPage() {
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDelete(canvas.id)}>Delete</AlertDialogAction>
+                              <AlertDialogAction onClick={() => handleDelete(canvas.id)} className="bg-vivid-pink text-accent-foreground hover:bg-vivid-pink/90">Delete</AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>
