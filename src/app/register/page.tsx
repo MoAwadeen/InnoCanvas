@@ -20,7 +20,7 @@ import { countries } from "@/lib/countries"
 
 export default function RegisterPage() {
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-background to-accent/20 text-white flex flex-col items-center justify-center p-4 md:p-8">
+    <div className="min-h-screen w-full bg-gradient-to-br from-background to-[#003CFE] text-white flex flex-col items-center justify-center p-4 md:p-8">
         <div className="absolute top-8 left-8">
           <Link href="/" className="flex items-center gap-2">
             <Bot className="h-8 w-8 text-primary" />
@@ -131,4 +131,5 @@ export default function RegisterPage() {
     
 
     
+
 
