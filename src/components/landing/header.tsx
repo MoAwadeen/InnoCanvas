@@ -49,7 +49,7 @@ export default function Header() {
                 <Button variant="ghost">Log In</Button>
             </Link>
             <Link href="/register">
-                <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+                <Button variant="gradient">
                     Get Started
                 </Button>
             </Link>
@@ -89,7 +89,7 @@ export default function Header() {
                     <Button variant="ghost" className="w-full">Log In</Button>
                   </Link>
                   <Link href="/register" className="w-full">
-                    <Button className="w-full">
+                    <Button variant="gradient" className="w-full">
                         Get Started
                     </Button>
                   </Link>

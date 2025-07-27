@@ -221,6 +221,7 @@ export default function BmcGeneratorPage() {
               />
               <Button
                 size="lg"
+                variant="gradient"
                 className="mt-8 w-full"
                 onClick={() => setStep(2)}
                 disabled={!formData.businessDescription}
@@ -267,6 +268,7 @@ export default function BmcGeneratorPage() {
               </div>
               <Button
                 size="lg"
+                variant="gradient"
                 className="mt-8 w-full"
                 onClick={() => handleGenerateCanvas(false)}
                 disabled={isLoading}
@@ -294,7 +296,7 @@ export default function BmcGeneratorPage() {
               bmcData && (
                 <div>
                     <div className="flex flex-wrap gap-4 justify-center mb-8">
-                        <Button variant="outline" onClick={() => handleGenerateCanvas(true)} disabled={isLoading}>
+                        <Button variant="gradient" onClick={() => handleGenerateCanvas(true)} disabled={isLoading}>
                             {isLoading ? <Loader className="mr-2 animate-spin" /> : <RefreshCw className="mr-2" />} 
                             Regenerate
                         </Button>

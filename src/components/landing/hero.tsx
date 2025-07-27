@@ -18,7 +18,7 @@ export default function Hero() {
           <Link href="/register">
             <Button
               size="lg"
-              className="text-lg bg-primary text-primary-foreground hover:bg-primary/90"
+              variant="gradient"
             >
               Try for Free <MoveRight className="ml-2" />
             </Button>

@@ -125,7 +125,7 @@ export default function ProfilePage() {
                     </Select>
                 </div>
                 
-                <Button type="submit" className="w-full">
+                <Button variant="gradient" type="submit" className="w-full">
                 Save Changes
                 </Button>
             </div>

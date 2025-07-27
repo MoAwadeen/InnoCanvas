@@ -14,16 +14,16 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 10% 10%;
 
-    --primary: 240 5.9% 10%;
+    --primary: 216 92% 58%;
     --primary-foreground: 0 0% 98%;
     
     --secondary: 215 20% 95%;
-    --secondary-foreground: 240 5.9% 10%;
+    --secondary-foreground: 220 10% 10%;
 
     --muted: 215 20% 95%;
-    --muted-foreground: 240 5% 65%;
+    --muted-foreground: 220 10% 40%;
 
-    --accent: 330 80% 55%;
+    --accent: 332 73% 66%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84.2% 60.2%;
@@ -33,7 +33,7 @@
     --input: 215 20% 90%;
     --ring: 220 10% 10%;
 
-    --radius: 1rem;
+    --radius: 1.5rem;
   }
 }
 
@@ -48,5 +48,32 @@
   
   html {
     @apply scroll-smooth;
+  }
+}
+
+@layer components {
+  .btn-gradient-container {
+    @apply relative p-[3px] rounded-2xl transition-all duration-300;
+    background: linear-gradient(90deg, #03a9f4, #f441a5);
+  }
+
+  .btn-gradient-container::before {
+    content: "";
+    @apply absolute inset-0 -z-10 rounded-2xl transition-all duration-300;
+    background: linear-gradient(90deg, #03a9f4, #f441a5);
+    filter: blur(0);
+  }
+
+  .btn-gradient-container:hover::before {
+    @apply blur-lg;
+  }
+
+  .btn-gradient-container:active::before {
+    @apply blur-sm;
+  }
+
+  .btn-gradient-content {
+    @apply text-base font-bold text-white bg-black rounded-xl px-4 py-2 transition-all duration-300;
+    /* You can add hover effects for the inner button too */
   }
 }

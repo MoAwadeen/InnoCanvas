@@ -77,7 +77,7 @@ export default function MyCanvasesPage() {
         <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-bold">Your Canvases</h2>
             <Link href="/generate">
-                <Button>
+                <Button variant="gradient">
                 <PlusCircle className="mr-2" />
                 Create New Canvas
                 </Button>

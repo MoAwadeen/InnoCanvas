@@ -49,7 +49,7 @@ export default function LoginPage() {
               <Input id="password" type="password" required />
             </div>
             <Link href="/my-canvases" className="w-full">
-                <Button type="submit" className="w-full">
+                <Button variant="gradient" type="submit" className="w-full">
                 Login
                 </Button>
             </Link>

@@ -18,6 +18,7 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-secondary hover:text-secondary-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        gradient: "p-0", // Remove padding for the gradient container
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -42,6 +43,19 @@ export interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
+
+    if (variant === "gradient") {
+      return (
+        <div className={cn("btn-gradient-container", className)}>
+           <Comp
+            className={cn("btn-gradient-content w-full h-full", buttonVariants({ size, className: 'text-lg' }))}
+            ref={ref}
+            {...props}
+          />
+        </div>
+      )
+    }
+
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}

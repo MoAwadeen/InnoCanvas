@@ -109,7 +109,7 @@ export default function RegisterPage() {
               <Input id="password" type="password" />
             </div>
             <Link href="/my-canvases" className="w-full">
-              <Button type="submit" className="w-full">
+              <Button variant="gradient" type="submit" className="w-full">
                 Create an account
               </Button>
             </Link>

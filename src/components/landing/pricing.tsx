@@ -70,9 +70,8 @@ export default function Pricing() {
           id="billing-cycle"
           checked={isYearly}
           onCheckedChange={setIsYearly}
-          className="data-[state=checked]:bg-accent"
         />
-        <Label htmlFor="billing-cycle" className={cn("transition-colors font-medium", isYearly ? "text-accent" : "text-muted-foreground")}>
+        <Label htmlFor="billing-cycle" className={cn("transition-colors font-medium", isYearly ? "text-primary" : "text-muted-foreground")}>
             Yearly <span className="text-sm font-medium text-green-600">(Save 25%)</span>
         </Label>
       </div>
@@ -83,7 +82,7 @@ export default function Pricing() {
             key={plan.name}
             className={cn(
               "bg-card border p-8 flex flex-col transition-all duration-300 rounded-2xl",
-              plan.popular ? "border-accent/50 shadow-lg" : ""
+              plan.popular ? "border-primary/50 shadow-lg" : ""
             )}
           >
             {plan.popular && (
@@ -113,9 +112,10 @@ export default function Pricing() {
             <Link href={plan.href} className="w-full">
               <Button
                 size="lg"
+                variant={plan.popular ? "gradient" : "default"}
                 className={cn(
                   "w-full text-lg",
-                  plan.popular ? "bg-accent text-accent-foreground hover:bg-accent/90" : "bg-primary text-primary-foreground hover:bg-primary/90"
+                  plan.popular ? "" : "bg-primary text-primary-foreground hover:bg-primary/90"
                 )}
               >
                 {plan.cta}

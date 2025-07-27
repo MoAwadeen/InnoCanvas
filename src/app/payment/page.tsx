@@ -124,7 +124,7 @@ export default function PaymentPage() {
                             <span>${selectedPlan.price}.00</span>
                         </div>
                     </div>
-                    <Button type="submit" className="w-full text-lg py-6">
+                    <Button variant="gradient" type="submit" className="w-full text-lg py-6">
                         Confirm Payment
                     </Button>
                 </div>
