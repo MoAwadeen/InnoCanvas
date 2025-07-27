@@ -57,6 +57,7 @@ export default {
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
         'vivid-pink': 'hsl(var(--vivid-pink))',
+        'soft-magenta': 'hsl(var(--soft-magenta))',
         peach: 'hsl(var(--peach))',
         chart: {
           '1': 'hsl(var(--chart-1))',
