@@ -2,7 +2,7 @@
 'use client';
 
 import Link from "next/link";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +18,7 @@ import { Bot, Loader } from "lucide-react";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from "@/hooks/useAuth";
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -25,6 +26,13 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      router.push('/my-canvases');
+    }
+  }, [user, router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

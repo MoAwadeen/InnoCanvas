@@ -2,7 +2,7 @@
 'use client';
 
 import Link from "next/link";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ReactCountryFlag from "react-country-flag";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, up
 import { auth, db } from "@/lib/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function RegisterPage() {
   const [fullName, setFullName] = useState('');
@@ -35,6 +36,14 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      router.push('/my-canvases');
+    }
+  }, [user, router]);
+
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
