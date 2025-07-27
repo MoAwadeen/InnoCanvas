@@ -12,15 +12,20 @@ const Textarea = React.forwardRef<
     ref as React.RefObject<HTMLTextAreaElement>
   ) || internalRef;
 
+  const handleInput = (event: React.FormEvent<HTMLTextAreaElement>) => {
+    const textarea = event.currentTarget;
+    textarea.style.height = 'auto';
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  };
+
   React.useLayoutEffect(() => {
     const textarea = combinedRef.current;
     if (textarea) {
-      // Temporarily make height 'auto' to get the right scrollHeight
-      textarea.style.height = 'auto';
-      // Set the height to the scrollHeight to fit the content
-      textarea.style.height = `${textarea.scrollHeight}px`;
+       // Set initial height
+       handleInput({ currentTarget: textarea } as any);
     }
   }, [props.value, combinedRef]);
+
 
   return (
     <textarea
@@ -30,6 +35,7 @@ const Textarea = React.forwardRef<
         className
       )}
       ref={combinedRef}
+      onInput={handleInput}
       {...props}
     />
   );

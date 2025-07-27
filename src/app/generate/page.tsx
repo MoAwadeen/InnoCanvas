@@ -181,7 +181,7 @@ export default function BmcGeneratorPage() {
                 // Revert to original template on error
                 setCurrentTemplate(originalTemplate);
             });
-        }, 500); // Increased delay to ensure DOM update
+        }, 1000); // Increased delay to ensure DOM update
     } else {
         toast({
             title: 'Error exporting',
@@ -225,9 +225,9 @@ export default function BmcGeneratorPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="w-full max-w-2xl"
+            className="w-full max-w-4xl"
           >
-            <div className="bg-card/50 backdrop-blur-lg border border-border/20 rounded-2xl p-8 shadow-2xl text-center">
+            <div className="bg-card/50 backdrop-blur-lg border-border/20 rounded-2xl p-8 shadow-2xl text-center">
               <h1 className="text-4xl font-bold mb-4">Tell Us About Your Idea</h1>
               <p className="text-muted-foreground mb-8">
                 Start with your business name and a brief description. The more detail, the better!
@@ -256,9 +256,9 @@ export default function BmcGeneratorPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="w-full max-w-3xl"
+            className="w-full max-w-4xl"
           >
-            <div className="bg-card/50 backdrop-blur-lg border border-border/20 rounded-2xl p-8 shadow-2xl">
+            <div className="bg-card/50 backdrop-blur-lg border-border/20 rounded-2xl p-8 shadow-2xl">
               <h1 className="text-3xl font-bold mb-2 text-center">Refine Your Business Vision</h1>
               <p className="text-muted-foreground mb-8 text-center">
                 Answer these questions to help the AI understand your business better.
@@ -401,24 +401,36 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
       {icon}
       <h3 className="font-bold text-lg">{title}</h3>
     </div>
-    <Textarea
-      value={content}
-      rows={1}
-      readOnly={!isEditing}
-      onChange={(e) => onContentChange(keyProp, e.target.value)}
-      className={cn(
-        "bg-transparent border-0 text-base flex-grow resize-none focus-visible:ring-0 focus-visible:ring-offset-0",
-        isEditing ? "cursor-text" : "cursor-default",
+    {isEditing ? (
+       <Textarea
+        value={content}
+        readOnly={!isEditing}
+        onChange={(e) => onContentChange(keyProp, e.target.value)}
+        className={cn(
+          "bg-transparent border-0 text-base flex-grow resize-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0",
+          "cursor-text",
+          // Glass Template
+          `data-[template=glass]:text-white/80`,
+          // Minimal Light Template
+          `data-[template=minimal]:text-gray-800 data-[template=minimal]:placeholder:text-gray-500`,
+           // Minimal Dark Template
+          `data-[template=dark]:text-gray-300 data-[template=dark]:placeholder:text-gray-500`,
+          `data-[template=minimal]:border data-[template=minimal]:border-gray-300 data-[template=dark]:border data-[template=dark]:border-gray-600`,
+        )}
+      />
+    ) : (
+      <div className={cn(
+        "text-base flex-grow whitespace-pre-wrap",
         // Glass Template
         `data-[template=glass]:text-white/80`,
         // Minimal Light Template
-        `data-[template=minimal]:text-gray-800 data-[template=minimal]:placeholder:text-gray-500`,
+        `data-[template=minimal]:text-gray-800`,
          // Minimal Dark Template
-        `data-[template=dark]:text-gray-300 data-[template=dark]:placeholder:text-gray-500`,
-
-        isEditing && `data-[template=minimal]:border data-[template=minimal]:border-gray-300 data-[template=dark]:border data-[template=dark]:border-gray-600`,
-      )}
-    />
+        `data-[template=dark]:text-gray-300`,
+      )}>
+        {content}
+      </div>
+    )}
   </div>
 );
     
