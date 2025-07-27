@@ -4,7 +4,7 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
-import { doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 import { Loader } from 'lucide-react';
 
 interface AuthContextType {
@@ -25,9 +25,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      if (!user) {
+    const unsubscribeAuth = onAuthStateChanged(auth, (authUser) => {
+      setUser(authUser);
+      if (!authUser) {
         setUserData(null);
         setLoading(false);
       }
@@ -37,18 +37,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
+      let unsubscribeFirestore: () => void;
+
       if (user) {
           const userDocRef = doc(db, 'users', user.uid);
-          const unsubscribeFirestore = onSnapshot(userDocRef, (doc) => {
+          unsubscribeFirestore = onSnapshot(userDocRef, (doc) => {
               if (doc.exists()) {
                   setUserData(doc.data());
               } else {
-                  setUserData(null);
+                  // This case can happen briefly if the user document hasn't been created yet
+                  setUserData(null); 
               }
               setLoading(false);
+          }, (error) => {
+              console.error("Error fetching user data:", error);
+              setLoading(false);
           });
-           return () => unsubscribeFirestore();
+      } else {
+        // No user, not loading
+        setLoading(false);
       }
+
+      return () => {
+          if (unsubscribeFirestore) {
+            unsubscribeFirestore();
+          }
+      };
   }, [user]);
 
 

@@ -15,10 +15,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Bot, Loader } from "lucide-react";
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth';
+import { auth, db } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from "@/hooks/useAuth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -26,13 +27,22 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, userData } = useAuth();
 
   useEffect(() => {
-    if (user) {
-      router.push('/my-canvases');
+    if (user && userData) { // Only redirect if both user and their data are loaded
+       // After login, check if profile is complete.
+      if (!userData.age || !userData.country || !userData.useCase) {
+        toast({
+            title: 'Complete Your Profile',
+            description: "Please fill in your details to continue.",
+        });
+        router.push('/profile');
+      } else {
+        router.push('/my-canvases');
+      }
     }
-  }, [user, router]);
+  }, [user, userData, router, toast]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +53,7 @@ export default function LoginPage() {
         title: 'Login Successful!',
         description: "Welcome back to InnoCanvas.",
       });
-      router.push('/my-canvases');
+      // The useEffect hook will handle redirection.
     } catch (error: any) {
       toast({
         title: 'Login Failed',
@@ -59,12 +69,33 @@ export default function LoginPage() {
     setIsLoading(true);
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      const userDocRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      // If the user document doesn't exist, create it.
+      // This handles cases where a user signs in with Google for the first time.
+      if (!userDoc.exists()) {
+        await setDoc(userDocRef, {
+          uid: user.uid,
+          fullName: user.displayName,
+          email: user.email,
+          createdAt: new Date(),
+           // Initialize other fields as empty to be filled out in profile
+          age: '',
+          gender: '',
+          country: '',
+          useCase: '',
+        });
+      }
+
        toast({
         title: 'Login Successful!',
         description: "Welcome back to InnoCanvas.",
       });
-      router.push('/my-canvases');
+      // The useEffect hook will handle redirection.
     } catch (error: any) {
        toast({
         title: 'Login Failed',

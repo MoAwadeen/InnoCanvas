@@ -21,7 +21,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { countries } from "@/lib/countries";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -36,13 +36,17 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, userData } = useAuth();
 
   useEffect(() => {
-    if (user) {
-      router.push('/my-canvases');
+    if (user && userData) { // Only redirect if both user and their data are loaded
+      if (!userData.age || !userData.country || !userData.useCase) {
+        router.push('/profile');
+      } else {
+        router.push('/my-canvases');
+      }
     }
-  }, [user, router]);
+  }, [user, userData, router]);
 
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -69,7 +73,7 @@ export default function RegisterPage() {
         title: 'Account Created!',
         description: "Welcome to InnoCanvas. Let's build something great.",
       });
-      router.push('/my-canvases');
+      // The useEffect hook will handle redirection.
     } catch (error: any) {
       toast({
         title: 'Registration Failed',
@@ -88,17 +92,27 @@ export default function RegisterPage() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      await setDoc(doc(db, "users", user.uid), {
-        uid: user.uid,
-        fullName: user.displayName,
-        email: user.email,
-        createdAt: new Date(),
-      });
+      const userDocRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      if (!userDoc.exists()) {
+        await setDoc(userDocRef, {
+          uid: user.uid,
+          fullName: user.displayName,
+          email: user.email,
+          createdAt: new Date(),
+          // Initialize other fields as empty to be filled out in profile
+          age: '',
+          gender: '',
+          country: '',
+          useCase: '',
+        });
+      }
        toast({
         title: 'Account Created!',
         description: "Welcome to InnoCanvas. Let's build something great.",
       });
-      router.push('/my-canvases');
+      // The useEffect hook will handle redirection based on profile completeness.
     } catch (error: any) {
        toast({
         title: 'Registration Failed',
