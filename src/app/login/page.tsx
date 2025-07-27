@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Bot, Loader } from "lucide-react";
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth';
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from "@/hooks/useAuth";
@@ -27,11 +27,11 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const { user, userData } = useAuth();
+  const { user, userData, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    if (user && userData) { // Only redirect if both user and their data are loaded
-       // After login, check if profile is complete.
+    // Redirect if user is logged in and their data is loaded
+    if (!authLoading && user && userData) {
       if (!userData.age || !userData.country || !userData.useCase) {
         toast({
             title: 'Complete Your Profile',
@@ -42,7 +42,7 @@ export default function LoginPage() {
         router.push('/my-canvases');
       }
     }
-  }, [user, userData, router, toast]);
+  }, [user, userData, authLoading, router, toast]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,14 +76,12 @@ export default function LoginPage() {
       const userDoc = await getDoc(userDocRef);
 
       // If the user document doesn't exist, create it.
-      // This handles cases where a user signs in with Google for the first time.
       if (!userDoc.exists()) {
         await setDoc(userDocRef, {
           uid: user.uid,
           fullName: user.displayName,
           email: user.email,
           createdAt: new Date(),
-           // Initialize other fields as empty to be filled out in profile
           age: '',
           gender: '',
           country: '',
@@ -93,7 +91,7 @@ export default function LoginPage() {
 
        toast({
         title: 'Login Successful!',
-        description: "Welcome back to InnoCanvas.",
+        description: "Welcome to InnoCanvas.",
       });
       // The useEffect hook will handle redirection.
     } catch (error: any) {
@@ -107,6 +105,14 @@ export default function LoginPage() {
     }
   };
 
+  // If loading or already logged in, show a loader to prevent form flash
+  if (authLoading || (user && userData)) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-background">
+        <Loader className="w-16 h-16 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center justify-center p-4">
@@ -166,7 +172,7 @@ export default function LoginPage() {
             </div>
           </div>
            <Button variant="secondary" className="w-full" onClick={handleGoogleLogin} disabled={isLoading}>
-              Login with Google
+              {isLoading ? <Loader className="animate-spin" /> : 'Login with Google'}
             </Button>
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}
