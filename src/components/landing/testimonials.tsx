@@ -49,7 +49,7 @@ export default function Testimonials() {
       <div className="text-center max-w-3xl mx-auto mb-12">
         <h2 className="text-3xl md:text-4xl font-bold">Loved by Innovators Worldwide</h2>
         <p className="mt-4 text-lg text-muted-foreground">
-          Don&apos;t just take our word for it. Here&apos;s what our users have to say.
+          Don't just take our word for it. Here's what our users have to say.
         </p>
       </div>
       <Carousel
@@ -64,7 +64,7 @@ export default function Testimonials() {
             <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
               <div className="p-1">
                 <div className="p-6 rounded-2xl bg-background/50 backdrop-blur-lg border border-white/10 shadow-lg h-full flex flex-col justify-between">
-                  <p className="text-foreground/80 mb-6 italic">&quot;{testimonial.quote}&quot;</p>
+                  <p className="text-foreground/80 mb-6 italic">"{testimonial.quote}"</p>
                   <div className="flex items-center gap-4">
                     <Avatar>
                       <AvatarImage src={testimonial.avatar} alt={testimonial.name} data-ai-hint={testimonial.dataAiHint} />
