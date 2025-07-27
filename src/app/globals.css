@@ -5,64 +5,64 @@
 
 @layer base {
   :root {
-    --background: 226 100% 9%; /* #002290 - Resolution Blue */
-    --foreground: 213 69% 97%; /* #F4F8FD - Alice Blue */
+    --background: 230 40% 6%; /* A very dark blue, almost black */
+    --foreground: 210 40% 98%; /* Light gray, almost white */
     
-    --card: 226 100% 14%; /* Darker variant of Resolution Blue */
-    --card-foreground: 213 69% 97%;
+    --card: 230 40% 10%; /* Slightly lighter dark blue for cards */
+    --card-foreground: 210 40% 98%;
 
-    --popover: 226 100% 4%; /* Even darker for popovers */
-    --popover-foreground: 213 69% 97%;
+    --popover: 230 40% 4%; /* Even darker for popovers */
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 184 99% 52%; /* #0CECFE - Electric blue */
-    --primary-foreground: 226 100% 9%;
+    --primary: 184 99% 52%; /* #0CECFE - Electric blue, like Blexar's accent */
+    --primary-foreground: 230 40% 6%;
 
-    --secondary: 216 92% 58%; /* #327FF6 - Azure */
-    --secondary-foreground: 213 69% 97%;
+    --secondary: 216 92% 58%; /* #327FF6 - A slightly less intense blue */
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 226 100% 14%;
-    --muted-foreground: 222 8% 65%;
+    --muted: 230 40% 10%;
+    --muted-foreground: 230 40% 60%;
 
     --accent: 317 69% 49%; /* #D127A0 - Red Violet */
-    --accent-foreground: 213 69% 97%;
+    --accent-foreground: 210 40% 98%;
 
-    --destructive: 9 68% 63%; /* #E17360 - Burnt Sienna */
-    --destructive-foreground: 213 69% 97%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
     
-    --border: 216 92% 20%; /* Darker Azure */
-    --input: 216 92% 20%;
+    --border: 230 40% 15%; /* A subtle border color */
+    --input: 230 40% 15%;
     --ring: 184 99% 52%;
 
-    --radius: 1.5rem;
+    --radius: 0.75rem; /* A more subtle rounding */
   }
 
   .dark {
-    --background: 226 100% 9%; /* #002290 - Resolution Blue */
-    --foreground: 213 69% 97%; /* #F4F8FD - Alice Blue */
+    --background: 230 40% 6%;
+    --foreground: 210 40% 98%;
     
-    --card: 226 100% 14%; /* Darker variant of Resolution Blue */
-    --card-foreground: 213 69% 97%;
+    --card: 230 40% 10%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 226 100% 4%; /* Even darker for popovers */
-    --popover-foreground: 213 69% 97%;
+    --popover: 230 40% 4%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 184 99% 52%; /* #0CECFE - Electric blue */
-    --primary-foreground: 226 100% 9%;
+    --primary: 184 99% 52%;
+    --primary-foreground: 230 40% 6%;
 
-    --secondary: 216 92% 58%; /* #327FF6 - Azure */
-    --secondary-foreground: 213 69% 97%;
+    --secondary: 216 92% 58%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 226 100% 14%;
-    --muted-foreground: 222 8% 65%;
+    --muted: 230 40% 10%;
+    --muted-foreground: 230 40% 60%;
 
-    --accent: 317 69% 49%; /* #D127A0 - Red Violet */
-    --accent-foreground: 213 69% 97%;
+    --accent: 317 69% 49%;
+    --accent-foreground: 210 40% 98%;
 
-    --destructive: 9 68% 63%; /* #E17360 - Burnt Sienna */
-    --destructive-foreground: 213 69% 97%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
     
-    --border: 216 92% 20%; /* Darker Azure */
-    --input: 216 92% 20%;
+    --border: 230 40% 15%;
+    --input: 230 40% 15%;
     --ring: 184 99% 52%;
   }
 }
@@ -110,4 +110,3 @@
   border-radius: var(--radius);
   border: 1px solid transparent;
 }
-    
