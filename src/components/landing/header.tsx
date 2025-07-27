@@ -38,9 +38,6 @@ function ThemeToggleButton() {
           <DropdownMenuItem onClick={() => setTheme("dark")}>
             Dark
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setTheme("system")}>
-            System
-          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     )
@@ -55,10 +52,10 @@ export default function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-lg">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-sm">
       <div className="container flex h-16 items-center">
         <Link href="/" className="mr-6 flex items-center gap-2">
-          <Bot className="h-6 w-6 text-primary" />
+          <Bot className="h-6 w-6 text-foreground" />
           <span className="font-bold text-lg">InnoCanvas</span>
         </Link>
         <div className="flex flex-1 items-center justify-end">
@@ -78,10 +75,10 @@ export default function Header() {
           </nav>
           <div className="hidden md:flex items-center gap-2">
             <Link href="/login">
-                <Button variant="outline">Log In</Button>
+                <Button variant="ghost">Log In</Button>
             </Link>
             <Link href="/register">
-                <Button className="bg-primary text-primary-foreground">
+                <Button>
                     Get Started Free
                 </Button>
             </Link>
@@ -98,7 +95,7 @@ export default function Header() {
               <SheetHeader>
                 <SheetTitle>
                   <Link href="/" className="flex items-center gap-2">
-                    <Bot className="h-6 w-6 text-primary" />
+                    <Bot className="h-6 w-6" />
                     <span className="font-bold text-lg">InnoCanvas</span>
                   </Link>
                 </SheetTitle>
@@ -112,7 +109,7 @@ export default function Header() {
                  </Link>
                 {navLinks.map((link) => (
                   <a
-                    key={link.name}
+                    key={link.href}
                     href={link.href}
                     className="text-muted-foreground transition-colors hover:text-foreground"
                   >
@@ -125,7 +122,7 @@ export default function Header() {
                     <Button variant="ghost" className="w-full">Log In</Button>
                   </Link>
                   <Link href="/register">
-                    <Button className="bg-primary text-primary-foreground w-full">
+                    <Button className="w-full">
                         Get Started Free
                     </Button>
                   </Link>

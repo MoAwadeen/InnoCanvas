@@ -40,12 +40,10 @@ type BMCBlock = {
   keyProp: keyof GenerateBMCOutput;
 };
 
-type Template = 'glass' | 'minimal' | 'dark';
+type Template = 'default'
 
 const templates: { name: Template; label: string }[] = [
-    { name: 'glass', label: 'Glassmorphism' },
-    { name: 'minimal', label: 'Minimal Light' },
-    { name: 'dark', label: 'Minimal Dark' },
+    { name: 'default', label: 'Default' },
 ];
 
 
@@ -82,7 +80,7 @@ export default function BmcGeneratorPage() {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [currentTemplate, setCurrentTemplate] = useState<Template>('glass');
+  const [currentTemplate, setCurrentTemplate] = useState<Template>('default');
   const [formData, setFormData] = useState<Partial<GenerateBMCInput>>({
     businessDescription: '',
     customerSegments: '',
@@ -139,21 +137,23 @@ export default function BmcGeneratorPage() {
   
   const handleExport = () => {
     if (canvasRef.current) {
-        const originalTemplate = currentTemplate;
         toast({
             title: 'Exporting PDF...',
             description: 'Please wait while we generate your PDF.',
         });
         
-        // Temporarily switch to a print-friendly theme
-        setCurrentTemplate('minimal');
+        // Ensure editing is off for correct rendering
+        const wasEditing = isEditing;
+        if (wasEditing) {
+            setIsEditing(false);
+        }
 
         // Allow state to update before rendering canvas
         setTimeout(() => {
             html2canvas(canvasRef.current!, {
                 useCORS: true,
-                backgroundColor: '#ffffff', // Explicitly set a white background
-                scale: 2, // Increase resolution
+                backgroundColor: null,
+                scale: 2, 
             }).then((canvas) => {
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF({
@@ -164,8 +164,7 @@ export default function BmcGeneratorPage() {
                 pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
                 pdf.save('innocanvas-bmc.pdf');
                 
-                // Revert to original template
-                setCurrentTemplate(originalTemplate);
+                if(wasEditing) setIsEditing(true);
 
                 toast({
                     title: 'PDF Exported!',
@@ -178,10 +177,9 @@ export default function BmcGeneratorPage() {
                     description: 'Failed to generate PDF. Please try again.',
                     variant: 'destructive',
                 });
-                // Revert to original template on error
-                setCurrentTemplate(originalTemplate);
+                if(wasEditing) setIsEditing(true);
             });
-        }, 2000); // Increased delay to ensure DOM update
+        }, 1000); 
     } else {
         toast({
             title: 'Error exporting',
@@ -196,12 +194,6 @@ export default function BmcGeneratorPage() {
           title: 'Coming Soon!',
           description: 'Public link sharing is currently under development.',
       });
-  }
-  
-  const cycleTemplate = () => {
-      const currentIndex = templates.findIndex(t => t.name === currentTemplate);
-      const nextIndex = (currentIndex + 1) % templates.length;
-      setCurrentTemplate(templates[nextIndex].name);
   }
 
   const initialBmcBlocks: Omit<BMCBlock, 'content' | 'isEditing'>[] = [
@@ -227,20 +219,20 @@ export default function BmcGeneratorPage() {
             exit={{ opacity: 0, y: -20 }}
             className="w-full max-w-4xl"
           >
-            <div className="bg-card rounded-2xl p-8 shadow-2xl text-center border">
+            <div className="bg-card rounded-2xl p-8 shadow-lg text-center border">
               <h1 className="text-4xl font-bold mb-4">Tell Us About Your Idea</h1>
               <p className="text-muted-foreground mb-8">
                 Start with your business name and a brief description. The more detail, the better!
               </p>
               <Textarea
                 placeholder="Ex: A mobile app that helps tourists explore historical places using AR…"
-                className="min-h-[150px] bg-background/50 border-border/30 text-lg"
+                className="min-h-[150px] bg-background text-lg"
                 value={formData.businessDescription}
                 onChange={(e) => handleInputChange('businessDescription', e.target.value)}
               />
               <Button
                 size="lg"
-                className="mt-8 bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg hover:shadow-xl transition-shadow w-full"
+                className="mt-8 w-full"
                 onClick={() => setStep(2)}
                 disabled={!formData.businessDescription}
               >
@@ -258,7 +250,7 @@ export default function BmcGeneratorPage() {
             exit={{ opacity: 0, y: -20 }}
             className="w-full max-w-4xl"
           >
-            <div className="bg-card rounded-2xl p-8 shadow-2xl border">
+            <div className="bg-card rounded-2xl p-8 shadow-lg border">
               <h1 className="text-3xl font-bold mb-2 text-center">Refine Your Business Vision</h1>
               <p className="text-muted-foreground mb-8 text-center">
                 Answer these questions to help the AI understand your business better.
@@ -275,7 +267,7 @@ export default function BmcGeneratorPage() {
                       {q.options.map((opt) => (
                         <div key={opt} className="flex items-center">
                           <RadioGroupItem value={opt} id={`${q.key}-${opt}`} className="peer sr-only"/>
-                          <Label htmlFor={`${q.key}-${opt}`} className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary w-full cursor-pointer">
+                          <Label htmlFor={`${q.key}-${opt}`} className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-foreground [&:has([data-state=checked])]:border-foreground w-full cursor-pointer">
                             {opt}
                           </Label>
                         </div>
@@ -286,7 +278,7 @@ export default function BmcGeneratorPage() {
               </div>
               <Button
                 size="lg"
-                className="mt-8 bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg hover:shadow-xl transition-shadow w-full"
+                className="mt-8 w-full"
                 onClick={() => handleGenerateCanvas(false)}
                 disabled={isLoading}
               >
@@ -305,7 +297,7 @@ export default function BmcGeneratorPage() {
           >
             {isLoading ? (
               <div className="flex flex-col items-center justify-center h-96 text-foreground">
-                <Loader className="w-16 h-16 animate-spin mb-4 text-primary" />
+                <Loader className="w-16 h-16 animate-spin mb-4 text-foreground" />
                 <h2 className="text-2xl font-semibold">Generating your canvas...</h2>
                 <p className="text-muted-foreground">The AI is working its magic!</p>
               </div>
@@ -321,11 +313,10 @@ export default function BmcGeneratorPage() {
                             <Edit className="mr-2" /> {isEditing ? 'Done Editing' : 'Edit'}
                         </Button>
                         <Button variant="outline" onClick={handleSave}><Save className="mr-2" /> Save to My Canvases</Button>
-                        <Button variant="outline" onClick={cycleTemplate}><Palette className="mr-2" /> {templates.find(t => t.name === currentTemplate)?.label}</Button>
                         <Button variant="outline" onClick={handleExport}><Download className="mr-2" /> Export as PDF</Button>
                         <Button variant="outline" onClick={handleShare}><Share2 className="mr-2" /> Share Public Link</Button>
                     </div>
-                  <div ref={canvasRef} className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 p-4 bg-background">
+                  <div ref={canvasRef} className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 p-4 bg-transparent">
                     {/* Top Row */}
                     <BmcCard key={initialBmcBlocks[0].keyProp} {...initialBmcBlocks[0]} content={bmcData.keyPartnerships} className="lg:col-span-1" isEditing={isEditing} onContentChange={handleBmcDataChange} />
                     <div className="lg:col-span-1 grid grid-rows-2 gap-4">
@@ -356,15 +347,15 @@ export default function BmcGeneratorPage() {
     <div className="min-h-screen w-full bg-background text-foreground p-4 md:p-8">
        <header className="flex justify-between items-center mb-8">
           <Link href="/" className="flex items-center gap-2">
-            <Bot className="h-8 w-8 text-primary" />
+            <Bot className="h-8 w-8" />
             <span className="font-bold text-2xl">InnoCanvas</span>
           </Link>
           <div className="flex items-center gap-2 text-sm font-medium">
-            <span className={step === 1 ? 'text-primary' : 'text-muted-foreground'}>Step 1</span>
+            <span className={step === 1 ? 'text-foreground' : 'text-muted-foreground'}>Step 1</span>
             <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            <span className={step === 2 ? 'text-primary' : 'text-muted-foreground'}>Step 2</span>
+            <span className={step === 2 ? 'text-foreground' : 'text-muted-foreground'}>Step 2</span>
             <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            <span className={step === 3 ? 'text-primary' : 'text-muted-foreground'}>Step 3</span>
+            <span className={step === 3 ? 'text-foreground' : 'text-muted-foreground'}>Step 3</span>
           </div>
         </header>
       <main className="flex flex-col items-center justify-center">
@@ -383,21 +374,10 @@ type BmcCardProps = Omit<BMCBlock, 'content'> & {
 
 const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onContentChange }: BmcCardProps) => (
     <div className={cn(
-        "rounded-2xl p-4 shadow-lg flex flex-col transition-all overflow-hidden",
-        // Glass Template
-        `data-[template=glass]:bg-card/20 data-[template=glass]:backdrop-blur-lg data-[template=glass]:border data-[template=glass]:border-border/10`,
-        // Minimal Light Template
-        `data-[template=minimal]:bg-white data-[template=minimal]:text-black data-[template=minimal]:border-black data-[template=minimal]:border`,
-        // Minimal Dark Template
-        `data-[template=dark]:bg-gray-900 data-[template=dark]:text-gray-200 data-[template=dark]:border data-[template=dark]:border-gray-700`,
+        "rounded-2xl p-4 shadow-lg flex flex-col transition-all overflow-hidden bg-card border",
         className
     )}>
-    <div className={cn(
-      "flex items-center gap-2 mb-2",
-      "data-[template=minimal]:text-black",
-      "data-[template=dark]:text-gray-200",
-      "data-[template=glass]:text-foreground"
-      )}>
+    <div className={cn("flex items-center gap-2 mb-2 text-card-foreground")}>
       {icon}
       <h3 className="font-bold text-lg">{title}</h3>
     </div>
@@ -407,28 +387,18 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
         onChange={(e) => onContentChange(keyProp, e.target.value)}
         className={cn(
           "bg-transparent border-0 text-base flex-grow resize-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0",
-          "cursor-text",
-          // Glass Template
-          `data-[template=glass]:text-foreground/80`,
-          // Minimal Light Template
-          `data-[template=minimal]:text-gray-800 data-[template=minimal]:placeholder:text-gray-500`,
-           // Minimal Dark Template
-          `data-[template=dark]:text-gray-300 data-[template=dark]:placeholder:text-gray-500`,
-          `data-[template=minimal]:border data-[template=minimal]:border-gray-300 data-[template=dark]:border data-[template=dark]:border-gray-600`,
+          "cursor-text text-card-foreground/80 placeholder:text-muted-foreground",
+          "border-t mt-2 pt-2 border-border"
         )}
       />
     ) : (
       <div className={cn(
-        "text-base flex-grow whitespace-pre-wrap overflow-hidden",
-        // Glass Template
-        `data-[template=glass]:text-foreground/80`,
-        // Minimal Light Template
-        `data-[template=minimal]:text-gray-800`,
-         // Minimal Dark Template
-        `data-[template=dark]:text-gray-300`,
+        "text-base flex-grow whitespace-pre-wrap overflow-auto text-card-foreground/80 pt-2",
       )}>
         {content}
       </div>
     )}
   </div>
 );
+
+    

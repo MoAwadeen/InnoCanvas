@@ -5,56 +5,48 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 224 71.4% 4.1%;
+    --background: 84 95% 59%;
+    --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
-    --card-foreground: 224 71.4% 4.1%;
+    --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 224 71.4% 4.1%;
-    --primary: 184 99% 52%;
-    --primary-foreground: 230 40% 6%;
-    --secondary: 220 14.3% 95.9%;
-    --secondary-foreground: 220.9 39.3% 11%;
-    --muted: 220 14.3% 95.9%;
-    --muted-foreground: 225.9 10.4% 44.1%;
-    --accent: 317 69% 49%;
-    --accent-foreground: 210 20% 98%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 195 91% 88%;
+    --primary-foreground: 0 0% 3.9%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 224 71.4% 4.1%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
     --radius: 0.75rem;
   }
 
   .dark {
-    --background: 230 40% 6%; /* A very dark blue, almost black */
-    --foreground: 210 40% 98%; /* Light gray, almost white */
-    
-    --card: 230 40% 10%; /* Slightly lighter dark blue for cards */
-    --card-foreground: 210 40% 98%;
-
-    --popover: 230 40% 4%; /* Even darker for popovers */
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 184 99% 52%; /* #0CECFE - Electric blue, like Blexar's accent */
-    --primary-foreground: 230 40% 6%;
-
-    --secondary: 216 92% 58%; /* #327FF6 - A slightly less intense blue */
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 230 40% 10%;
-    --muted-foreground: 230 40% 60%;
-
-    --accent: 317 69% 49%; /* #D127A0 - Red Violet */
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-    
-    --border: 230 40% 15%; /* A subtle border color */
-    --input: 230 40% 15%;
-    --ring: 184 99% 52%;
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 195 91% 88%;
+    --primary-foreground: 0 0% 3.9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 195 91% 88%;
   }
 }
 
@@ -65,39 +57,4 @@
   body {
     @apply bg-background text-foreground;
   }
-
-  [data-template='minimal'] .lucide-react {
-    @apply text-black;
-  }
-  [data-template='dark'] .lucide-react {
-      @apply text-gray-300;
-  }
-}
-
-@layer utilities {
-    .hover\:animate-gradient-bg:hover {
-        background-size: 200% 200%;
-        animation: gradient-animation 5s ease infinite;
-    }
-}
-
-@keyframes gradient-animation {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-@keyframes breathing-border {
-  0%, 100% {
-    box-shadow: 0 0 5px 0px hsla(var(--primary), 0.5), 0 0 10px 0px hsla(var(--accent), 0.5);
-  }
-  50% {
-    box-shadow: 0 0 20px 5px hsla(var(--primary), 0.7), 0 0 30px 10px hsla(var(--accent), 0.7);
-  }
-}
-
-.breathing-rounded-lines {
-  animation: breathing-border 4s ease-in-out infinite;
-  border-radius: var(--radius);
-  border: 1px solid transparent;
 }
