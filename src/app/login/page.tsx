@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Bot, Loader } from "lucide-react";
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, User } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from "@/hooks/useAuth";
@@ -27,33 +27,59 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const { user, userData, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    // Redirect if user is logged in and their data is loaded
-    if (!authLoading && user && userData) {
-      if (!userData.age || !userData.country || !userData.useCase) {
+    // Redirect if user is already logged in
+    if (!authLoading && user) {
+        router.push('/my-canvases');
+    }
+  }, [user, authLoading, router]);
+
+  const handleSuccessfulLogin = async (user: User) => {
+    const userDocRef = doc(db, "users", user.uid);
+    const userDoc = await getDoc(userDocRef);
+    let userData = userDoc.exists() ? userDoc.data() : null;
+    
+    // Create user doc if it doesn't exist (e.g. first Google login)
+    if (!userData) {
+      const newUserdata = {
+          uid: user.uid,
+          fullName: user.displayName,
+          email: user.email,
+          createdAt: new Date(),
+          age: '',
+          gender: '',
+          country: '',
+          useCase: '',
+      }
+      await setDoc(userDocRef, newUserdata);
+      userData = newUserdata;
+    }
+
+    toast({
+        title: 'Login Successful!',
+        description: `Welcome ${user.displayName || 'back'}!`,
+    });
+
+    if (!userData.age || !userData.country || !userData.useCase) {
         toast({
             title: 'Complete Your Profile',
             description: "Please fill in your details to continue.",
         });
         router.push('/profile');
-      } else {
+    } else {
         router.push('/my-canvases');
-      }
     }
-  }, [user, userData, authLoading, router, toast]);
+  }
+
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      toast({
-        title: 'Login Successful!',
-        description: "Welcome back to InnoCanvas.",
-      });
-      // The useEffect hook will handle redirection.
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      await handleSuccessfulLogin(userCredential.user);
     } catch (error: any) {
       toast({
         title: 'Login Failed',
@@ -70,30 +96,7 @@ export default function LoginPage() {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-
-      const userDocRef = doc(db, "users", user.uid);
-      const userDoc = await getDoc(userDocRef);
-
-      // If the user document doesn't exist, create it.
-      if (!userDoc.exists()) {
-        await setDoc(userDocRef, {
-          uid: user.uid,
-          fullName: user.displayName,
-          email: user.email,
-          createdAt: new Date(),
-          age: '',
-          gender: '',
-          country: '',
-          useCase: '',
-        });
-      }
-
-       toast({
-        title: 'Login Successful!',
-        description: "Welcome to InnoCanvas.",
-      });
-      // The useEffect hook will handle redirection.
+      await handleSuccessfulLogin(result.user);
     } catch (error: any) {
        toast({
         title: 'Login Failed',
@@ -106,7 +109,7 @@ export default function LoginPage() {
   };
 
   // If loading or already logged in, show a loader to prevent form flash
-  if (authLoading || (user && userData)) {
+  if (authLoading || user) {
     return (
       <div className="min-h-screen w-full flex items-center justify-center bg-background">
         <Loader className="w-16 h-16 animate-spin text-primary" />
