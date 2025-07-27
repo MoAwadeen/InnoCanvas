@@ -181,7 +181,7 @@ export default function BmcGeneratorPage() {
                 // Revert to original template on error
                 setCurrentTemplate(originalTemplate);
             });
-        }, 1000); // Increased delay to ensure DOM update
+        }, 2000); // Increased delay to ensure DOM update
     } else {
         toast({
             title: 'Error exporting',
@@ -382,15 +382,15 @@ type BmcCardProps = Omit<BMCBlock, 'content'> & {
 };
 
 const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onContentChange }: BmcCardProps) => (
-  <div className={cn(
-    `rounded-2xl p-4 shadow-lg flex flex-col transition-all`,
-    // Glass Template
-    `data-[template=glass]:bg-card/50 data-[template=glass]:backdrop-blur-lg data-[template=glass]:border data-[template=glass]:border-border/20`,
-    // Minimal Light Template
-    `data-[template=minimal]:bg-white data-[template=minimal]:text-black data-[template=minimal]:border-black data-[template=minimal]:border`,
-    // Minimal Dark Template
-    `data-[template=dark]:bg-gray-900 data-[template=dark]:text-gray-200 data-[template=dark]:border data-[template=dark]:border-gray-700`,
-    className
+    <div className={cn(
+        "rounded-2xl p-4 shadow-lg flex flex-col transition-all overflow-hidden",
+        // Glass Template
+        `data-[template=glass]:bg-card/50 data-[template=glass]:backdrop-blur-lg data-[template=glass]:border data-[template=glass]:border-border/20`,
+        // Minimal Light Template
+        `data-[template=minimal]:bg-white data-[template=minimal]:text-black data-[template=minimal]:border-black data-[template=minimal]:border`,
+        // Minimal Dark Template
+        `data-[template=dark]:bg-gray-900 data-[template=dark]:text-gray-200 data-[template=dark]:border data-[template=dark]:border-gray-700`,
+        className
     )}>
     <div className={cn(
       "flex items-center gap-2 mb-2",
@@ -404,7 +404,6 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
     {isEditing ? (
        <Textarea
         value={content}
-        readOnly={!isEditing}
         onChange={(e) => onContentChange(keyProp, e.target.value)}
         className={cn(
           "bg-transparent border-0 text-base flex-grow resize-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0",

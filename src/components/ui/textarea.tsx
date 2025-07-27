@@ -22,7 +22,8 @@ const Textarea = React.forwardRef<
     const textarea = combinedRef.current;
     if (textarea) {
        // Set initial height
-       handleInput({ currentTarget: textarea } as any);
+       textarea.style.height = 'auto';
+       textarea.style.height = `${textarea.scrollHeight}px`;
     }
   }, [props.value, combinedRef]);
 
