@@ -36,10 +36,9 @@ export default function Features() {
         {features.map((feature, i) => (
            <div 
             key={feature.title} 
-            className="glass-card p-6 flex flex-col items-start text-left transition-all duration-300 hover:border-primary/50 hover:scale-105"
-            style={{ animation: `float ${3 + i*0.5}s ease-in-out infinite` }}
+            className="bg-card p-6 flex flex-col items-start text-left transition-all duration-300 hover:border-primary/50 hover:scale-105 rounded-2xl border"
             >
-              <div className="p-3 bg-primary/10 rounded-lg mb-4">
+              <div className="p-3 bg-secondary rounded-lg mb-4">
                 {feature.icon}
               </div>
               <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>

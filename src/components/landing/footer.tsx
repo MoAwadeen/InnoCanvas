@@ -5,12 +5,12 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="w-full mt-20 border-t border-white/10">
+    <footer className="w-full mt-20 border-t">
       <div className="container py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="flex flex-col gap-4 items-start text-left">
             <Link href="/" className="flex items-center gap-2">
-              <Bot className="h-6 w-6 text-primary text-glow" />
+              <Bot className="h-6 w-6 text-primary" />
               <span className="font-bold text-lg">InnoCanvas</span>
             </Link>
             <p className="text-muted-foreground">
@@ -38,12 +38,12 @@ export default function Footer() {
              <h4 className="font-semibold">Stay Updated</h4>
              <p className="text-muted-foreground">Subscribe to our newsletter for the latest updates.</p>
              <form className="flex gap-2 w-full">
-                <Input type="email" placeholder="Enter your email" className="glass-card" />
-                <Button type="submit" className="glow-button bg-primary text-primary-foreground">Subscribe</Button>
+                <Input type="email" placeholder="Enter your email" />
+                <Button type="submit">Subscribe</Button>
              </form>
           </div>
         </div>
-        <div className="mt-12 pt-8 border-t border-white/10 flex justify-between items-center">
+        <div className="mt-12 pt-8 border-t flex justify-between items-center">
             <p className="text-muted-foreground text-sm">&copy; {new Date().getFullYear()} InnoCanvas. All rights reserved.</p>
         </div>
       </div>

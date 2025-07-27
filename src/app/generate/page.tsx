@@ -20,7 +20,6 @@ import {
   Save,
   Download,
   Share2,
-  Palette,
   Loader,
   ChevronRight,
   Bot,
@@ -39,13 +38,6 @@ type BMCBlock = {
   icon: React.ReactNode;
   keyProp: keyof GenerateBMCOutput;
 };
-
-type Template = 'default'
-
-const templates: { name: Template; label: string }[] = [
-    { name: 'default', label: 'Default' },
-];
-
 
 const refinementQuestions = [
   {
@@ -80,7 +72,6 @@ export default function BmcGeneratorPage() {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [currentTemplate, setCurrentTemplate] = useState<Template>('default');
   const [formData, setFormData] = useState<Partial<GenerateBMCInput>>({
     businessDescription: '',
     customerSegments: '',
@@ -142,13 +133,11 @@ export default function BmcGeneratorPage() {
             description: 'Please wait while we generate your PDF.',
         });
         
-        // Ensure editing is off for correct rendering
         const wasEditing = isEditing;
         if (wasEditing) {
             setIsEditing(false);
         }
 
-        // Allow state to update before rendering canvas
         setTimeout(() => {
             html2canvas(canvasRef.current!, {
                 useCORS: true,
@@ -226,7 +215,7 @@ export default function BmcGeneratorPage() {
               </p>
               <Textarea
                 placeholder="Ex: A mobile app that helps tourists explore historical places using AR…"
-                className="min-h-[150px] bg-background text-lg"
+                className="min-h-[150px] text-lg"
                 value={formData.businessDescription}
                 onChange={(e) => handleInputChange('businessDescription', e.target.value)}
               />
@@ -267,7 +256,7 @@ export default function BmcGeneratorPage() {
                       {q.options.map((opt) => (
                         <div key={opt} className="flex items-center">
                           <RadioGroupItem value={opt} id={`${q.key}-${opt}`} className="peer sr-only"/>
-                          <Label htmlFor={`${q.key}-${opt}`} className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-foreground [&:has([data-state=checked])]:border-foreground w-full cursor-pointer">
+                          <Label htmlFor={`${q.key}-${opt}`} className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent/10 hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary w-full cursor-pointer">
                             {opt}
                           </Label>
                         </div>
@@ -303,7 +292,7 @@ export default function BmcGeneratorPage() {
               </div>
             ) : (
               bmcData && (
-                <div data-template={currentTemplate}>
+                <div>
                     <div className="flex flex-wrap gap-4 justify-center mb-8">
                         <Button variant="outline" onClick={() => handleGenerateCanvas(true)} disabled={isLoading}>
                             {isLoading ? <Loader className="mr-2 animate-spin" /> : <RefreshCw className="mr-2" />} 
@@ -346,16 +335,16 @@ export default function BmcGeneratorPage() {
   return (
     <div className="min-h-screen w-full bg-background text-foreground p-4 md:p-8">
        <header className="flex justify-between items-center mb-8">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/my-canvases" className="flex items-center gap-2">
             <Bot className="h-8 w-8" />
             <span className="font-bold text-2xl">InnoCanvas</span>
           </Link>
           <div className="flex items-center gap-2 text-sm font-medium">
-            <span className={step === 1 ? 'text-foreground' : 'text-muted-foreground'}>Step 1</span>
+            <span className={step === 1 ? 'text-primary' : 'text-muted-foreground'}>Step 1</span>
             <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            <span className={step === 2 ? 'text-foreground' : 'text-muted-foreground'}>Step 2</span>
+            <span className={step === 2 ? 'text-primary' : 'text-muted-foreground'}>Step 2</span>
             <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            <span className={step === 3 ? 'text-foreground' : 'text-muted-foreground'}>Step 3</span>
+            <span className={step === 3 ? 'text-primary' : 'text-muted-foreground'}>Step 3</span>
           </div>
         </header>
       <main className="flex flex-col items-center justify-center">
@@ -374,7 +363,7 @@ type BmcCardProps = Omit<BMCBlock, 'content'> & {
 
 const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onContentChange }: BmcCardProps) => (
     <div className={cn(
-        "rounded-2xl p-4 shadow-lg flex flex-col transition-all overflow-hidden bg-card border",
+        "rounded-2xl p-4 shadow-sm flex flex-col transition-all overflow-hidden bg-card border",
         className
     )}>
     <div className={cn("flex items-center gap-2 mb-2 text-card-foreground")}>
@@ -400,5 +389,3 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
     )}
   </div>
 );
-
-    

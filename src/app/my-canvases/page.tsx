@@ -57,7 +57,9 @@ export default function MyCanvasesPage() {
            <Link href="/profile">
             <Button variant="outline"><User className="mr-2"/>Profile</Button>
            </Link>
-          <Button variant="outline">Logout</Button>
+           <Link href="/">
+            <Button variant="outline">Logout</Button>
+          </Link>
         </div>
       </header>
 
@@ -75,7 +77,7 @@ export default function MyCanvasesPage() {
         <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-bold">Your Canvases</h2>
             <Link href="/generate">
-                <Button className="bg-primary text-primary-foreground shadow-lg hover:shadow-xl transition-shadow">
+                <Button>
                 <PlusCircle className="mr-2" />
                 Create New Canvas
                 </Button>
@@ -93,7 +95,7 @@ export default function MyCanvasesPage() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
                 <Card
-                  className="bg-card text-card-foreground flex flex-col h-full hover:border-primary/50 transition-all"
+                  className="flex flex-col h-full hover:border-primary/50 transition-all"
                 >
                   <CardHeader>
                     <CardTitle>{canvas.title}</CardTitle>
@@ -133,7 +135,7 @@ export default function MyCanvasesPage() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 border-2 border-dashed border-border/20 rounded-2xl bg-card/20">
+          <div className="text-center py-20 border-2 border-dashed border-border/20 rounded-2xl bg-secondary">
             <h2 className="text-2xl font-semibold mb-4">No Canvases Yet</h2>
             <p className="text-muted-foreground mb-6">
               Click the button above to start creating your first Business Model Canvas.
@@ -144,5 +146,3 @@ export default function MyCanvasesPage() {
     </div>
   );
 }
-
-    

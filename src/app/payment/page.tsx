@@ -64,7 +64,7 @@ export default function PaymentPage() {
                         key={plan.name}
                         onClick={() => setSelectedPlan(plan)}
                         className={cn(
-                            "bg-card border text-card-foreground cursor-pointer transition-all",
+                            "cursor-pointer transition-all",
                             selectedPlan.name === plan.name ? 'border-primary ring-2 ring-primary' : 'hover:border-primary/50'
                         )}
                     >
@@ -88,43 +88,43 @@ export default function PaymentPage() {
                  ))}
                 </div>
             </div>
-            <Card className="w-full bg-card border text-card-foreground">
+            <Card className="w-full">
                 <CardHeader>
                     <CardTitle className="text-2xl">Payment Details</CardTitle>
                     <CardDescription>
-                        Complete your purchase for the <span className="font-bold text-primary">{selectedPlan.name}</span> plan.
+                        Complete your purchase for the <span className="font-bold text-accent">{selectedPlan.name}</span> plan.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                 <div className="grid gap-6">
                     <div className="grid gap-2">
                         <Label htmlFor="card-name">Name on Card</Label>
-                        <Input id="card-name" placeholder="Mohamed Awadeen" required className="bg-background" />
+                        <Input id="card-name" placeholder="Mohamed Awadeen" required />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="card-number">Card Number</Label>
                         <div className="relative">
-                            <Input id="card-number" placeholder="**** **** **** 1234" required className="bg-background pr-10" />
+                            <Input id="card-number" placeholder="**** **** **** 1234" required className="pr-10" />
                             <CreditCard className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="grid gap-2">
                              <Label htmlFor="expiry-date">Expiry Date</Label>
-                             <Input id="expiry-date" placeholder="MM/YY" required className="bg-background" />
+                             <Input id="expiry-date" placeholder="MM/YY" required />
                         </div>
                         <div className="grid gap-2">
                              <Label htmlFor="cvc">CVC</Label>
-                             <Input id="cvc" placeholder="123" required className="bg-background" />
+                             <Input id="cvc" placeholder="123" required />
                         </div>
                     </div>
-                    <div className="border-t border-border pt-4 mt-2">
+                    <div className="border-t pt-4 mt-2">
                         <div className="flex justify-between items-center text-lg font-bold">
                             <span>Total Due Today:</span>
                             <span>${selectedPlan.price}.00</span>
                         </div>
                     </div>
-                    <Button type="submit" className="w-full bg-primary text-primary-foreground text-lg py-6">
+                    <Button type="submit" className="w-full text-lg py-6">
                         Confirm Payment
                     </Button>
                 </div>

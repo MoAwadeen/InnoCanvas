@@ -31,12 +31,14 @@ export default function ProfilePage() {
                 <Link href="/my-canvases">
                     <Button variant="outline">My Canvases</Button>
                 </Link>
-                <Button variant="outline">Logout</Button>
+                <Link href="/">
+                  <Button variant="outline">Logout</Button>
+                </Link>
             </div>
       </header>
       <main className="w-full max-w-5xl flex-grow">
         <h1 className="text-4xl md:text-5xl font-bold mb-8">Your Profile</h1>
-        <Card className="mx-auto max-w-3xl w-full bg-card border text-card-foreground">
+        <Card className="mx-auto max-w-3xl w-full">
             <CardHeader>
                 <div className="flex items-center gap-4">
                     <Avatar className="w-20 h-20 border-2 border-primary">
@@ -54,7 +56,7 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="grid gap-2">
                         <Label htmlFor="full-name">Full Name</Label>
-                        <Input id="full-name" defaultValue="Mohamed Awadeen" required className="bg-background" />
+                        <Input id="full-name" defaultValue="Mohamed Awadeen" required />
                     </div>
                     <div className="grid gap-2">
                     <Label htmlFor="email">Email</Label>
@@ -63,7 +65,6 @@ export default function ProfilePage() {
                         type="email"
                         defaultValue="mohamed.awadeen@example.com"
                         required
-                        className="bg-background"
                         disabled
                     />
                     </div>
@@ -71,12 +72,12 @@ export default function ProfilePage() {
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="grid gap-2">
                         <Label htmlFor="age">Age</Label>
-                        <Input id="age" type="number" placeholder="25" required className="bg-background" />
+                        <Input id="age" type="number" placeholder="25" required />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="gender">Gender</Label>
                         <Select>
-                            <SelectTrigger id="gender" className="bg-background">
+                            <SelectTrigger id="gender">
                                 <SelectValue placeholder="Select gender" />
                             </SelectTrigger>
                             <SelectContent>
@@ -91,7 +92,7 @@ export default function ProfilePage() {
                 <div className="grid gap-2">
                     <Label htmlFor="country">Country</Label>
                     <Select>
-                        <SelectTrigger id="country" className="bg-background">
+                        <SelectTrigger id="country">
                             <SelectValue placeholder="Select your country" />
                         </SelectTrigger>
                         <SelectContent>
@@ -111,7 +112,7 @@ export default function ProfilePage() {
                 <div className="grid gap-2">
                     <Label htmlFor="use-case">Primary Use Case</Label>
                     <Select>
-                        <SelectTrigger id="use-case" className="bg-background">
+                        <SelectTrigger id="use-case">
                             <SelectValue placeholder="How will you use InnoCanvas?" />
                         </SelectTrigger>
                         <SelectContent>
@@ -124,7 +125,7 @@ export default function ProfilePage() {
                     </Select>
                 </div>
                 
-                <Button type="submit" className="w-full bg-primary text-primary-foreground">
+                <Button type="submit" className="w-full">
                 Save Changes
                 </Button>
             </div>

@@ -21,7 +21,7 @@ export default function LoginPage() {
             <span className="font-bold text-2xl">InnoCanvas</span>
           </Link>
         </div>
-      <Card className="mx-auto max-w-md w-full bg-card border text-card-foreground">
+      <Card className="mx-auto max-w-md w-full">
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>
@@ -37,7 +37,6 @@ export default function LoginPage() {
                 type="email"
                 placeholder="m@example.com"
                 required
-                className="bg-background"
               />
             </div>
             <div className="grid gap-2">
@@ -47,11 +46,13 @@ export default function LoginPage() {
                   Forgot your password?
                 </Link>
               </div>
-              <Input id="password" type="password" required className="bg-background" />
+              <Input id="password" type="password" required />
             </div>
-            <Button type="submit" className="w-full bg-primary text-primary-foreground">
-              Login
-            </Button>
+            <Link href="/my-canvases" className="w-full">
+                <Button type="submit" className="w-full">
+                Login
+                </Button>
+            </Link>
             <Button variant="outline" className="w-full">
               Login with Google
             </Button>
@@ -67,5 +68,3 @@ export default function LoginPage() {
     </div>
   )
 }
-    
-    

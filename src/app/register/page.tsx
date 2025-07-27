@@ -27,7 +27,7 @@ export default function RegisterPage() {
             <span className="font-bold text-2xl">InnoCanvas</span>
           </Link>
         </div>
-      <Card className="mx-auto max-w-md w-full bg-card border text-card-foreground">
+      <Card className="mx-auto max-w-md w-full">
         <CardHeader>
           <CardTitle className="text-xl">Sign Up</CardTitle>
           <CardDescription>
@@ -38,7 +38,7 @@ export default function RegisterPage() {
           <div className="grid gap-4">
             <div className="grid gap-2">
                 <Label htmlFor="full-name">Full Name</Label>
-                <Input id="full-name" placeholder="Max Robinson" required className="bg-background" />
+                <Input id="full-name" placeholder="Max Robinson" required />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
@@ -47,18 +47,17 @@ export default function RegisterPage() {
                 type="email"
                 placeholder="m@example.com"
                 required
-                className="bg-background"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
                     <Label htmlFor="age">Age</Label>
-                    <Input id="age" type="number" placeholder="25" required className="bg-background" />
+                    <Input id="age" type="number" placeholder="25" required />
                 </div>
                 <div className="grid gap-2">
                     <Label htmlFor="gender">Gender</Label>
                     <Select>
-                        <SelectTrigger id="gender" className="bg-background">
+                        <SelectTrigger id="gender">
                             <SelectValue placeholder="Select gender" />
                         </SelectTrigger>
                         <SelectContent>
@@ -73,7 +72,7 @@ export default function RegisterPage() {
             <div className="grid gap-2">
                 <Label htmlFor="country">Country</Label>
                  <Select>
-                    <SelectTrigger id="country" className="bg-background">
+                    <SelectTrigger id="country">
                         <SelectValue placeholder="Select your country" />
                     </SelectTrigger>
                     <SelectContent>
@@ -93,7 +92,7 @@ export default function RegisterPage() {
              <div className="grid gap-2">
                 <Label htmlFor="use-case">Primary Use Case</Label>
                 <Select>
-                    <SelectTrigger id="use-case" className="bg-background">
+                    <SelectTrigger id="use-case">
                         <SelectValue placeholder="How will you use InnoCanvas?" />
                     </SelectTrigger>
                     <SelectContent>
@@ -107,11 +106,13 @@ export default function RegisterPage() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" className="bg-background" />
+              <Input id="password" type="password" />
             </div>
-            <Button type="submit" className="w-full bg-primary text-primary-foreground">
-              Create an account
-            </Button>
+            <Link href="/my-canvases" className="w-full">
+              <Button type="submit" className="w-full">
+                Create an account
+              </Button>
+            </Link>
             <Button variant="outline" className="w-full">
               Sign up with Google
             </Button>
@@ -127,5 +128,3 @@ export default function RegisterPage() {
     </div>
   )
 }
-    
-    

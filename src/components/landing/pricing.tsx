@@ -65,15 +65,15 @@ export default function Pricing() {
       </div>
 
       <div className="flex justify-center items-center gap-4 mb-10">
-        <Label htmlFor="billing-cycle" className={cn("transition-colors font-medium", !isYearly ? "text-primary text-glow" : "text-muted-foreground")}>Monthly</Label>
+        <Label htmlFor="billing-cycle" className={cn("transition-colors font-medium", !isYearly ? "text-primary" : "text-muted-foreground")}>Monthly</Label>
         <Switch
           id="billing-cycle"
           checked={isYearly}
           onCheckedChange={setIsYearly}
           className="data-[state=checked]:bg-accent"
         />
-        <Label htmlFor="billing-cycle" className={cn("transition-colors font-medium", isYearly ? "text-accent text-glow" : "text-muted-foreground")}>
-            Yearly <span className="text-sm font-medium text-green-400">(Save 25%)</span>
+        <Label htmlFor="billing-cycle" className={cn("transition-colors font-medium", isYearly ? "text-accent" : "text-muted-foreground")}>
+            Yearly <span className="text-sm font-medium text-green-600">(Save 25%)</span>
         </Label>
       </div>
 
@@ -82,13 +82,13 @@ export default function Pricing() {
           <div
             key={plan.name}
             className={cn(
-              "glass-card p-8 flex flex-col transition-all duration-300",
-              plan.popular ? "border-accent/50 shadow-[0_0_30px_hsl(var(--accent)/0.3)]" : "hover:border-white/20"
+              "bg-card border p-8 flex flex-col transition-all duration-300 rounded-2xl",
+              plan.popular ? "border-accent/50 shadow-lg" : ""
             )}
           >
             {plan.popular && (
               <div className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2">
-                <div className="px-4 py-1 text-sm font-semibold text-white bg-accent rounded-full shadow-md flex items-center gap-2">
+                <div className="px-4 py-1 text-sm font-semibold text-accent-foreground bg-accent rounded-full shadow-md flex items-center gap-2">
                   <Zap className="w-4 h-4" />
                   Recommended
                 </div>
@@ -115,7 +115,7 @@ export default function Pricing() {
                 size="lg"
                 className={cn(
                   "w-full text-lg",
-                  plan.popular ? "bg-accent text-white hover:bg-accent/90 glow-button" : "bg-white/10 text-white hover:bg-white/20"
+                  plan.popular ? "bg-accent text-accent-foreground hover:bg-accent/90" : "bg-primary text-primary-foreground hover:bg-primary/90"
                 )}
               >
                 {plan.cta}

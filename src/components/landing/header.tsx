@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bot, PanelTop, Moon, Sun } from "lucide-react";
+import { Bot, PanelTop } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -11,41 +11,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useTheme } from "next-themes";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-
-function ThemeToggleButton() {
-    const { setTheme } = useTheme()
-  
-    return (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon" className="bg-transparent border-white/10 hover:bg-white/10">
-            <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-            <span className="sr-only">Toggle theme</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="glass-card">
-          <DropdownMenuItem onClick={() => setTheme("light")}>
-            Light
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setTheme("dark")}>
-            Dark
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    )
-  }
 
 export default function Header() {
   const navLinks = [
-    { name: "Home", href: "#" },
+    { name: "Home", href: "/" },
     { name: "Features", href: "#features" },
     { name: "Testimonials", href: "#testimonials" },
     { name: "Pricing", href: "#pricing" },
@@ -53,10 +22,10 @@ export default function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full">
-      <div className="container flex h-20 items-center justify-between mt-4 glass-card">
+    <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-lg border-b">
+      <div className="container flex h-20 items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <Bot className="h-6 w-6 text-primary text-glow" />
+          <Bot className="h-6 w-6 text-primary" />
           <span className="font-bold text-lg">InnoCanvas</span>
         </Link>
         
@@ -64,12 +33,12 @@ export default function Header() {
             <ul className="flex items-center gap-8 text-sm">
               {navLinks.map((link) => (
                 <li key={link.name}>
-                  <a
+                  <Link
                     href={link.href}
-                    className="text-muted-foreground transition-colors hover:text-foreground hover:text-glow"
+                    className="text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -77,10 +46,10 @@ export default function Header() {
 
         <div className="hidden md:flex items-center gap-4">
             <Link href="/login">
-                <Button variant="ghost" className="hover:bg-white/5 hover:text-white">Log In</Button>
+                <Button variant="ghost">Log In</Button>
             </Link>
             <Link href="/register">
-                <Button className="glow-button bg-primary text-primary-foreground hover:bg-primary/90">
+                <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                     Get Started
                 </Button>
             </Link>
@@ -88,40 +57,39 @@ export default function Header() {
 
         {/* Mobile Menu */}
         <div className="md:hidden flex items-center gap-2">
-          <ThemeToggleButton />
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="md:hidden bg-transparent border-white/10 hover:bg-white/10">
+              <Button variant="outline" size="icon" className="md:hidden">
                 <PanelTop className="h-5 w-5" />
                 <span className="sr-only">Toggle Menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="top" className="glass-card border-none">
+            <SheetContent side="top" className="bg-background">
               <SheetHeader>
                 <SheetTitle>
                   <Link href="/" className="flex items-center gap-2">
-                    <Bot className="h-6 w-6 text-primary text-glow" />
+                    <Bot className="h-6 w-6 text-primary" />
                     <span className="font-bold text-lg">InnoCanvas</span>
                   </Link>
                 </SheetTitle>
               </SheetHeader>
               <div className="grid gap-4 py-4">
                 {navLinks.map((link) => (
-                  <a
+                  <Link
                     key={link.href}
                     href={link.href}
                     className="text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {link.name}
-                  </a>
+                  </Link>
                 ))}
               </div>
               <div className="grid grid-cols-2 gap-4">
-                  <Link href="/login">
+                  <Link href="/login" className="w-full">
                     <Button variant="ghost" className="w-full">Log In</Button>
                   </Link>
-                  <Link href="/register">
-                    <Button className="w-full glow-button">
+                  <Link href="/register" className="w-full">
+                    <Button className="w-full">
                         Get Started
                     </Button>
                   </Link>
