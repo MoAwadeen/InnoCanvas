@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Bot } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function RegisterPage() {
   return (
@@ -26,7 +27,7 @@ export default function RegisterPage() {
         <CardHeader>
           <CardTitle className="text-xl">Sign Up</CardTitle>
           <CardDescription>
-            Enter your information to create an account
+            Enter your information to create an account. Start your journey with AI-driven strategy.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -44,6 +45,45 @@ export default function RegisterPage() {
                 required
                 className="bg-black/20 border-white/30"
               />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                    <Label htmlFor="age">Age</Label>
+                    <Input id="age" type="number" placeholder="25" required className="bg-black/20 border-white/30" />
+                </div>
+                <div className="grid gap-2">
+                    <Label htmlFor="gender">Gender</Label>
+                    <Select>
+                        <SelectTrigger id="gender" className="bg-black/20 border-white/30">
+                            <SelectValue placeholder="Select gender" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="male">Male</SelectItem>
+                            <SelectItem value="female">Female</SelectItem>
+                            <SelectItem value="non-binary">Non-binary</SelectItem>
+                            <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
+            <div className="grid gap-2">
+                <Label htmlFor="country">Country</Label>
+                <Input id="country" placeholder="United States" required className="bg-black/20 border-white/30" />
+            </div>
+             <div className="grid gap-2">
+                <Label htmlFor="use-case">Primary Use Case</Label>
+                <Select>
+                    <SelectTrigger id="use-case" className="bg-black/20 border-white/30">
+                        <SelectValue placeholder="How will you use InnoCanvas?" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="student">Student</SelectItem>
+                        <SelectItem value="entrepreneur">Entrepreneur</SelectItem>
+                        <SelectItem value="accelerator">Accelerator</SelectItem>
+                        <SelectItem value="consultant">Consultant</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
@@ -67,4 +107,3 @@ export default function RegisterPage() {
     </div>
   )
 }
-
