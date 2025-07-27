@@ -30,6 +30,7 @@
     --deep-navy: 241 100% 27%; /* #000987 */
     --bright-cyan: 183 100% 45%; /* #00D7E5 */
     --vibrant-orange: 16 94% 49%; /* #F6540F */
+    --radius: 0.5rem; /* Added default radius */
   }
 }
 
@@ -49,7 +50,7 @@
 @layer components {
   /* Glassy Card */
   .card-glass {
-    @apply rounded-2xl border border-white/10 bg-white/5 p-6 shadow-lg backdrop-blur-lg;
+    @apply rounded-2xl border-2 border-bright-cyan bg-white/5 p-12 shadow-lg backdrop-blur-lg;
     transition: all 0.3s ease;
   }
   .card-glass:hover {
