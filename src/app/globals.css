@@ -68,7 +68,7 @@
 }
 
 @layer utilities {
-    .animate-gradient-bg {
+    .hover\:animate-gradient-bg:hover {
         background-size: 200% 200%;
         animation: gradient-animation 5s ease infinite;
     }
@@ -80,3 +80,4 @@
     100% { background-position: 0% 50%; }
 }
     
+

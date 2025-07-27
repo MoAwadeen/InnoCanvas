@@ -96,7 +96,10 @@ export default function Pricing() {
               <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
               <p className="text-muted-foreground mb-6">{plan.description}</p>
               <div className="mb-8">
-                <span className="text-5xl font-extrabold">
+                <span className={cn(
+                  "text-5xl font-extrabold transition-colors",
+                  ((isYearly && plan.price.yearly > 0) || (!isYearly && plan.price.monthly > 0)) && "text-primary"
+                  )}>
                   ${isYearly ? plan.price.yearly / 12 : plan.price.monthly}
                 </span>
                 <span className="text-muted-foreground text-lg">/month</span>
@@ -115,7 +118,7 @@ export default function Pricing() {
                   className={cn(
                     "w-full", 
                     !plan.popular && "bg-primary/80",
-                    plan.popular && "animate-gradient-bg"
+                    plan.popular && "hover:animate-gradient-bg"
                   )}
                 >
                   {plan.cta}
@@ -128,3 +131,4 @@ export default function Pricing() {
     </section>
   );
 }
+
