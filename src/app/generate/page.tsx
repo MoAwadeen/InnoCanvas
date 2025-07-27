@@ -36,6 +36,8 @@ import { generateBMC, GenerateBMCInput, GenerateBMCOutput } from '@/ai/flows/gen
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import Link from 'next/link';
+import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 type BMCBlock = {
   title: string;
@@ -43,6 +45,15 @@ type BMCBlock = {
   content: string;
   keyProp: keyof GenerateBMCOutput;
 };
+
+type Template = 'glass' | 'minimal' | 'dark';
+
+const templates: { name: Template; label: string }[] = [
+    { name: 'glass', label: 'Glassmorphism' },
+    { name: 'minimal', label: 'Minimal Light' },
+    { name: 'dark', label: 'Minimal Dark' },
+];
+
 
 const refinementQuestions = [
   {
@@ -73,8 +84,11 @@ const refinementQuestions = [
 ];
 
 export default function BmcGeneratorPage() {
+  const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentTemplate, setCurrentTemplate] = useState<Template>('glass');
   const [formData, setFormData] = useState<Partial<GenerateBMCInput>>({
     businessDescription: '',
     customerSegments: '',
@@ -95,22 +109,62 @@ export default function BmcGeneratorPage() {
   ) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
+  
+  const handleBmcDataChange = (key: keyof GenerateBMCOutput, value: string) => {
+    if (bmcData) {
+      setBmcData(prev => prev ? { ...prev, [key]: value } : null);
+    }
+  };
 
-  const handleGenerateCanvas = async () => {
+  const handleGenerateCanvas = async (regenerate = false) => {
+    if (!regenerate) {
+        setStep(3);
+    }
     setIsLoading(true);
-    setStep(3);
     try {
       const result = await generateBMC(formData as GenerateBMCInput);
       setBmcData(result);
     } catch (error) {
       console.error('Error generating BMC:', error);
-      // You can add toast notifications here to show errors
+      toast({
+        title: 'Error Generating Canvas',
+        description: 'There was an issue with the AI. Please try again.',
+        variant: 'destructive',
+      })
     } finally {
       setIsLoading(false);
     }
   };
 
-  const initialBmcBlocks: Omit<BMCBlock, 'content'>[] = [
+  const handleSave = () => {
+    // Firestore saving logic would go here
+    toast({
+      title: 'Canvas Saved!',
+      description: 'Your masterpiece is safe in "My Canvases".',
+    });
+  };
+  
+  const handleExport = () => {
+      toast({
+          title: 'Coming Soon!',
+          description: 'PDF export functionality is currently under development.',
+      });
+  }
+
+  const handleShare = () => {
+      toast({
+          title: 'Coming Soon!',
+          description: 'Public link sharing is currently under development.',
+      });
+  }
+  
+  const cycleTemplate = () => {
+      const currentIndex = templates.findIndex(t => t.name === currentTemplate);
+      const nextIndex = (currentIndex + 1) % templates.length;
+      setCurrentTemplate(templates[nextIndex].name);
+  }
+
+  const initialBmcBlocks: Omit<BMCBlock, 'content' | 'isEditing'>[] = [
     { title: 'Key Partners', icon: <Handshake className="w-5 h-5" />, keyProp: 'keyPartnerships' },
     { title: 'Key Activities', icon: <Wrench className="w-5 h-5" />, keyProp: 'keyActivities' },
     { title: 'Key Resources', icon: <Package className="w-5 h-5" />, keyProp: 'keyResources' },
@@ -176,7 +230,7 @@ export default function BmcGeneratorPage() {
                     <RadioGroup
                       onValueChange={(value) => handleInputChange(q.key as keyof GenerateBMCInput, value)}
                       value={formData[q.key as keyof GenerateBMCInput]}
-                      className="grid grid-cols-2 md:grid-cols-3 gap-4"
+                      className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4"
                     >
                       {q.options.map((opt) => (
                         <div key={opt} className="flex items-center">
@@ -193,9 +247,10 @@ export default function BmcGeneratorPage() {
               <Button
                 size="lg"
                 className="mt-8 bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg hover:shadow-xl transition-shadow w-full"
-                onClick={handleGenerateCanvas}
+                onClick={() => handleGenerateCanvas(false)}
+                disabled={isLoading}
               >
-                Generate Canvas
+                {isLoading ? <><Loader className="mr-2 animate-spin" /> Generating...</> : 'Generate Canvas'}
               </Button>
             </div>
           </motion.div>
@@ -216,31 +271,36 @@ export default function BmcGeneratorPage() {
               </div>
             ) : (
               bmcData && (
-                <div>
+                <div data-template={currentTemplate}>
                     <div className="flex flex-wrap gap-4 justify-center mb-8">
-                        <Button variant="outline"><RefreshCw className="mr-2" /> Regenerate</Button>
-                        <Button variant="outline"><Edit className="mr-2" /> Edit</Button>
-                        <Button variant="outline"><Save className="mr-2" /> Save to My Canvases</Button>
-                        <Button variant="outline"><Palette className="mr-2" /> Templates</Button>
-                        <Button variant="outline"><Download className="mr-2" /> Export as PDF</Button>
-                        <Button variant="outline"><Share2 className="mr-2" /> Share Public Link</Button>
+                        <Button variant="outline" onClick={() => handleGenerateCanvas(true)} disabled={isLoading}>
+                            {isLoading ? <Loader className="mr-2 animate-spin" /> : <RefreshCw className="mr-2" />} 
+                            Regenerate
+                        </Button>
+                        <Button variant="outline" onClick={() => setIsEditing(!isEditing)}>
+                            <Edit className="mr-2" /> {isEditing ? 'Done Editing' : 'Edit'}
+                        </Button>
+                        <Button variant="outline" onClick={handleSave}><Save className="mr-2" /> Save to My Canvases</Button>
+                        <Button variant="outline" onClick={cycleTemplate}><Palette className="mr-2" /> {templates.find(t => t.name === currentTemplate)?.label}</Button>
+                        <Button variant="outline" onClick={handleExport}><Download className="mr-2" /> Export as PDF</Button>
+                        <Button variant="outline" onClick={handleShare}><Share2 className="mr-2" /> Share Public Link</Button>
                     </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
                     {/* Top Row */}
-                    <BmcCard key={initialBmcBlocks[0].keyProp} {...initialBmcBlocks[0]} content={bmcData.keyPartnerships} className="lg:col-span-1" />
+                    <BmcCard key={initialBmcBlocks[0].keyProp} {...initialBmcBlocks[0]} content={bmcData.keyPartnerships} className="lg:col-span-1" isEditing={isEditing} onContentChange={handleBmcDataChange} />
                     <div className="lg:col-span-1 grid grid-rows-2 gap-4">
-                      <BmcCard key={initialBmcBlocks[1].keyProp} {...initialBmcBlocks[1]} content={bmcData.keyActivities} />
-                      <BmcCard key={initialBmcBlocks[2].keyProp} {...initialBmcBlocks[2]} content={bmcData.keyResources} />
+                      <BmcCard key={initialBmcBlocks[1].keyProp} {...initialBmcBlocks[1]} content={bmcData.keyActivities} isEditing={isEditing} onContentChange={handleBmcDataChange} />
+                      <BmcCard key={initialBmcBlocks[2].keyProp} {...initialBmcBlocks[2]} content={bmcData.keyResources} isEditing={isEditing} onContentChange={handleBmcDataChange} />
                     </div>
-                    <BmcCard key={initialBmcBlocks[3].keyProp} {...initialBmcBlocks[3]} content={bmcData.valuePropositions} className="lg:col-span-1" />
+                    <BmcCard key={initialBmcBlocks[3].keyProp} {...initialBmcBlocks[3]} content={bmcData.valuePropositions} className="lg:col-span-1" isEditing={isEditing} onContentChange={handleBmcDataChange} />
                     <div className="lg:col-span-1 grid grid-rows-2 gap-4">
-                      <BmcCard key={initialBmcBlocks[4].keyProp} {...initialBmcBlocks[4]} content={bmcData.customerRelationships} />
-                      <BmcCard key={initialBmcBlocks[5].keyProp} {...initialBmcBlocks[5]} content={bmcData.channels} />
+                      <BmcCard key={initialBmcBlocks[4].keyProp} {...initialBmcBlocks[4]} content={bmcData.customerRelationships} isEditing={isEditing} onContentChange={handleBmcDataChange} />
+                      <BmcCard key={initialBmcBlocks[5].keyProp} {...initialBmcBlocks[5]} content={bmcData.channels} isEditing={isEditing} onContentChange={handleBmcDataChange} />
                     </div>
-                    <BmcCard key={initialBmcBlocks[6].keyProp} {...initialBmcBlocks[6]} content={bmcData.customerSegments} className="lg:col-span-1" />
+                    <BmcCard key={initialBmcBlocks[6].keyProp} {...initialBmcBlocks[6]} content={bmcData.customerSegments} className="lg:col-span-1" isEditing={isEditing} onContentChange={handleBmcDataChange} />
                     {/* Bottom Row */}
-                    <BmcCard key={initialBmcBlocks[7].keyProp} {...initialBmcBlocks[7]} content={bmcData.costStructure} className="lg:col-span-2" />
-                    <BmcCard key={initialBmcBlocks[8].keyProp} {...initialBmcBlocks[8]} content={bmcData.revenueStreams} className="lg:col-span-3" />
+                    <BmcCard key={initialBmcBlocks[7].keyProp} {...initialBmcBlocks[7]} content={bmcData.costStructure} className="lg:col-span-2" isEditing={isEditing} onContentChange={handleBmcDataChange} />
+                    <BmcCard key={initialBmcBlocks[8].keyProp} {...initialBmcBlocks[8]} content={bmcData.revenueStreams} className="lg:col-span-3" isEditing={isEditing} onContentChange={handleBmcDataChange} />
                   </div>
                 </div>
               )
@@ -274,16 +334,45 @@ export default function BmcGeneratorPage() {
   );
 }
 
-const BmcCard = ({ title, icon, content, className }: BMCBlock & { className?: string }) => (
-  <div className={`bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-4 shadow-lg flex flex-col ${className}`}>
+type BmcCardProps = Omit<BMCBlock, 'content'> & {
+  className?: string;
+  isEditing: boolean;
+  content: string;
+  onContentChange: (key: keyof GenerateBMCOutput, value: string) => void;
+};
+
+const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onContentChange }: BmcCardProps) => (
+  <div className={cn(
+    `rounded-2xl p-4 shadow-lg flex flex-col transition-all`,
+    // Glass Template
+    `data-[template=glass]:bg-white/10 data-[template=glass]:backdrop-blur-lg data-[template=glass]:border data-[template=glass]:border-white/20`,
+    // Minimal Light Template
+    `data-[template=minimal]:bg-gray-50 data-[template=minimal]:text-gray-800 data-[template=minimal]:border`,
+    // Minimal Dark Template
+    `data-[template=dark]:bg-gray-900 data-[template=dark]:text-gray-200 data-[template=dark]:border data-[template=dark]:border-gray-700`,
+    className
+    )}>
     <div className="flex items-center gap-2 mb-2">
       {icon}
       <h3 className="font-bold text-lg">{title}</h3>
     </div>
     <Textarea
-      defaultValue={content}
-      className="bg-transparent border-0 text-base text-white/80 flex-grow resize-none focus-visible:ring-0 focus-visible:ring-offset-0"
+      value={content}
+      readOnly={!isEditing}
+      onChange={(e) => onContentChange(keyProp, e.target.value)}
+      className={cn(
+        "bg-transparent border-0 text-base flex-grow resize-none focus-visible:ring-0 focus-visible:ring-offset-0",
+        isEditing ? "cursor-text" : "cursor-default",
+        // Glass Template
+        `data-[template=glass]:text-white/80`,
+        // Minimal Light Template
+        `data-[template=minimal]:text-gray-600 data-[template=minimal]:placeholder:text-gray-400`,
+         // Minimal Dark Template
+        `data-[template=dark]:text-gray-300 data-[template=dark]:placeholder:text-gray-500`,
+
+        isEditing && `data-[template=minimal]:border data-[template=dark]:border`,
+      )}
     />
   </div>
 );
-
+    
