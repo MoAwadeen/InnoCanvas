@@ -50,7 +50,7 @@
 @layer components {
   /* Glassy Card */
   .card-glass {
-    @apply rounded-2xl border-2 border-bright-cyan bg-white/5 p-12 shadow-lg backdrop-blur-lg;
+    @apply rounded-2xl border border-white/10 bg-white/5 p-8 shadow-lg backdrop-blur-lg;
     transition: all 0.3s ease;
   }
   .card-glass:hover {

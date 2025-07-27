@@ -186,16 +186,16 @@ export default function MyCanvasesPage() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
                 <Card
-                  className="flex flex-col h-full hover:border-primary/50 transition-all border-border bg-card"
+                  className="card-glass flex flex-col h-full bg-bright-cyan/5 border-bright-cyan/20 p-0"
                 >
-                  <CardHeader>
+                  <CardHeader className="p-6">
                     <CardTitle className="line-clamp-2 text-card-foreground">{canvas.title}</CardTitle>
                   </CardHeader>
-                  <CardContent className="flex-grow">
-                    <p className="text-muted-foreground text-sm line-clamp-3 h-16">{canvas.preview}</p>
+                  <CardContent className="flex-grow p-6 pt-0">
+                    <p className="text-bright-cyan/80 text-sm line-clamp-3 h-16">{canvas.preview}</p>
                   </CardContent>
-                  <CardFooter className="flex justify-between items-center mt-auto pt-4 border-t border-border/20">
-                    <p className="text-sm text-muted-foreground">{canvas.date}</p>
+                  <CardFooter className="flex justify-between items-center mt-auto p-6 pt-4 border-t border-bright-cyan/10">
+                    <p className="text-sm text-bright-cyan/60">{canvas.date}</p>
                     <div className="flex gap-2">
                         <Link href={`/generate?canvasId=${canvas.id}`}>
                             <Button variant="secondary">Open</Button>
@@ -226,7 +226,7 @@ export default function MyCanvasesPage() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 border-2 border-dashed border-border/20 rounded-2xl bg-secondary flex flex-col items-center">
+          <div className="text-center py-20 border-2 border-dashed border-border/20 rounded-2xl bg-secondary/50 flex flex-col items-center">
             <h2 className="text-2xl font-semibold mb-4">No Canvases Yet</h2>
             <p className="text-muted-foreground mb-6 max-w-md">
               It looks like your workspace is empty. Let's create your first Business Model Canvas and bring your ideas to life.
