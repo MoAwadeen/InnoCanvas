@@ -82,7 +82,7 @@ export default function BmcGeneratorPage() {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [currentTemplate, setCurrentTemplate] = useState<Template>('minimal');
+  const [currentTemplate, setCurrentTemplate] = useState<Template>('glass');
   const [formData, setFormData] = useState<Partial<GenerateBMCInput>>({
     businessDescription: '',
     customerSegments: '',
@@ -385,7 +385,7 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
     <div className={cn(
         "rounded-2xl p-4 shadow-lg flex flex-col transition-all overflow-hidden",
         // Glass Template
-        `data-[template=glass]:bg-card/50 data-[template=glass]:backdrop-blur-lg data-[template=glass]:border data-[template=glass]:border-border/20`,
+        `data-[template=glass]:bg-card/20 data-[template=glass]:backdrop-blur-lg data-[template=glass]:border data-[template=glass]:border-border/10`,
         // Minimal Light Template
         `data-[template=minimal]:bg-white data-[template=minimal]:text-black data-[template=minimal]:border-black data-[template=minimal]:border`,
         // Minimal Dark Template
@@ -396,7 +396,7 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
       "flex items-center gap-2 mb-2",
       "data-[template=minimal]:text-black",
       "data-[template=dark]:text-gray-200",
-      "data-[template=glass]:text-black"
+      "data-[template=glass]:text-foreground"
       )}>
       {icon}
       <h3 className="font-bold text-lg">{title}</h3>
@@ -409,7 +409,7 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
           "bg-transparent border-0 text-base flex-grow resize-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0",
           "cursor-text",
           // Glass Template
-          `data-[template=glass]:text-black/80`,
+          `data-[template=glass]:text-foreground/80`,
           // Minimal Light Template
           `data-[template=minimal]:text-gray-800 data-[template=minimal]:placeholder:text-gray-500`,
            // Minimal Dark Template
@@ -421,7 +421,7 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
       <div className={cn(
         "text-base flex-grow whitespace-pre-wrap overflow-hidden",
         // Glass Template
-        `data-[template=glass]:text-black/80`,
+        `data-[template=glass]:text-foreground/80`,
         // Minimal Light Template
         `data-[template=minimal]:text-gray-800`,
          // Minimal Dark Template
