@@ -40,7 +40,7 @@ export default function MyCanvasesPage() {
               New Canvas
             </Button>
           </Link>
-          <Button variant="outline" className="bg-transparent hover:bg-white/10 border-white/20 hover:text-white">Logout</Button>
+          <Button variant="outline" className="bg-transparent hover:bg-white/10 border-border/30 hover:text-white">Logout</Button>
         </div>
       </header>
 
@@ -51,7 +51,7 @@ export default function MyCanvasesPage() {
             {mockCanvases.map((canvas) => (
               <Card
                 key={canvas.id}
-                className="bg-white/10 backdrop-blur-lg border-border/20 text-white flex flex-col"
+                className="bg-card/50 backdrop-blur-lg border-border/20 text-white flex flex-col"
               >
                 <CardHeader>
                   <CardTitle>{canvas.title}</CardTitle>
@@ -89,3 +89,4 @@ export default function MyCanvasesPage() {
     
 
     
+
