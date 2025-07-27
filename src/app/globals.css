@@ -24,6 +24,7 @@
     --border: 217 33% 25%;
     --input: 217 33% 20%;
     --ring: 216 92% 58%; /* azure */
+    --radius: 9999px; /* full radius */
   }
 
   .dark {
@@ -46,6 +47,7 @@
     --border: 217 33% 25%;
     --input: 217 33% 20%;
     --ring: 216 92% 58%; /* azure */
+    --radius: 9999px; /* full radius */
   }
 }
 

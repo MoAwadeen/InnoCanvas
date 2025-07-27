@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bot, PanelTop } from "lucide-react";
+import { Bot, Home, LayoutDashboard, PanelTop } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -43,8 +43,14 @@ export default function Header() {
             </ul>
           </nav>
           <div className="hidden md:flex items-center gap-2">
+            <Link href="/my-canvases">
+              <Button variant="ghost"><Home className="mr-2" /> Home</Button>
+            </Link>
+             <Link href="/my-canvases">
+              <Button variant="ghost"><LayoutDashboard className="mr-2" /> My Canvases</Button>
+            </Link>
             <Link href="/login">
-                <Button variant="ghost">Log In</Button>
+                <Button variant="outline">Log In</Button>
             </Link>
             <Link href="/register">
                 <Button className="bg-gradient-to-r from-primary to-accent text-primary-foreground">
@@ -69,6 +75,12 @@ export default function Header() {
                 </SheetTitle>
               </SheetHeader>
               <div className="grid gap-4 py-4">
+                 <Link href="/my-canvases" className="text-muted-foreground transition-colors hover:text-foreground">
+                    Home
+                 </Link>
+                 <Link href="/my-canvases" className="text-muted-foreground transition-colors hover:text-foreground">
+                    My Canvases
+                 </Link>
                 {navLinks.map((link) => (
                   <a
                     key={link.name}
