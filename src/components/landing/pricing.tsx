@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -6,6 +7,7 @@ import { CheckCircle } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 export default function Pricing() {
   const [isYearly, setIsYearly] = useState(false);
@@ -22,6 +24,7 @@ export default function Pricing() {
         "Standard templates",
       ],
       cta: "Start for Free",
+      href: "/register"
     },
     {
       name: "Pro",
@@ -35,6 +38,7 @@ export default function Pricing() {
       ],
       cta: "Go Pro",
       popular: true,
+      href: "/payment"
     },
     {
       name: "Premium",
@@ -47,6 +51,7 @@ export default function Pricing() {
         "Premium templates",
       ],
       cta: "Contact Sales",
+      href: "/payment"
     },
   ];
 
@@ -104,12 +109,14 @@ export default function Pricing() {
                   </li>
                 ))}
               </ul>
-              <Button
-                size="lg"
-                className={cn("w-full", !plan.popular && "bg-primary/80")}
-              >
-                {plan.cta}
-              </Button>
+              <Link href={plan.href} className="w-full">
+                <Button
+                  size="lg"
+                  className={cn("w-full", !plan.popular && "bg-primary/80")}
+                >
+                  {plan.cta}
+                </Button>
+              </Link>
             </div>
           </div>
         ))}
