@@ -5,48 +5,65 @@
 
 @layer base {
   :root {
-    --background: 222 84% 4%;
-    --foreground: 210 40% 98%;
-    --card: 222 84% 10%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 84% 4%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 180 99% 52%; /* #0CECFE */
-    --primary-foreground: 222 84% 4%;
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 322 70% 48%; /* #D127A0 */
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 180 99% 52%; /* #0CECFE */
-    --radius: 1rem;
+    --background: 226 100% 9%; /* #002290 - Resolution Blue */
+    --foreground: 213 69% 97%; /* #F4F8FD - Alice Blue */
+    
+    --card: 226 100% 14%; /* Darker variant of Resolution Blue */
+    --card-foreground: 213 69% 97%;
+
+    --popover: 226 100% 4%; /* Even darker for popovers */
+    --popover-foreground: 213 69% 97%;
+
+    --primary: 184 99% 52%; /* #0CECFE - Electric blue */
+    --primary-foreground: 226 100% 9%;
+
+    --secondary: 216 92% 58%; /* #327FF6 - Azure */
+    --secondary-foreground: 213 69% 97%;
+
+    --muted: 226 100% 14%;
+    --muted-foreground: 222 8% 65%;
+
+    --accent: 317 69% 49%; /* #D127A0 - Red Violet */
+    --accent-foreground: 213 69% 97%;
+
+    --destructive: 9 68% 63%; /* #E17360 - Burnt Sienna */
+    --destructive-foreground: 213 69% 97%;
+    
+    --border: 216 92% 20%; /* Darker Azure */
+    --input: 216 92% 20%;
+    --ring: 184 99% 52%;
+
+    --radius: 1.5rem;
   }
 
   .dark {
-    --background: 222 84% 4%;
-    --foreground: 210 40% 98%;
-    --card: 222 84% 10%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 84% 4%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 180 99% 52%; /* #0CECFE */
-    --primary-foreground: 222 84% 4%;
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 322 70% 48%; /* #D127A0 */
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 180 99% 52%; /* #0CECFE */
+    --background: 226 100% 9%; /* #002290 - Resolution Blue */
+    --foreground: 213 69% 97%; /* #F4F8FD - Alice Blue */
+    
+    --card: 226 100% 14%; /* Darker variant of Resolution Blue */
+    --card-foreground: 213 69% 97%;
+
+    --popover: 226 100% 4%; /* Even darker for popovers */
+    --popover-foreground: 213 69% 97%;
+
+    --primary: 184 99% 52%; /* #0CECFE - Electric blue */
+    --primary-foreground: 226 100% 9%;
+
+    --secondary: 216 92% 58%; /* #327FF6 - Azure */
+    --secondary-foreground: 213 69% 97%;
+
+    --muted: 226 100% 14%;
+    --muted-foreground: 222 8% 65%;
+
+    --accent: 317 69% 49%; /* #D127A0 - Red Violet */
+    --accent-foreground: 213 69% 97%;
+
+    --destructive: 9 68% 63%; /* #E17360 - Burnt Sienna */
+    --destructive-foreground: 213 69% 97%;
+    
+    --border: 216 92% 20%; /* Darker Azure */
+    --input: 216 92% 20%;
+    --ring: 184 99% 52%;
   }
 }
 
