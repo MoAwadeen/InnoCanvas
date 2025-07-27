@@ -79,6 +79,9 @@
   }
 
   /* Pricing Switch Color */
+  [data-state='unchecked']#billing-cycle {
+    background-color: hsl(var(--peach));
+  }
   [data-state='checked']#billing-cycle {
     background-color: hsl(var(--vivid-pink));
   }
