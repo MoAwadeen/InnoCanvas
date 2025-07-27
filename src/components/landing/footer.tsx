@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="w-full mt-20 border-t">
+    <footer className="w-full mt-20 border-t border-border/50">
       <div className="container py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="flex flex-col gap-4 items-start text-left">
@@ -39,11 +39,11 @@ export default function Footer() {
              <p className="text-muted-foreground">Subscribe to our newsletter for the latest updates.</p>
              <form className="flex gap-2 w-full">
                 <Input type="email" placeholder="Enter your email" />
-                <Button type="submit">Subscribe</Button>
+                <Button type="submit" variant="gradient">Subscribe</Button>
              </form>
           </div>
         </div>
-        <div className="mt-12 pt-8 border-t flex justify-between items-center">
+        <div className="mt-12 pt-8 border-t border-border/50 flex justify-between items-center">
             <p className="text-muted-foreground text-sm">&copy; {new Date().getFullYear()} InnoCanvas. All rights reserved.</p>
         </div>
       </div>

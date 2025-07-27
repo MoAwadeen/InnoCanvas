@@ -8,8 +8,8 @@ export default function Hero() {
   return (
     <section className="container flex flex-col items-center py-24 md:py-32">
       <div className="flex flex-col items-center gap-6 text-center max-w-4xl">
-        <div className="headline-realism">
-          <h1 className="headline text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tighter leading-tight">
+        <div className="headline-glow">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tighter leading-tight">
             Welcome to InnoCanvas
           </h1>
         </div>
@@ -33,14 +33,14 @@ export default function Hero() {
         </div>
       </div>
       <div className="relative mt-20 w-full max-w-6xl">
-         <div className="p-4 border rounded-2xl bg-card shadow-lg">
+         <div className="p-4 rounded-2xl bg-black/30 card-glass">
             <Image
             src="https://placehold.co/1200x800.png"
             alt="InnoCanvas App Preview"
             width={1200}
             height={800}
             className="rounded-xl shadow-2xl"
-            data-ai-hint="app mockup business light modern"
+            data-ai-hint="app mockup business dark modern"
             />
         </div>
       </div>

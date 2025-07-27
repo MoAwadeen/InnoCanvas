@@ -34,15 +34,15 @@ export default function Faq() {
 
   return (
     <section id="faq" className="container py-20 md:py-24">
-      <div className="text-center max-w-3xl mx-auto mb-12 headline-realism">
-        <h2 className="headline text-3xl md:text-4xl font-bold">Frequently Asked Questions</h2>
+      <div className="text-center max-w-3xl mx-auto mb-12">
+        <h2 className="headline-glow text-3xl md:text-4xl font-bold">Frequently Asked Questions</h2>
         <p className="mt-4 text-lg text-muted-foreground">
           Find answers to common questions about InnoCanvas.
         </p>
       </div>
       <Accordion type="single" collapsible className="w-full max-w-3xl mx-auto">
         {faqs.map((faq, index) => (
-          <AccordionItem key={index} value={`item-${index}`} className="bg-card border rounded-lg mb-4 px-6">
+          <AccordionItem key={index} value={`item-${index}`} className="card-glass border-0 mb-4 px-6">
             <AccordionTrigger className="text-lg text-left hover:no-underline">{faq.question}</AccordionTrigger>
             <AccordionContent className="text-base text-muted-foreground text-left">{faq.answer}</AccordionContent>
           </AccordionItem>

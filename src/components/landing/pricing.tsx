@@ -25,7 +25,7 @@ export default function Pricing() {
       ],
       cta: "Start for Free",
       href: "/register",
-      variant: "secondary"
+      variant: "outline"
     },
     {
       name: "Pro",
@@ -39,7 +39,8 @@ export default function Pricing() {
       ],
       cta: "Go Pro",
       href: "/payment",
-      variant: "gradient"
+      variant: "gradient",
+      popular: true,
     },
     {
       name: "Premium",
@@ -52,16 +53,15 @@ export default function Pricing() {
         "Premium templates",
       ],
       cta: "Go Premium",
-      popular: true,
       href: "/payment",
-      variant: "gradient"
+      variant: "secondary"
     },
   ];
 
   return (
     <section id="pricing" className="container py-20 md:py-24">
-      <div className="text-center max-w-3xl mx-auto mb-12 headline-realism">
-        <h2 className="headline text-3xl md:text-4xl font-bold">Choose Your Plan</h2>
+      <div className="text-center max-w-3xl mx-auto mb-12">
+        <h2 className="headline-glow text-3xl md:text-4xl font-bold">Choose Your Plan</h2>
         <p className="mt-4 text-lg text-muted-foreground">
           Simple, transparent pricing. No hidden fees.
         </p>
@@ -75,17 +75,17 @@ export default function Pricing() {
           onCheckedChange={setIsYearly}
         />
         <Label htmlFor="billing-cycle" className={cn("transition-colors font-medium", isYearly ? "text-primary" : "text-muted-foreground")}>
-            Yearly <span className="text-sm font-medium text-green-600">(Save 25%)</span>
+            Yearly <span className="text-sm font-medium text-green-400">(Save 25%)</span>
         </Label>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto items-start">
         {plans.map((plan) => (
           <div
             key={plan.name}
             className={cn(
-              "card-realism p-8 flex flex-col transition-all duration-300 rounded-2xl relative text-left",
-              plan.popular ? "shadow-lg" : ""
+              "card-glass flex flex-col transition-all duration-300 rounded-2xl relative text-left p-8",
+               plan.popular ? "border-primary/50" : ""
             )}
           >
             {plan.popular && (
@@ -96,17 +96,17 @@ export default function Pricing() {
                 </div>
               </div>
             )}
-            <h3 className="card-title mb-2">{plan.name}</h3>
-            <p className="card-text mb-6 h-10">{plan.description}</p>
+            <h3 className="text-2xl font-bold text-foreground mb-2">{plan.name}</h3>
+            <p className="text-muted-foreground mb-6 h-10">{plan.description}</p>
             <div className="mb-8">
-              <span className="text-5xl font-extrabold text-white">
+              <span className="text-5xl font-extrabold text-foreground">
                 ${isYearly ? (plan.price.yearly / 12).toFixed(0) : plan.price.monthly}
               </span>
-              <span className="text-gray-400 text-lg">/month</span>
+              <span className="text-muted-foreground text-lg">/month</span>
             </div>
             <ul className="space-y-4 mb-10 flex-1">
               {plan.features.map((feature) => (
-                <li key={feature} className="flex items-center gap-3 text-left text-white">
+                <li key={feature} className="flex items-center gap-3 text-left text-foreground/90">
                   <CheckCircle className="w-5 h-5 text-green-500" />
                   <span>{feature}</span>
                 </li>
