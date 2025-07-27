@@ -152,7 +152,7 @@ export default function BmcGeneratorPage() {
         setTimeout(() => {
             html2canvas(canvasRef.current!, {
                 useCORS: true,
-                backgroundColor: null, // Use transparent background
+                backgroundColor: '#ffffff', // Explicitly set a white background
                 scale: 2, // Increase resolution
             }).then((canvas) => {
                 const imgData = canvas.toDataURL('image/png');
@@ -181,7 +181,7 @@ export default function BmcGeneratorPage() {
                 // Revert to original template on error
                 setCurrentTemplate(originalTemplate);
             });
-        }, 100); // Small delay to ensure DOM update
+        }, 200); // Increased delay to ensure DOM update
     } else {
         toast({
             title: 'Error exporting',
@@ -325,7 +325,7 @@ export default function BmcGeneratorPage() {
                         <Button variant="outline" onClick={handleExport}><Download className="mr-2" /> Export as PDF</Button>
                         <Button variant="outline" onClick={handleShare}><Share2 className="mr-2" /> Share Public Link</Button>
                     </div>
-                  <div ref={canvasRef} className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 p-4">
+                  <div ref={canvasRef} className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 p-4 bg-background">
                     {/* Top Row */}
                     <BmcCard key={initialBmcBlocks[0].keyProp} {...initialBmcBlocks[0]} content={bmcData.keyPartnerships} className="lg:col-span-1" isEditing={isEditing} onContentChange={handleBmcDataChange} />
                     <div className="lg:col-span-1 grid grid-rows-2 gap-4">
@@ -353,7 +353,7 @@ export default function BmcGeneratorPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-background to-primary/30 text-white p-4 md:p-8">
+    <div className="min-h-screen w-full bg-gradient-to-br from-background to-[#003CFE]/30 text-white p-4 md:p-8">
        <header className="flex justify-between items-center mb-8">
           <Link href="/" className="flex items-center gap-2">
             <Bot className="h-8 w-8 text-primary" />
@@ -387,14 +387,14 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
     // Glass Template
     `data-[template=glass]:bg-card/50 data-[template=glass]:backdrop-blur-lg data-[template=glass]:border data-[template=glass]:border-border/20`,
     // Minimal Light Template
-    `data-[template=minimal]:bg-gray-50 data-[template=minimal]:text-gray-800 data-[template=minimal]:border-gray-900 data-[template=minimal]:border`,
+    `data-[template=minimal]:bg-white data-[template=minimal]:text-black data-[template=minimal]:border-black data-[template=minimal]:border`,
     // Minimal Dark Template
     `data-[template=dark]:bg-gray-900 data-[template=dark]:text-gray-200 data-[template=dark]:border data-[template=dark]:border-gray-700`,
     className
     )}>
     <div className={cn(
       "flex items-center gap-2 mb-2",
-      "data-[template=minimal]:text-gray-800",
+      "data-[template=minimal]:text-black",
       "data-[template=dark]:text-gray-200",
       "data-[template=glass]:text-white"
       )}>
@@ -411,11 +411,11 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
         // Glass Template
         `data-[template=glass]:text-white/80`,
         // Minimal Light Template
-        `data-[template=minimal]:text-gray-600 data-[template=minimal]:placeholder:text-gray-400`,
+        `data-[template=minimal]:text-gray-800 data-[template=minimal]:placeholder:text-gray-500`,
          // Minimal Dark Template
         `data-[template=dark]:text-gray-300 data-[template=dark]:placeholder:text-gray-500`,
 
-        isEditing && `data-[template=minimal]:border data-[template=dark]:border`,
+        isEditing && `data-[template=minimal]:border data-[template=minimal]:border-gray-300 data-[template=dark]:border data-[template=dark]:border-gray-600`,
       )}
     />
   </div>
