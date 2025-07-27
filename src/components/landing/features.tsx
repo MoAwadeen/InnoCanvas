@@ -1,5 +1,4 @@
 import { Bot, Download, LayoutTemplate, Share2 } from "lucide-react";
-import InteractiveCard from "./interactive-card";
 
 export default function Features() {
   const features = [
@@ -27,8 +26,8 @@ export default function Features() {
 
   return (
     <section id="features" className="container py-20 md:py-24">
-      <div className="text-center max-w-3xl mx-auto mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold">Why InnoCanvas?</h2>
+      <div className="text-center max-w-3xl mx-auto mb-12 headline-realism">
+        <h2 className="headline text-3xl md:text-4xl font-bold">Why InnoCanvas?</h2>
         <p className="mt-4 text-lg text-muted-foreground">
           Everything you need to transform your business idea into a concrete plan.
         </p>
@@ -36,7 +35,10 @@ export default function Features() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 justify-center">
         {features.map((feature) => (
            <div key={feature.title} className="flex justify-center">
-              <InteractiveCard title={feature.title} description={feature.description} icon={feature.icon} />
+              <div className="card-realism">
+                <div className="card-title">{feature.title}</div>
+                <div className="card-text">{feature.description}</div>
+              </div>
            </div>
         ))}
       </div>

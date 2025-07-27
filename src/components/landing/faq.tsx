@@ -34,8 +34,8 @@ export default function Faq() {
 
   return (
     <section id="faq" className="container py-20 md:py-24">
-      <div className="text-center max-w-3xl mx-auto mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold">Frequently Asked Questions</h2>
+      <div className="text-center max-w-3xl mx-auto mb-12 headline-realism">
+        <h2 className="headline text-3xl md:text-4xl font-bold">Frequently Asked Questions</h2>
         <p className="mt-4 text-lg text-muted-foreground">
           Find answers to common questions about InnoCanvas.
         </p>

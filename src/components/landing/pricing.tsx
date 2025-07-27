@@ -60,8 +60,8 @@ export default function Pricing() {
 
   return (
     <section id="pricing" className="container py-20 md:py-24">
-      <div className="text-center max-w-3xl mx-auto mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold">Choose Your Plan</h2>
+      <div className="text-center max-w-3xl mx-auto mb-12 headline-realism">
+        <h2 className="headline text-3xl md:text-4xl font-bold">Choose Your Plan</h2>
         <p className="mt-4 text-lg text-muted-foreground">
           Simple, transparent pricing. No hidden fees.
         </p>
@@ -84,7 +84,7 @@ export default function Pricing() {
           <div
             key={plan.name}
             className={cn(
-              "bg-card border-border border p-8 flex flex-col transition-all duration-300 rounded-2xl relative",
+              "card-realism p-8 flex flex-col transition-all duration-300 rounded-2xl relative text-left",
               plan.popular ? "shadow-lg" : ""
             )}
           >
@@ -96,23 +96,23 @@ export default function Pricing() {
                 </div>
               </div>
             )}
-            <h3 className="text-2xl font-bold mb-2 text-card-foreground">{plan.name}</h3>
-            <p className="text-muted-foreground mb-6 h-10">{plan.description}</p>
+            <h3 className="card-title mb-2">{plan.name}</h3>
+            <p className="card-text mb-6 h-10">{plan.description}</p>
             <div className="mb-8">
-              <span className="text-5xl font-extrabold text-card-foreground">
+              <span className="text-5xl font-extrabold text-white">
                 ${isYearly ? (plan.price.yearly / 12).toFixed(0) : plan.price.monthly}
               </span>
-              <span className="text-muted-foreground text-lg">/month</span>
+              <span className="text-gray-400 text-lg">/month</span>
             </div>
             <ul className="space-y-4 mb-10 flex-1">
               {plan.features.map((feature) => (
-                <li key={feature} className="flex items-center gap-3 text-left text-card-foreground">
+                <li key={feature} className="flex items-center gap-3 text-left text-white">
                   <CheckCircle className="w-5 h-5 text-green-500" />
                   <span>{feature}</span>
                 </li>
               ))}
             </ul>
-            <Link href={plan.href} className="w-full">
+            <Link href={plan.href} className="w-full mt-auto">
               <Button
                 size="lg"
                 variant={plan.variant as any}

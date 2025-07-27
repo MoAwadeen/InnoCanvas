@@ -19,7 +19,7 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-secondary hover:text-secondary-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        gradient: "uiverse",
+        gradient: "btn-realism",
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -52,21 +52,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           ref={ref}
           {...props}
         >
-          <div className="wrapper">
-            <span>{children}</span>
-            <div className="circle circle-12" />
-            <div className="circle circle-11" />
-            <div className="circle circle-10" />
-            <div className="circle circle-9" />
-            <div className="circle circle-8" />
-            <div className="circle circle-7" />
-            <div className="circle circle-6" />
-            <div className="circle circle-5" />
-            <div className="circle circle-4" />
-            <div className="circle circle-3" />
-            <div className="circle circle-2" />
-            <div className="circle circle-1" />
-          </div>
+          <div className="blob" />
+          <div className="inner">{children}</div>
         </Comp>
       )
     }

@@ -8,9 +8,11 @@ export default function Hero() {
   return (
     <section className="container flex flex-col items-center py-24 md:py-32">
       <div className="flex flex-col items-center gap-6 text-center max-w-4xl">
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tighter leading-tight">
-          Welcome to InnoCanvas
-        </h1>
+        <div className="headline-realism">
+          <h1 className="headline text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tighter leading-tight">
+            Welcome to InnoCanvas
+          </h1>
+        </div>
         <p className="max-w-2xl text-lg text-muted-foreground">
           Your AI-Powered Business Model Canvas Companion. Innovate Your Startup Vision with AI.
         </p>
@@ -20,11 +22,11 @@ export default function Hero() {
               size="lg"
               variant="gradient"
             >
-              Try for Free <MoveRight className="ml-2" />
+              Try for Free
             </Button>
           </Link>
           <Link href="#features">
-            <Button size="lg" variant="outline" className="text-lg">
+            <Button size="lg" variant="outline">
                 View Demo
             </Button>
           </Link>

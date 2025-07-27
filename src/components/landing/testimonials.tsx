@@ -9,7 +9,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Card, CardContent } from "@/components/ui/card";
 import { Star } from "lucide-react";
 
 export default function Testimonials() {
@@ -49,8 +48,8 @@ export default function Testimonials() {
 
   return (
     <section id="testimonials" className="container py-20 md:py-24">
-      <div className="text-center max-w-3xl mx-auto mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold">Loved by Innovators Worldwide</h2>
+      <div className="text-center max-w-3xl mx-auto mb-12 headline-realism">
+        <h2 className="headline text-3xl md:text-4xl font-bold">Loved by Innovators Worldwide</h2>
         <p className="mt-4 text-lg text-muted-foreground">
           Don't just take our word for it. Here's what our users have to say.
         </p>
@@ -66,24 +65,24 @@ export default function Testimonials() {
           {testimonials.map((testimonial, index) => (
             <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
               <div className="p-4 h-full">
-                <Card className="h-full flex flex-col justify-between text-left p-6 border-border">
-                  <div className="flex mb-4">
-                      {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 text-yellow-400 fill-yellow-400" />)}
-                  </div>
-                  <CardContent className="p-0">
-                    <p className="text-card-foreground/80 mb-6 italic">"{testimonial.quote}"</p>
-                    <div className="flex items-center gap-4">
-                      <Avatar className="border-2 border-primary/50">
-                        <AvatarImage src={testimonial.avatar} alt={testimonial.name} data-ai-hint={testimonial.dataAiHint} />
-                        <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-semibold text-card-foreground">{testimonial.name}</p>
-                        <p className="text-sm text-muted-foreground">{testimonial.title}</p>
-                      </div>
+                <div className="card-realism h-full flex flex-col justify-between text-left p-6">
+                  <div>
+                    <div className="flex mb-4">
+                        {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 text-yellow-400 fill-yellow-400" />)}
                     </div>
-                  </CardContent>
-                </Card>
+                    <p className="card-text mb-6 italic">"{testimonial.quote}"</p>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <Avatar className="border-2 border-primary/50">
+                      <AvatarImage src={testimonial.avatar} alt={testimonial.name} data-ai-hint={testimonial.dataAiHint} />
+                      <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-semibold text-white">{testimonial.name}</p>
+                      <p className="text-sm text-gray-400">{testimonial.title}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </CarouselItem>
           ))}
