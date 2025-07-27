@@ -77,12 +77,6 @@ export default function Header() {
             </ul>
           </nav>
           <div className="hidden md:flex items-center gap-2">
-            <Link href="/my-canvases">
-              <Button variant="ghost"><Home className="mr-2" /> Home</Button>
-            </Link>
-             <Link href="/my-canvases">
-              <Button variant="ghost"><LayoutDashboard className="mr-2" /> My Canvases</Button>
-            </Link>
             <Link href="/login">
                 <Button variant="outline">Log In</Button>
             </Link>

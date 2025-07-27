@@ -98,9 +98,9 @@ export default function Pricing() {
               <div className="mb-8">
                 <span className={cn(
                   "text-5xl font-extrabold transition-colors",
-                  isYearly && (plan.price.yearly > 0 || plan.price.monthly > 0) ? "text-primary" : "text-foreground"
+                  isYearly && plan.price.yearly > 0 ? "text-accent" : "text-foreground"
                   )}>
-                  ${isYearly ? plan.price.yearly / 12 : plan.price.monthly}
+                  ${isYearly ? (plan.price.yearly / 12).toFixed(0) : plan.price.monthly}
                 </span>
                 <span className="text-muted-foreground text-lg">/month</span>
               </div>
@@ -117,7 +117,8 @@ export default function Pricing() {
                   size="lg"
                   variant={plan.popular ? 'default' : 'outline'}
                   className={cn(
-                    "w-full hover:animate-gradient-bg"
+                    "w-full",
+                    plan.popular && "hover:animate-gradient-bg"
                   )}
                 >
                   {plan.cta}
