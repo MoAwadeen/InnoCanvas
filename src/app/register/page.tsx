@@ -21,12 +21,12 @@ import { countries } from "@/lib/countries"
 export default function RegisterPage() {
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center justify-center p-4">
-        <div className="absolute top-8 left-8">
-          <Link href="/" className="flex items-center gap-2">
-            <Bot className="h-8 w-8 text-primary" />
-            <span className="font-bold text-2xl">InnoCanvas</span>
-          </Link>
-        </div>
+      <div className="absolute top-8 left-8">
+        <Link href="/" className="flex items-center gap-2">
+          <Bot className="h-8 w-8 text-primary" />
+          <span className="font-bold text-2xl">InnoCanvas</span>
+        </Link>
+      </div>
       <Card className="mx-auto max-w-md w-full border-border bg-bright-cyan/20 backdrop-blur-lg">
         <CardHeader>
           <CardTitle className="text-xl">Sign Up</CardTitle>
