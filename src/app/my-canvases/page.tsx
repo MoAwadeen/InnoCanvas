@@ -21,7 +21,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Bot, PlusCircle, Trash2 } from 'lucide-react';
+import { Bot, PlusCircle, Trash2, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const mockCanvases = [
@@ -54,7 +54,9 @@ export default function MyCanvasesPage() {
           <span className="font-bold text-2xl">InnoCanvas</span>
         </Link>
         <div className="flex items-center gap-4">
-           <Button variant="outline" className="bg-transparent hover:bg-white/10 border-border/30 hover:text-white">Profile</Button>
+           <Link href="/profile">
+            <Button variant="outline" className="bg-transparent hover:bg-white/10 border-border/30 hover:text-white"><User className="mr-2"/>Profile</Button>
+           </Link>
           <Button variant="outline" className="bg-transparent hover:bg-white/10 border-border/30 hover:text-white">Logout</Button>
         </div>
       </header>
@@ -142,3 +144,5 @@ export default function MyCanvasesPage() {
     </div>
   );
 }
+
+    

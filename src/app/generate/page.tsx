@@ -270,7 +270,7 @@ export default function BmcGeneratorPage() {
                     <RadioGroup
                       onValueChange={(value) => handleInputChange(q.key as keyof GenerateBMCInput, value)}
                       value={formData[q.key as keyof GenerateBMCInput]}
-                      className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4"
+                      className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"
                     >
                       {q.options.map((opt) => (
                         <div key={opt} className="flex items-center">
@@ -420,4 +420,6 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
     />
   </div>
 );
+    
+
     
