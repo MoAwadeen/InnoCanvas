@@ -1,5 +1,7 @@
+
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -14,12 +16,14 @@ export default function Hero() {
           vision to life. No credit card required.
         </p>
         <div className="flex flex-col sm:flex-row gap-4">
-          <Button
-            size="lg"
-            className="bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg hover:shadow-xl transition-shadow"
-          >
-            Get Started Free
-          </Button>
+          <Link href="/generate">
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg hover:shadow-xl transition-shadow"
+            >
+              Get Started Free
+            </Button>
+          </Link>
           <Button size="lg" variant="outline">
             Try Demo
           </Button>

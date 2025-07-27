@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -43,9 +44,11 @@ export default function Header() {
           </nav>
           <div className="hidden md:flex items-center gap-2">
             <Button variant="ghost">Log In</Button>
-            <Button className="bg-gradient-to-r from-primary to-accent text-primary-foreground">
-              Get Started Free
-            </Button>
+            <Link href="/generate">
+                <Button className="bg-gradient-to-r from-primary to-accent text-primary-foreground">
+                    Get Started Free
+                </Button>
+            </Link>
           </div>
           <Sheet>
             <SheetTrigger asChild>
@@ -76,9 +79,11 @@ export default function Header() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                   <Button variant="ghost">Log In</Button>
-                  <Button className="bg-gradient-to-r from-primary to-accent text-primary-foreground">
-                    Get Started Free
-                  </Button>
+                  <Link href="/generate">
+                    <Button className="bg-gradient-to-r from-primary to-accent text-primary-foreground w-full">
+                        Get Started Free
+                    </Button>
+                  </Link>
               </div>
             </SheetContent>
           </Sheet>
