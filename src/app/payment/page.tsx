@@ -13,8 +13,9 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Bot, CheckCircle, CreditCard } from "lucide-react"
+import { CheckCircle, CreditCard } from "lucide-react"
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/logo";
 
 const plans = [
     {
@@ -45,10 +46,7 @@ export default function PaymentPage() {
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center p-4 md:p-8">
         <header className="w-full max-w-5xl flex justify-between items-center mb-8">
-            <Link href="/my-canvases" className="flex items-center gap-2">
-                <Bot className="h-8 w-8 text-primary" />
-                <span className="font-bold text-2xl">InnoCanvas</span>
-            </Link>
+            <Logo />
             <Link href="/my-canvases">
                 <Button variant="secondary">Back to My Canvases</Button>
             </Link>

@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Bot, Loader } from "lucide-react";
+import { Loader } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { countries } from "@/lib/countries";
@@ -28,6 +28,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Logo } from "@/components/logo";
 
 
 const formSchema = z.object({
@@ -145,10 +146,7 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center justify-center p-4">
       <div className="absolute top-8 left-8">
-        <Link href="/" className="flex items-center gap-2">
-          <Bot className="h-8 w-8 text-primary" />
-          <span className="font-bold text-2xl">InnoCanvas</span>
-        </Link>
+        <Logo href="/" />
       </div>
       <Card className="mx-auto max-w-md w-full card-glass bg-bright-cyan/20 backdrop-blur-lg">
         <CardHeader>
@@ -311,5 +309,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-
-    

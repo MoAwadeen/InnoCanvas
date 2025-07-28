@@ -14,12 +14,13 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Bot, Loader } from "lucide-react";
+import { Loader } from "lucide-react";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, User } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from "@/hooks/useAuth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
+import { Logo } from "@/components/logo";
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -120,10 +121,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center justify-center p-4">
       <div className="absolute top-8 left-8">
-        <Link href="/" className="flex items-center gap-2">
-          <Bot className="h-8 w-8 text-primary" />
-          <span className="font-bold text-2xl">InnoCanvas</span>
-        </Link>
+        <Logo href="/" />
       </div>
       <Card className="mx-auto max-w-md w-full card-glass bg-bright-cyan/20 backdrop-blur-lg">
         <CardHeader>

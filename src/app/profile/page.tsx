@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Bot, LogOut, User, Loader } from "lucide-react"
+import { LogOut, User, Loader } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { countries } from "@/lib/countries"
@@ -25,6 +25,7 @@ import { signOut, updateProfile as updateAuthProfile } from "firebase/auth"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { useState, useEffect } from "react"
+import { Logo } from "@/components/logo"
 
 export default function ProfilePage() {
     const { user, userData, loading: authLoading } = useAuth();
@@ -124,10 +125,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center p-4 md:p-8">
         <header className="w-full max-w-5xl flex justify-between items-center mb-8">
-            <Link href="/my-canvases" className="flex items-center gap-2">
-                <Bot className="h-8 w-8 text-primary" />
-                <span className="font-bold text-2xl">InnoCanvas</span>
-            </Link>
+            <Logo />
             <div className="flex items-center gap-4">
                 <Link href="/my-canvases">
                     <Button variant="secondary">My Canvases</Button>

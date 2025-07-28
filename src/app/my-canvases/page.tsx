@@ -21,7 +21,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Bot, PlusCircle, Trash2, User, LogOut, Loader, Eye } from 'lucide-react';
+import { PlusCircle, Trash2, User, LogOut, Loader, Eye } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { auth, db } from '@/lib/firebase';
@@ -30,6 +30,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
 import { collection, query, onSnapshot, deleteDoc, doc, orderBy } from 'firebase/firestore';
+import { Logo } from '@/components/logo';
 
 interface Canvas {
   id: string;
@@ -138,10 +139,7 @@ export default function MyCanvasesPage() {
   return (
     <div className="min-h-screen w-full bg-background text-foreground p-4 md:p-8">
       <header className="flex justify-between items-center mb-12">
-        <Link href="/" className="flex items-center gap-2">
-          <Bot className="h-8 w-8 text-primary" />
-          <span className="font-bold text-2xl">InnoCanvas</span>
-        </Link>
+        <Logo />
         <div className="flex items-center gap-4">
            <Link href="/profile">
             <Button variant="secondary"><User className="mr-2"/>Profile</Button>

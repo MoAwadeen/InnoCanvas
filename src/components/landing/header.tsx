@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bot, PanelTop } from "lucide-react";
+import { PanelTop } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -11,6 +11,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { Logo } from "../logo";
 
 export default function Header() {
   const navLinks = [
@@ -24,10 +25,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-lg border-b border-border/50">
       <div className="container flex h-20 items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <Bot className="h-6 w-6 text-primary" />
-          <span className="font-bold text-lg">InnoCanvas</span>
-        </Link>
+        <Logo href="/" />
         
         <nav className="hidden md:flex">
             <ul className="flex items-center gap-8 text-sm">
@@ -67,10 +65,7 @@ export default function Header() {
             <SheetContent side="top" className="bg-background">
               <SheetHeader>
                 <SheetTitle>
-                  <Link href="/" className="flex items-center gap-2">
-                    <Bot className="h-6 w-6 text-primary" />
-                    <span className="font-bold text-lg">InnoCanvas</span>
-                  </Link>
+                   <Logo href="/" />
                 </SheetTitle>
               </SheetHeader>
               <div className="grid gap-4 py-4">

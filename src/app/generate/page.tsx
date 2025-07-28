@@ -22,12 +22,10 @@ import {
   Share2,
   Loader,
   ChevronRight,
-  Bot,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { generateBMC, GenerateBMCInput, GenerateBMCOutput } from '@/ai/flows/generate-bmc';
 import { Label } from '@/components/ui/label';
-import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import jsPDF from 'jspdf';
@@ -36,6 +34,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { db } from '@/lib/firebase';
 import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc } from 'firebase/firestore';
+import { Logo } from '@/components/logo';
 
 
 type BMCBlock = {
@@ -420,10 +419,7 @@ export default function BmcGeneratorPage() {
   return (
     <div className="min-h-screen w-full bg-background text-foreground p-4 md:p-8">
        <header className="flex justify-between items-center mb-8">
-          <Link href="/my-canvases" className="flex items-center gap-2">
-            <Bot className="h-8 w-8 text-primary" />
-            <span className="font-bold text-2xl">InnoCanvas</span>
-          </Link>
+          <Logo />
           <div className="flex items-center gap-2 text-sm font-medium">
             <span className={step === 1 ? 'text-primary' : 'text-muted-foreground'}>Step 1</span>
             <ChevronRight className="w-4 h-4 text-muted-foreground" />
