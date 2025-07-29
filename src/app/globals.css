@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 241 100% 27%; /* #000987 */
+    --background:166, 100%, 15%;
     --foreground: 210 40% 98%;
     --card: 217 33% 25%;
     --card-foreground: 210 40% 98%;
@@ -30,6 +30,18 @@
     --deep-navy: 241 100% 27%; /* #000987 */
     --bright-cyan: 183 100% 45%; /* #00D7E5 */
     --vibrant-orange: 16 94% 49%; /* #F6540F */
+    --green-yellow: 93, 79%, 67%;
+    --screamin-green: 133, 100%, 72%;
+    --brunswick-green: 164, 94%, 14%;
+    --dark-green: 167, 56%, 13%;
+    --jade: 151, 74%, 40%;
+
+    --pigment-green: 143, 64%, 43%;
+    --brunswick-green: 166, 100%, 15%;
+    --platinum: 220, 7%, 84%;
+    --white: 0, 0%, 100%;
+    --black: 0, 0%, 0%;
+    --eerie-black:  0%, 11%;
     --radius: 0.5rem; /* Added default radius */
   }
 }
@@ -69,16 +81,25 @@
     position: relative;
     overflow: hidden;
     z-index: 1;
-    background: linear-gradient(45deg, hsl(var(--vivid-pink)), hsl(var(--soft-magenta)), hsl(var(--light-coral)), hsl(var(--peach)), hsl(var(--vivid-pink)));
+    background: linear-gradient(45deg, hsl(var(--green-yellow)), hsl(var(--screamin-green)), hsl(var(--jade)), hsl(var(--vivid-pink)), hsl(var(--green-yellow)));
     background-size: 200% 200%;
     animation: gradient-animation 5s ease infinite;
-    transition: background-position 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
     @apply text-foreground rounded-lg px-4 py-2;
+    box-shadow: 0 0 15px hsl(var(--screamin-green) / 0.5);
   }
   
   .btn-glow:hover {
     background-position: 100% 100%;
+    box-shadow: 0 0 25px hsl(var(--screamin-green) / 0.7);
+    transform: scale(1.05);
   }
+
+  .btn-glow:focus {
+    outline: 2px solid hsl(var(--screamin-green));
+    outline-offset: 2px;
+  }
+
 
   /* Pricing Switch Color */
   [data-state='unchecked']#billing-cycle {
