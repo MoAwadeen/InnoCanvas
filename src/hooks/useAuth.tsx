@@ -4,12 +4,11 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
-import { doc, onSnapshot } from 'firebase/firestore';
-import { Loader } from 'lucide-react';
+import { doc, onSnapshot, DocumentData } from 'firebase/firestore';
 
 interface AuthContextType {
   user: User | null;
-  userData: any | null;
+  userData: DocumentData | null;
   loading: boolean;
 }
 
@@ -21,7 +20,7 @@ const AuthContext = createContext<AuthContextType>({
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [userData, setUserData] = useState<any | null>(null);
+  const [userData, setUserData] = useState<DocumentData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,24 +36,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-      let unsubscribeFirestore: () => void;
+      let unsubscribeFirestore: (() => void) | undefined;
 
       if (user) {
+          setLoading(true);
           const userDocRef = doc(db, 'users', user.uid);
-          unsubscribeFirestore = onSnapshot(userDocRef, (doc) => {
-              if (doc.exists()) {
-                  setUserData(doc.data());
+          unsubscribeFirestore = onSnapshot(userDocRef, (docSnap) => {
+              if (docSnap.exists()) {
+                  setUserData(docSnap.data());
               } else {
-                  // This case can happen briefly if the user document hasn't been created yet
                   setUserData(null); 
               }
               setLoading(false);
           }, (error) => {
               console.error("Error fetching user data:", error);
+              setUserData(null);
               setLoading(false);
           });
       } else {
-        // No user, not loading
         setLoading(false);
       }
 
@@ -65,20 +64,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       };
   }, [user]);
 
-
-  if (loading) {
-    return (
-        <div className="min-h-screen w-full flex items-center justify-center bg-background">
-            <Loader className="w-16 h-16 animate-spin text-primary" />
-        </div>
-    );
-  }
+  const value = { user, userData, loading };
 
   return (
-    <AuthContext.Provider value={{ user, userData, loading }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (context === undefined) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
+};
+
+    

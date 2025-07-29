@@ -19,7 +19,7 @@ import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, User }
 import { auth, db } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from "@/hooks/useAuth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { Logo } from "@/components/logo";
 
 export default function LoginPage() {
@@ -28,52 +28,26 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const { user, loading: authLoading } = useAuth();
+  const { user, userData, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    // Redirect if user is already logged in
-    if (!authLoading && user) {
-        router.push('/my-canvases');
+    // Redirect if user is already logged in and data is loaded
+    if (!authLoading && user && userData) {
+        if (!userData.age || !userData.country || !userData.useCase) {
+            router.push('/profile');
+        } else {
+            router.push('/my-canvases');
+        }
     }
-  }, [user, authLoading, router]);
+  }, [user, userData, authLoading, router]);
 
-  const handleSuccessfulLogin = async (user: User) => {
-    const userDocRef = doc(db, "users", user.uid);
-    const userDoc = await getDoc(userDocRef);
-    let userData = userDoc.exists() ? userDoc.data() : null;
-    
-    // Create user doc if it doesn't exist (e.g. first Google login)
-    if (!userData) {
-      const newUserdata = {
-          uid: user.uid,
-          fullName: user.displayName,
-          email: user.email,
-          createdAt: new Date(),
-          age: '',
-          gender: '',
-          country: '',
-          useCase: '',
-      }
-      await setDoc(userDocRef, newUserdata);
-      userData = newUserdata;
-    }
-
+  const handleSuccessfulLogin = async (loggedInUser: User) => {
+    // The useEffect will handle redirection once userData is loaded by the hook
     toast({
         title: 'Login Successful!',
-        description: `Welcome ${user.displayName || 'back'}!`,
+        description: `Welcome ${loggedInUser.displayName || 'back'}!`,
     });
-
-    if (!userData.age || !userData.country || !userData.useCase) {
-        toast({
-            title: 'Complete Your Profile',
-            description: "Please fill in your details to continue.",
-        });
-        router.push('/profile');
-    } else {
-        router.push('/my-canvases');
-    }
   }
-
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,7 +71,24 @@ export default function LoginPage() {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
-      await handleSuccessfulLogin(result.user);
+       const loggedInUser = result.user;
+
+      const userDocRef = doc(db, "users", loggedInUser.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      if (!userDoc.exists()) {
+        await setDoc(userDocRef, {
+            uid: loggedInUser.uid,
+            fullName: loggedInUser.displayName,
+            email: loggedInUser.email,
+            createdAt: serverTimestamp(),
+            age: '',
+            gender: '',
+            country: '',
+            useCase: '',
+        });
+      }
+      await handleSuccessfulLogin(loggedInUser);
     } catch (error: any) {
        toast({
         title: 'Login Failed',
@@ -109,14 +100,15 @@ export default function LoginPage() {
     }
   };
 
-  // If loading or already logged in, show a loader to prevent form flash
-  if (authLoading || user) {
+  // While auth state is resolving, show a loader to prevent form flash
+  if (authLoading) {
     return (
       <div className="min-h-screen w-full flex items-center justify-center bg-background">
         <Loader className="w-16 h-16 animate-spin text-primary" />
       </div>
     );
   }
+
 
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center justify-center p-4">
@@ -186,3 +178,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    

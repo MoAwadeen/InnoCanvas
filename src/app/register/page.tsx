@@ -21,7 +21,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { countries } from "@/lib/countries";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useForm } from 'react-hook-form';
@@ -49,7 +49,7 @@ const formSchema = z.object({
 export default function RegisterPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const { user, userData, loading } = useAuth();
+  const { user, userData, loading: authLoading } = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -67,32 +67,33 @@ export default function RegisterPage() {
   const { isSubmitting } = form.formState;
 
   useEffect(() => {
-    if (!loading && user && userData) {
+    // Redirect if user is already logged in and data is loaded
+    if (!authLoading && user && userData) {
       if (!userData.age || !userData.country || !userData.useCase) {
         router.push('/profile');
       } else {
         router.push('/my-canvases');
       }
     }
-  }, [user, userData, loading, router]);
+  }, [user, userData, authLoading, router]);
 
 
   const handleSignUp = async (values: z.infer<typeof formSchema>) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-      const user = userCredential.user;
+      const newUser = userCredential.user;
       
-      await updateProfile(user, { displayName: values.fullName });
+      await updateProfile(newUser, { displayName: values.fullName });
 
-      await setDoc(doc(db, "users", user.uid), {
-        uid: user.uid,
+      await setDoc(doc(db, "users", newUser.uid), {
+        uid: newUser.uid,
         fullName: values.fullName,
         email: values.email,
         age: values.age,
         gender: values.gender,
         country: values.country,
         useCase: values.useCase,
-        createdAt: new Date(),
+        createdAt: serverTimestamp(),
       });
 
       toast({
@@ -113,27 +114,33 @@ export default function RegisterPage() {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
-      const user = result.user;
+      const newUser = result.user;
 
-      const userDocRef = doc(db, "users", user.uid);
+      const userDocRef = doc(db, "users", newUser.uid);
       const userDoc = await getDoc(userDocRef);
 
       if (!userDoc.exists()) {
         await setDoc(userDocRef, {
-          uid: user.uid,
-          fullName: user.displayName,
-          email: user.email,
-          createdAt: new Date(),
+          uid: newUser.uid,
+          fullName: newUser.displayName,
+          email: newUser.email,
+          createdAt: serverTimestamp(),
           age: '',
           gender: '',
           country: '',
           useCase: '',
         });
+         toast({
+          title: 'Account Created!',
+          description: "Welcome to InnoCanvas. Let's build something great.",
+        });
+      } else {
+         toast({
+          title: 'Welcome Back!',
+          description: "You've successfully signed in.",
+        });
       }
-       toast({
-        title: 'Account Created!',
-        description: "Welcome to InnoCanvas. Let's build something great.",
-      });
+      // The useEffect hook will handle redirection.
     } catch (error: any) {
        toast({
         title: 'Registration Failed',
@@ -142,6 +149,15 @@ export default function RegisterPage() {
       });
     }
   };
+  
+  if (authLoading) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-background">
+        <Loader className="w-16 h-16 animate-spin text-primary" />
+      </div>
+    );
+  }
+
 
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center justify-center p-4">
@@ -309,3 +325,5 @@ export default function RegisterPage() {
     </div>
   );
 }
+
+    

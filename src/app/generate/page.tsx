@@ -72,7 +72,7 @@ const refinementQuestions = [
 ];
 
 export default function BmcGeneratorPage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const canvasId = searchParams.get('canvasId');
@@ -95,10 +95,10 @@ export default function BmcGeneratorPage() {
   const canvasRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
-    if (!user) {
+    if (!authLoading && !user) {
       router.push('/login');
     }
-  }, [user, router]);
+  }, [user, authLoading, router]);
 
   useEffect(() => {
       const loadCanvas = async () => {
@@ -135,8 +135,10 @@ export default function BmcGeneratorPage() {
         }
       };
 
-      loadCanvas();
-  }, [canvasId, user, router, toast]);
+      if (!authLoading && user) {
+        loadCanvas();
+      }
+  }, [canvasId, user, authLoading, router, toast]);
 
   const handleInputChange = (
     key: keyof GenerateBMCInput,
@@ -152,9 +154,19 @@ export default function BmcGeneratorPage() {
   };
 
   const handleGenerateCanvas = async (regenerate = false) => {
+    if (!regenerate && Object.values(formData).some(v => v === '')) {
+      toast({
+        title: 'Missing Information',
+        description: 'Please fill out all refinement questions before generating.',
+        variant: 'destructive'
+      });
+      return;
+    }
+    
     if (!regenerate) {
         setStep(3);
     }
+
     setIsLoading(true);
     try {
       const result = await generateBMC(formData as GenerateBMCInput);
@@ -182,24 +194,27 @@ export default function BmcGeneratorPage() {
         const canvasData = {
             ...bmcData,
             businessDescription: formData.businessDescription,
-            createdAt: serverTimestamp(),
             userId: user.uid,
         };
 
         if (canvasId) {
             // Update existing document
             const canvasDocRef = doc(db, 'users', user.uid, 'canvases', canvasId);
-            await setDoc(canvasDocRef, canvasData, { merge: true });
+            await setDoc(canvasDocRef, { ...canvasData, updatedAt: serverTimestamp() }, { merge: true });
+             toast({
+                title: 'Canvas Updated!',
+                description: 'Your changes have been saved.',
+            });
         } else {
             // Create new document
-            const newCanvasRef = await addDoc(collection(db, 'users', user.uid, 'canvases'), canvasData);
-            router.replace(`/generate?canvasId=${newCanvasRef.id}`); // Update URL to reflect new ID
+            const newCanvasRef = await addDoc(collection(db, 'users', user.uid, 'canvases'), { ...canvasData, createdAt: serverTimestamp() });
+            router.replace(`/generate?canvasId=${newCanvasRef.id}`, { scroll: false }); // Update URL to reflect new ID without reload
+            toast({
+                title: 'Canvas Saved!',
+                description: 'Your masterpiece is safe in "My Canvases".',
+            });
         }
-
-        toast({
-            title: 'Canvas Saved!',
-            description: 'Your masterpiece is safe in "My Canvases".',
-        });
+        setIsEditing(false);
     } catch (error) {
         console.error("Error saving canvas:", error);
         toast({ title: 'Error', description: 'Failed to save canvas.', variant: 'destructive' });
@@ -250,7 +265,7 @@ export default function BmcGeneratorPage() {
                 });
                 if(wasEditing) setIsEditing(true);
             });
-        }, 1000); 
+        }, 500); 
     } else {
         toast({
             title: 'Error exporting',
@@ -385,7 +400,7 @@ export default function BmcGeneratorPage() {
                         <Button variant="secondary" onClick={() => setIsEditing(!isEditing)}>
                             <Edit className="mr-2" /> {isEditing ? 'Done Editing' : 'Edit'}
                         </Button>
-                        <Button variant="secondary" onClick={handleSave} disabled={isLoading}><Save className="mr-2" /> Save to My Canvases</Button>
+                        <Button variant="secondary" onClick={handleSave} disabled={isLoading}><Save className="mr-2" /> {canvasId ? 'Save Changes' : 'Save to My Canvases'}</Button>
                         <Button variant="secondary" onClick={handleExport}><Download className="mr-2" /> Export as PDF</Button>
                         <Button variant="secondary" onClick={handleShare}><Share2 className="mr-2" /> Share Public Link</Button>
                     </div>
@@ -415,6 +430,14 @@ export default function BmcGeneratorPage() {
         return null;
     }
   };
+
+  if (authLoading && !canvasId) {
+    return (
+        <div className="min-h-screen w-full flex items-center justify-center bg-background">
+            <Loader className="w-16 h-16 animate-spin text-primary" />
+        </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full bg-background text-foreground p-4 md:p-8">
@@ -470,3 +493,5 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
     )}
   </div>
 );
+
+    
