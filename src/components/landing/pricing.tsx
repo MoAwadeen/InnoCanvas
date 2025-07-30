@@ -16,14 +16,13 @@ export default function Pricing() {
     {
       name: "Free",
       price: { monthly: 0, yearly: 0 },
-      description: "For individuals getting started.",
+      description: "For individuals & students getting started.",
       features: [
-        "3 canvases/month",
-        "AI-powered generation",
-        "Basic export (PNG)",
-        "Standard templates",
+        "1 Canvas",
+        "Basic BMC Generation",
+        "JPG Download (with watermark)",
       ],
-      cta: "Start for Free",
+      cta: "Start with Free",
       href: "/register",
       variant: "outline"
     },
@@ -32,12 +31,12 @@ export default function Pricing() {
       price: { monthly: 8, yearly: 72 },
       description: "For professionals and small teams.",
       features: [
-        "Unlimited canvases",
-        "Advanced export (PDF, PNG)",
-        "All visual templates",
-        "Priority support",
+        "10 Canvases",
+        "PDF Download (no watermark)",
+        "Access to all Templates",
+        "Custom Color Palettes",
       ],
-      cta: "Go Pro",
+      cta: "Upgrade Now",
       href: "/payment",
       variant: "gradient",
       popular: true,
@@ -47,12 +46,12 @@ export default function Pricing() {
       price: { monthly: 15, yearly: 144 },
       description: "For businesses and power users.",
       features: [
-        "All Pro features",
-        "Custom branding tools",
-        "Team access & collaboration",
-        "Premium templates",
+        "Unlimited Canvases",
+        "AI Consultation (Select Persona)",
+        "Real-time Editing & Collaboration",
+        "Custom Branding",
       ],
-      cta: "Go Premium",
+      cta: "Upgrade Now",
       href: "/payment",
       variant: "outline",
     },
@@ -61,7 +60,7 @@ export default function Pricing() {
   return (
     <section id="pricing" className="container py-20 md:py-24">
       <div className="text-center max-w-3xl mx-auto mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold">Choose Your Plan</h2>
+        <h2 className="text-3xl md:text-4xl font-bold">Plans that Grow with You</h2>
         <p className="mt-4 text-lg text-muted-foreground">
           Simple, transparent pricing. No hidden fees.
         </p>
@@ -84,8 +83,8 @@ export default function Pricing() {
           <div
             key={plan.name}
             className={cn(
-              "bg-secondary/50 border border-border flex flex-col transition-all duration-300 rounded-2xl relative text-left p-8",
-               plan.popular ? "border-primary/80" : ""
+              "card-glass flex flex-col transition-all duration-300 relative text-left p-8 h-full",
+               plan.popular ? "border-primary/80 ring-2 ring-primary/50" : "border-white/10"
             )}
           >
             {plan.popular && (

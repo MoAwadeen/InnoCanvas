@@ -2,28 +2,43 @@
 "use client";
 
 import Link from "next/link";
-import { PanelTop } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
-  SheetHeader,
-  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Logo } from "../logo";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Header() {
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, loading } = useAuth();
+
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const navLinks = [
     { name: "Features", href: "#features" },
-    { name: "Testimonials", href: "#testimonials" },
     { name: "Pricing", href: "#pricing" },
-    { name: "FAQ", href: "#faq" },
+    { name: "How it Works", href: "#how-it-works" },
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-lg border-b border-border/50">
+    <header className={cn(
+        "sticky top-0 z-50 w-full transition-all duration-300",
+        scrolled ? "bg-background/80 backdrop-blur-lg border-b border-border/50" : "bg-transparent"
+    )}>
       <div className="container flex h-20 items-center justify-between">
         <Logo href="/" />
         
@@ -33,7 +48,7 @@ export default function Header() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-muted-foreground transition-colors hover:text-foreground"
+                    className="text-muted-foreground transition-colors hover:text-foreground font-medium"
                   >
                     {link.name}
                   </Link>
@@ -42,52 +57,69 @@ export default function Header() {
             </ul>
         </nav>
 
-        <div className="hidden md:flex items-center gap-4">
-            <Link href="/login">
-                <Button variant="ghost">Log In</Button>
-            </Link>
-            <Link href="/register">
-                <Button className="btn-gradient">
-                    Get Started
-                </Button>
-            </Link>
+        <div className="hidden md:flex items-center gap-2">
+            {!loading && (
+              user ? (
+                 <Link href="/my-canvases">
+                    <Button variant="secondary">My Canvases</Button>
+                </Link>
+              ) : (
+                <>
+                  <Link href="/login">
+                      <Button variant="ghost">Log In</Button>
+                  </Link>
+                  <Link href="/register">
+                      <Button className="btn-gradient">
+                          Sign Up
+                      </Button>
+                  </Link>
+                </>
+              )
+            )}
         </div>
 
         {/* Mobile Menu */}
         <div className="md:hidden flex items-center gap-2">
-          <Sheet>
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="md:hidden">
-                <PanelTop className="h-5 w-5" />
+                <Menu className="h-5 w-5" />
                 <span className="sr-only">Toggle Menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="top" className="bg-background">
-              <SheetHeader>
-                <SheetTitle>
-                   <Logo href="/" />
-                </SheetTitle>
-              </SheetHeader>
-              <div className="grid gap-4 py-4">
+            <SheetContent side="top" className="bg-background/95 backdrop-blur-lg">
+              <div className="grid gap-6 py-6">
+                <Logo href="/" />
                 {navLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="text-muted-foreground transition-colors hover:text-foreground"
+                    className="text-lg font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    onClick={() => setMobileMenuOpen(false)}
                   >
                     {link.name}
                   </Link>
                 ))}
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                  <Link href="/login" className="w-full">
-                    <Button variant="outline" className="w-full">Log In</Button>
-                  </Link>
-                  <Link href="/register" className="w-full">
-                    <Button className="w-full btn-gradient">
-                        Get Started
-                    </Button>
-                  </Link>
+                <div className="border-t border-border pt-6 mt-2 grid grid-cols-2 gap-4">
+                  {!loading && (
+                    user ? (
+                      <Link href="/my-canvases" className="w-full col-span-2">
+                        <Button variant="secondary" className="w-full">My Canvases</Button>
+                      </Link>
+                    ) : (
+                      <>
+                        <Link href="/login" className="w-full">
+                          <Button variant="outline" className="w-full">Log In</Button>
+                        </Link>
+                        <Link href="/register" className="w-full">
+                          <Button className="w-full btn-gradient">
+                              Sign Up
+                          </Button>
+                        </Link>
+                      </>
+                    )
+                  )}
+                </div>
               </div>
             </SheetContent>
           </Sheet>

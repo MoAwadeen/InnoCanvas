@@ -184,26 +184,26 @@ export default function MyCanvasesPage() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
                 <Card
-                  className="card-glass flex flex-col h-full bg-bright-cyan/5 border-bright-cyan/20 p-0"
+                  className="card-glass flex flex-col h-full bg-secondary/30 p-0"
                 >
                   <CardHeader className="p-6">
                     <CardTitle className="line-clamp-2 text-card-foreground">{canvas.title}</CardTitle>
                   </CardHeader>
                   <CardContent className="flex-grow p-6 pt-0">
-                    <p className="text-bright-cyan/80 text-sm line-clamp-3 h-16">{canvas.preview}</p>
+                    <p className="text-muted-foreground text-sm line-clamp-3 h-16">{canvas.preview}</p>
                   </CardContent>
-                  <CardFooter className="flex justify-between items-center mt-auto p-6 pt-4 border-t border-bright-cyan/10">
-                    <p className="text-sm text-bright-cyan/60">{canvas.date}</p>
+                  <CardFooter className="flex justify-between items-center mt-auto p-6 pt-4 border-t border-white/10">
+                    <p className="text-sm text-muted-foreground">{canvas.date}</p>
                     <div className="flex gap-2">
                         <Link href={`/generate?canvasId=${canvas.id}`}>
                             <Button variant="secondary">Open</Button>
                         </Link>
                         <Link href={`/preview?canvasId=${canvas.id}`}>
-                          <Button variant="secondary"><Eye className="mr-2"/>Preview</Button>
+                          <Button variant="secondary"><Eye className="mr-2 h-4 w-4"/>Preview</Button>
                         </Link>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button variant="outline" size="icon">
+                            <Button variant="destructive" size="icon">
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </AlertDialogTrigger>
@@ -216,7 +216,7 @@ export default function MyCanvasesPage() {
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDelete(canvas.id)} className="bg-vivid-pink text-accent-foreground hover:bg-vivid-pink/90">Delete</AlertDialogAction>
+                              <AlertDialogAction onClick={() => handleDelete(canvas.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>
@@ -227,14 +227,14 @@ export default function MyCanvasesPage() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 border-2 border-dashed border-border/20 rounded-2xl bg-secondary/50 flex flex-col items-center">
+          <div className="text-center py-20 border-2 border-dashed border-border/20 rounded-2xl bg-secondary/20 flex flex-col items-center">
             <h2 className="text-2xl font-semibold mb-4">No Canvases Yet</h2>
             <p className="text-muted-foreground mb-6 max-w-md">
               It looks like your workspace is empty. Let's create your first Business Model Canvas and bring your ideas to life.
             </p>
             <Link href="/generate">
-                <Button variant="gradient" size="icon" className="h-24 w-24 rounded-full">
-                  <PlusCircle className="h-12 w-12" />
+                 <Button variant="gradient" size="lg" className="h-24 w-24 rounded-full p-0 flex items-center justify-center">
+                    <PlusCircle className="h-12 w-12" />
                 </Button>
             </Link>
           </div>

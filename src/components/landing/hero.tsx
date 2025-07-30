@@ -1,47 +1,33 @@
-
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import Link from "next/link";
-import { MoveRight } from "lucide-react";
 
 export default function Hero() {
   return (
-    <section className="container flex flex-col items-center py-24 md:py-32">
-      <div className="flex flex-col items-center gap-6 text-center max-w-4xl">
-        <div className="headline-glow">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tighter leading-tight">
-            Where Business Strategy meets AI
-          </h1>
-        </div>
-        <p className="max-w-2xl text-lg text-muted-foreground">
-          InnoCanvas is a design-to-code platform that helps you build a business model, connect it to your vision, and deliver a comprehensive plan faster than ever.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 mt-6">
-          <Link href="/register">
-            <Button
-              size="lg"
-              className="btn-gradient"
-            >
-              Get Started for Free
-            </Button>
-          </Link>
-          <Link href="#features">
-            <Button size="lg" variant="outline">
-                Learn More
-            </Button>
-          </Link>
-        </div>
+    <section className="relative container flex flex-col items-center py-24 md:py-40">
+      <div className="absolute inset-0 top-[-10rem] -z-10 h-full w-full overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60rem] h-[60rem] bg-gradient-to-tr from-primary/30 to-vivid-pink/30 rounded-full blur-3xl animate-[gradient-blob_8s_ease-in-out_infinite]" />
       </div>
-      <div className="relative mt-20 w-full max-w-6xl">
-         <div className="p-2 rounded-2xl bg-primary/10 border border-primary/20 shadow-2xl shadow-primary/20">
-            <Image
-            src="https://placehold.co/1200x800.png"
-            alt="InnoCanvas App Preview"
-            width={1200}
-            height={800}
-            className="rounded-xl"
-            data-ai-hint="app mockup business dark modern"
-            />
+
+      <div className="relative card-glass p-8 md:p-12 lg:p-16">
+         <div className="flex flex-col items-center gap-6 text-center max-w-4xl">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tighter leading-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
+                InnoCanvas
+            </h1>
+            <p className="max-w-2xl text-lg md:text-xl text-muted-foreground">
+                Reimagine your business model. Visually, Intelligently, Instantly.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 mt-6">
+                <Link href="/register">
+                    <Button size="lg" className="btn-gradient animation-pulse-glow">
+                        Try Free Canvas
+                    </Button>
+                </Link>
+                <Link href="#pricing">
+                    <Button size="lg" variant="outline">
+                        Explore Plans
+                    </Button>
+                </Link>
+            </div>
         </div>
       </div>
     </section>
