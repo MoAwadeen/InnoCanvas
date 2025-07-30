@@ -60,13 +60,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Separator } from '@/components/ui/separator';
 
 
 type BMCBlock = {
   title: string;
   icon: React.ReactNode;
   keyProp: keyof GenerateBMCOutput;
-  description: string;
 };
 
 const initialColors = {
@@ -104,6 +104,18 @@ const refinementQuestions = [
     },
 ];
 
+const bmcLayout: BMCBlock[] = [
+    { title: "Key Partnerships", keyProp: "keyPartnerships", icon: <Handshake /> },
+    { title: "Key Activities", keyProp: "keyActivities", icon: <Wrench /> },
+    { title: "Key Resources", keyProp: "keyResources", icon: <Package /> },
+    { title: "Value Propositions", keyProp: "valuePropositions", icon: <Gift /> },
+    { title: "Customer Relationships", keyProp: "customerRelationships", icon: <Heart /> },
+    { title: "Channels", keyProp: "channels", icon: <Truck /> },
+    { title: "Customer Segments", keyProp: "customerSegments", icon: <Users /> },
+    { title: "Cost Structure", keyProp: "costStructure", icon: <Wallet /> },
+    { title: "Revenue Streams", keyProp: "revenueStreams", icon: <DollarSign /> },
+];
+
 function BmcGeneratorPageClient() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
@@ -114,7 +126,7 @@ function BmcGeneratorPageClient() {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [isGettingSuggestions, setIsGettingSuggestions] = useState(false);
+  const [isGettingSuggestions, setIsGettingSuggestions] = useState(isEditing);
   const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<Partial<GenerateBMCInput>>({
@@ -306,16 +318,13 @@ function BmcGeneratorPageClient() {
 
             let finalWidth, finalHeight;
             if (canvasAspectRatio > pdfAspectRatio) {
-                // Canvas is wider than PDF page
                 finalWidth = pdfWidth;
                 finalHeight = pdfWidth / canvasAspectRatio;
             } else {
-                // Canvas is taller than PDF page
                 finalHeight = pdfHeight;
                 finalWidth = pdfHeight * canvasAspectRatio;
             }
 
-            // Center the image on the PDF page
             const x = (pdfWidth - finalWidth) / 2;
             const y = (pdfHeight - finalHeight) / 2;
 
@@ -379,18 +388,6 @@ function BmcGeneratorPageClient() {
       reader.readAsDataURL(file);
     }
   };
-
-  const bmcLayout: BMCBlock[] = [
-    { title: "Key Partnerships", keyProp: "keyPartnerships", description: "Strategic alliances to optimize operations and reduce risks.", icon: <Handshake /> },
-    { title: "Key Activities", keyProp: "keyActivities", description: "Critical activities for creating and delivering value.", icon: <Wrench /> },
-    { title: "Key Resources", keyProp: "keyResources", description: "Essential assets required for the business to function.", icon: <Package /> },
-    { title: "Value Propositions", keyProp: "valuePropositions", description: "The unique value a company's product or service provides.", icon: <Gift /> },
-    { title: "Customer Relationships", keyProp: "customerRelationships", description: "Types of relationships established with customer segments.", icon: <Heart /> },
-    { title: "Channels", keyProp: "channels", description: "How a company communicates with and reaches its customers.", icon: <Truck /> },
-    { title: "Customer Segments", keyProp: "customerSegments", description: "The different groups of people or organizations a company serves.", icon: <Users /> },
-    { title: "Cost Structure", keyProp: "costStructure", description: "All costs incurred to operate a business model.", icon: <Wallet /> },
-    { title: "Revenue Streams", keyProp: "revenueStreams", description: "How a company generates cash from each customer segment.", icon: <DollarSign /> },
-];
 
   const renderStep = () => {
     if (error) {
@@ -490,7 +487,7 @@ function BmcGeneratorPageClient() {
             key="step3"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-full"
+            className="w-full flex flex-col gap-6"
           >
             {isLoading && !bmcData ? (
               <div className="flex flex-col items-center justify-center h-96 text-foreground">
@@ -500,133 +497,123 @@ function BmcGeneratorPageClient() {
               </div>
             ) : (
               bmcData && (
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                    {/* Left Column: Controls */}
-                    <div className="lg:col-span-1 flex flex-col gap-6">
-                       <div className="card-glass p-6 rounded-2xl">
-                          <h2 className="text-xl font-bold text-foreground mb-4">Canvas Controls</h2>
-                           <div className="flex flex-col gap-3">
-                              <Button variant="gradient" onClick={() => handleGenerateCanvas(true)} disabled={isLoading}>
-                                  {isLoading ? <Loader className="mr-2 animate-spin" /> : <RefreshCw className="mr-2" />} 
-                                  Regenerate
-                              </Button>
-                              <Button variant="secondary" onClick={() => setIsEditing(!isEditing)}>
-                                  <Edit className="mr-2" /> {isEditing ? 'Done Editing' : 'Edit Canvas'}
-                              </Button>
-                              <Button variant="secondary" onClick={handleSave} disabled={isLoading}><Save className="mr-2" /> {canvasId ? 'Save Changes' : 'Save to My Canvases'}</Button>
-                              <Button variant="secondary" onClick={handleExport} disabled={isLoading}>
-                                <Download className="mr-2" />
-                                Export as PDF
-                              </Button>
-                              <Button variant="secondary" onClick={handleShare}><Share2 className="mr-2" /> Share Public Link</Button>
-                           </div>
-                       </div>
-
-                       <div className="card-glass p-6 rounded-2xl">
-                          <h2 className="text-xl font-bold text-foreground mb-4">Branding</h2>
-                          <div className="space-y-4">
-                            <div>
-                              <Label className="font-semibold text-base mb-2 block text-foreground">Logo</Label>
-                              <input type="file" id="logo-upload" className="hidden" accept="image/*" onChange={handleLogoUpload} />
-                              <Button asChild variant="outline" className='w-full'>
-                                <label htmlFor="logo-upload" className="cursor-pointer">
-                                  <Upload className="mr-2"/>
-                                  Upload Logo
-                                </label>
-                              </Button>
-                            </div>
-                            <div className="flex items-center justify-between pt-2">
-                              <Label htmlFor="remove-watermark" className="font-semibold text-base flex items-center gap-2">
-                                <Gem className="text-vivid-pink" /> Remove Watermark
-                              </Label>
-                              <div className='flex items-center gap-2'>
-                                  <Badge variant="outline" className='border-vivid-pink text-vivid-pink'>PRO</Badge>
-                                  <Switch id="remove-watermark" checked={removeWatermark} onCheckedChange={setRemoveWatermark}/>
-                              </div>
-                            </div>
-                          </div>
+                <>
+                    {/* Toolbar */}
+                    <div className="card-glass p-4 rounded-2xl flex flex-wrap items-center justify-center gap-x-6 gap-y-4">
+                        <div className="flex items-center gap-2">
+                            <Button variant="gradient" size="sm" onClick={() => handleGenerateCanvas(true)} disabled={isLoading}>
+                                {isLoading ? <Loader className="mr-2 animate-spin" /> : <RefreshCw className="mr-2" />} 
+                                Regenerate
+                            </Button>
+                            <Button variant="secondary" size="sm" onClick={() => setIsEditing(!isEditing)}>
+                                <Edit className="mr-2" /> {isEditing ? 'Done' : 'Edit'}
+                            </Button>
+                             <Button variant="secondary" size="sm" onClick={handleSave} disabled={isLoading}><Save className="mr-2" /> {canvasId ? 'Save' : 'Save'}</Button>
                         </div>
 
-                         <div className="card-glass p-6 rounded-2xl">
-                              <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2"><Palette className='text-primary'/> Theme</h2>
-                              <div className="space-y-3">
+                        <Separator orientation='vertical' className='h-8' />
+                        
+                        <div className='flex items-center gap-3'>
+                            <Label className="font-semibold text-base text-foreground">Logo</Label>
+                            <input type="file" id="logo-upload" className="hidden" accept="image/*" onChange={handleLogoUpload} />
+                            <Button asChild variant="outline" size="sm">
+                              <label htmlFor="logo-upload" className="cursor-pointer">
+                                <Upload className="mr-2"/>
+                                Upload
+                              </label>
+                            </Button>
+                            <div className="flex items-center gap-2">
+                              <Label htmlFor="remove-watermark" className="font-semibold text-base flex items-center gap-1">
+                                <Gem size={16} className="text-vivid-pink" />
+                              </Label>
+                              <Switch id="remove-watermark" checked={removeWatermark} onCheckedChange={setRemoveWatermark}/>
+                              <Badge variant="outline" className='border-vivid-pink text-vivid-pink'>PRO</Badge>
+                            </div>
+                        </div>
+
+                        <Separator orientation='vertical' className='h-8' />
+
+                        <div className='flex items-center gap-3'>
+                             <h2 className="font-semibold text-base flex items-center gap-2"><Palette className='text-primary'/> Theme</h2>
+                             <div className="flex items-center gap-2">
                                 {Object.keys(colors).map(key => (
-                                    <div key={key} className="flex items-center justify-between">
-                                        <Label className="capitalize text-foreground">{key}</Label>
+                                    <div key={key} className="flex items-center gap-2">
+                                        <Label className="capitalize text-xs text-foreground">{key}</Label>
                                         <input 
                                             type="color" 
                                             value={colors[key as keyof typeof colors]}
                                             onChange={e => handleColorChange(key as keyof typeof colors, e.target.value)}
-                                            className="w-8 h-8 rounded-md border-none cursor-pointer bg-transparent"
+                                            className="w-6 h-6 rounded border-none cursor-pointer bg-transparent"
                                         />
                                     </div>
                                 ))}
                               </div>
-                         </div>
+                        </div>
 
-
-                         <div className="card-glass p-6 rounded-2xl">
-                              <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2"><Sparkles className='text-primary'/> AI Suggestions</h2>
-                              <p className='text-muted-foreground mb-4 text-sm'>Let our AI analyze your canvas and provide actionable feedback.</p>
-                              <Button variant='secondary' onClick={handleGetSuggestions} disabled={isGettingSuggestions} className='w-full'>
-                                  {isGettingSuggestions ? <Loader className="mr-2 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4" />}
+                        <Separator orientation='vertical' className='h-8' />
+                        
+                        <div className="flex items-center gap-2">
+                            <Button variant='secondary' size="sm" onClick={handleGetSuggestions} disabled={isGettingSuggestions}>
+                                  {isGettingSuggestions ? <Loader className="mr-2 animate-spin"/> : <Sparkles className="mr-2" />}
                                   Get Feedback
+                            </Button>
+                             <Button variant="secondary" size="sm" onClick={handleExport} disabled={isLoading}>
+                                <Download className="mr-2" />
+                                Export
                               </Button>
-                         </div>
+                        </div>
                     </div>
 
-                    {/* Right Column: Canvas */}
-                    <div className="lg:col-span-3">
+
+                    {/* Canvas */}
+                    <div className="w-full">
                          <div ref={styledCanvasRef} className="aspect-[16/9] p-8 flex flex-col relative" style={{ background: colors.background }}>
-                            {/* Watermark */}
                              {!removeWatermark && (
-                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                    <p className="text-[clamp(2rem,15vw,8rem)] font-bold -rotate-12" style={{color: 'rgba(255, 255, 255, 0.05)'}}>
+                                <div className="absolute bottom-4 right-4 z-20">
+                                    <p className="text-xs" style={{color: 'rgba(255, 255, 255, 0.2)'}}>
                                         Powered by InnoCanvas
                                     </p>
                                 </div>
                             )}
 
-                             {/* Header */}
                              <div className="flex justify-between items-start mb-4 relative z-10">
                                  <h2 className="text-3xl font-bold" style={{color: colors.primary}}>Business Model Canvas</h2>
                                 {logoUrl && <div className="relative w-24 h-12"><Image src={logoUrl} alt="Logo" layout="fill" objectFit="contain" /></div>}
                              </div>
 
-                            <div className="flex-grow flex flex-col gap-4 relative z-10">
-                                <div className="flex flex-row gap-4 flex-grow">
-                                    <div className="flex flex-col gap-4 w-1/4">
-                                        <StyledBmcBlock {...bmcLayout[0]} content={bmcData[bmcLayout[0].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[0].keyProp, e.target.value)} colors={colors} />
-                                    </div>
-                                    <div className="flex flex-col gap-4 w-1/2">
-                                        <StyledBmcBlock {...bmcLayout[1]} content={bmcData[bmcLayout[1].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[1].keyProp, e.target.value)} colors={colors} />
-                                        <StyledBmcBlock {...bmcLayout[2]} content={bmcData[bmcLayout[2].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[2].keyProp, e.target.value)} colors={colors} />
-                                    </div>
-                                    <div className="flex flex-col gap-4 w-1/4">
-                                        <StyledBmcBlock {...bmcLayout[4]} content={bmcData[bmcLayout[4].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[4].keyProp, e.target.value)} colors={colors} />
-                                        <StyledBmcBlock {...bmcLayout[5]} content={bmcData[bmcLayout[5].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[5].keyProp, e.target.value)} colors={colors} />
-                                    </div>
-                                </div>
-                                <div className="flex flex-row gap-4 flex-grow">
-                                    <div className="w-1/4 h-full">
-                                        <StyledBmcBlock {...bmcLayout[6]} content={bmcData[bmcLayout[6].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[6].keyProp, e.target.value)} colors={colors} />
-                                    </div>
-                                    <div className="w-3/4 h-full">
-                                        <StyledBmcBlock {...bmcLayout[3]} content={bmcData[bmcLayout[3].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[3].keyProp, e.target.value)} colors={colors} />
-                                    </div>
-                                </div>
-                                <div className="flex flex-row gap-4 h-1/3">
-                                    <div className="w-1/2">
-                                      <StyledBmcBlock {...bmcLayout[7]} content={bmcData[bmcLayout[7].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[7].keyProp, e.target.value)} colors={colors} />
-                                    </div>
-                                     <div className="w-1/2">
-                                      <StyledBmcBlock {...bmcLayout[8]} content={bmcData[bmcLayout[8].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[8].keyProp, e.target.value)} colors={colors} />
-                                    </div>
-                                </div>
-                             </div>
+                            <div className="flex-grow grid grid-cols-10 grid-rows-6 gap-2 relative z-10">
+                               <div className="col-span-2 row-span-4">
+                                  <StyledBmcBlock {...bmcLayout[0]} content={bmcData[bmcLayout[0].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[0].keyProp, e.target.value)} colors={colors} />
+                               </div>
+                               <div className="col-span-2 row-span-2">
+                                  <StyledBmcBlock {...bmcLayout[1]} content={bmcData[bmcLayout[1].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[1].keyProp, e.target.value)} colors={colors} />
+                               </div>
+                               <div className="col-span-2 row-span-2">
+                                  <StyledBmcBlock {...bmcLayout[2]} content={bmcData[bmcLayout[2].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[2].keyProp, e.target.value)} colors={colors} />
+                               </div>
+                               <div className="col-span-2 row-span-4">
+                                  <StyledBmcBlock {...bmcLayout[3]} content={bmcData[bmcLayout[3].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[3].keyProp, e.target.value)} colors={colors} />
+                               </div>
+                               <div className="col-span-1 row-span-2">
+                                  <StyledBmcBlock {...bmcLayout[4]} content={bmcData[bmcLayout[4].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[4].keyProp, e.target.value)} colors={colors} />
+                               </div>
+                               <div className="col-span-1 row-span-2">
+                                  <StyledBmcBlock {...bmcLayout[5]} content={bmcData[bmcLayout[5].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[5].keyProp, e.target.value)} colors={colors} />
+                               </div>
+                               <div className="col-span-2 row-span-4">
+                                  <StyledBmcBlock {...bmcLayout[6]} content={bmcData[bmcLayout[6].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[6].keyProp, e.target.value)} colors={colors} />
+                               </div>
+
+                               <div className="col-span-4 row-span-2 col-start-3">
+                                  <StyledBmcBlock {...bmcLayout[7]} content={bmcData[bmcLayout[7].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[7].keyProp, e.target.value)} colors={colors} />
+                               </div>
+                               <div className="col-span-4 row-span-2 col-start-3">
+                                   <StyledBmcBlock {...bmcLayout[8]} content={bmcData[bmcLayout[8].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[8].keyProp, e.target.value)} colors={colors} />
+                               </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </>
               )
             )}
           </motion.div>
@@ -692,21 +679,21 @@ function BmcGeneratorPageClient() {
 
 const StyledBmcBlock = ({ title, content, icon, isEditing, onChange, colors }: { title: string; content: string; icon: React.ReactNode; isEditing: boolean; onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void; colors: typeof initialColors }) => {
     return (
-        <div className="p-4 rounded-xl flex flex-col h-full" style={{ backgroundColor: colors.card, border: `1px solid ${colors.primary}20` }}>
-            <div className='flex items-center gap-3' style={{ color: colors.primary }}>
+        <div className="p-2 md:p-4 rounded-xl flex flex-col h-full" style={{ backgroundColor: colors.card, border: `1px solid ${colors.primary}20` }}>
+            <div className='flex items-center gap-2 md:gap-3 text-xs md:text-sm' style={{ color: colors.primary }}>
               <div className="flex-shrink-0">{icon}</div>
-              <h3 className="text-base font-bold">{title}</h3>
+              <h3 className="font-bold">{title}</h3>
             </div>
             <div className="mt-2 flex-grow overflow-hidden">
               {isEditing ? (
                   <Textarea 
                       value={content}
                       onChange={onChange}
-                      className="w-full h-full bg-transparent border-0 text-sm p-0 focus-visible:ring-0 resize-none"
+                      className="w-full h-full bg-transparent border-0 text-xs md:text-sm p-0 focus-visible:ring-0 resize-none"
                       style={{ color: colors.foreground }}
                   />
               ) : (
-                  <div className="text-sm whitespace-pre-wrap overflow-y-auto h-full" style={{ color: colors.foreground }}>
+                  <div className="text-xs md:text-sm whitespace-pre-wrap overflow-y-auto h-full p-1" style={{ color: colors.foreground }}>
                       {content}
                   </div>
               )}
@@ -727,3 +714,5 @@ export default function BmcGeneratorPage() {
     </Suspense>
   )
 }
+
+    
