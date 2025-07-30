@@ -232,7 +232,6 @@ function BmcGeneratorPageClient() {
             logoUrl: logoUrl,
             removeWatermark: removeWatermark,
             userId: user.uid,
-            // for query ordering
             businessDescription: formData.businessDescription, 
         };
 
@@ -665,11 +664,12 @@ const StyledBmcBlock = ({
             readOnly={!isEditing}
             className={cn(
                 "text-xs whitespace-pre-wrap flex-grow overflow-y-auto bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 p-0 text-white leading-tight",
-                !isEditing ? "resize-none" : ""
+                !isEditing ? "resize-none" : "resize-y" // Allow resize only when editing
             )} 
         />
     </div>
 );
+
 
 export default function BmcGeneratorPage() {
   return (
