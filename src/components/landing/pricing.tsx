@@ -38,8 +38,7 @@ export default function Pricing() {
       ],
       cta: "Upgrade Now",
       href: "/payment",
-      variant: "gradient",
-      popular: true,
+      variant: "outline",
     },
     {
       name: "Premium",
@@ -53,7 +52,8 @@ export default function Pricing() {
       ],
       cta: "Upgrade Now",
       href: "/payment",
-      variant: "outline",
+      variant: "gradient",
+      popular: true,
     },
   ];
 
