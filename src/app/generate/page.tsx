@@ -417,7 +417,12 @@ function BmcGeneratorPageClient() {
                         <Button variant="secondary" onClick={handleExport}><Download className="mr-2" /> Export as PDF</Button>
                         <Button variant="secondary" onClick={handleShare}><Share2 className="mr-2" /> Share Public Link</Button>
                     </div>
-                  <div ref={canvasRef} className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 p-4 bg-transparent">
+                  <div ref={canvasRef} className="relative grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 p-4 bg-transparent">
+                     <div className="absolute inset-0 flex items-center justify-center -z-10">
+                        <h1 className="text-8xl font-extrabold text-foreground/5 select-none transform -rotate-12">
+                            Powered by InnoCanvas
+                        </h1>
+                    </div>
                     {/* Top Row */}
                     <BmcCard key={initialBmcBlocks[0].keyProp} {...initialBmcBlocks[0]} content={bmcData.keyPartnerships} className="lg:col-span-1" isEditing={isEditing} onContentChange={handleBmcDataChange} />
                     <div className="lg:col-span-1 grid grid-rows-2 gap-4">
@@ -480,7 +485,7 @@ type BmcCardProps = Omit<BMCBlock, 'content'> & {
 
 const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onContentChange }: BmcCardProps) => (
     <div className={cn(
-        "rounded-2xl p-4 shadow-sm flex flex-col transition-all overflow-hidden bg-card border-border border",
+        "rounded-2xl p-4 shadow-sm flex flex-col transition-all overflow-hidden bg-card border-border border-2",
         className
     )}>
     <div className={cn("flex items-center gap-2 mb-2 text-card-foreground")}>
