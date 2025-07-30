@@ -59,7 +59,8 @@ export default function MyCanvasesPage() {
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const userCanvases = querySnapshot.docs.map(doc => {
           const data = doc.data();
-          const previewContent = [data.valuePropositions, data.customerSegments, data.revenueStreams].filter(Boolean).join(' · ');
+          const canvasData = data.canvasData || {};
+          const previewContent = [canvasData.valuePropositions, canvasData.customerSegments, canvasData.revenueStreams].filter(Boolean).join(' · ');
           return {
             id: doc.id,
             title: data.businessDescription || 'Untitled Canvas',

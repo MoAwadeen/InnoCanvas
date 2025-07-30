@@ -107,6 +107,7 @@ function BmcGeneratorPageClient() {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isGettingSuggestions, setIsGettingSuggestions] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<Partial<GenerateBMCInput>>({
     businessDescription: '',
@@ -368,6 +369,14 @@ function BmcGeneratorPageClient() {
   ];
 
   const renderStep = () => {
+    if (error) {
+        return (
+            <div className="flex flex-col items-center justify-center h-96 text-red-500">
+                <h2 className="text-2xl font-semibold">Error</h2>
+                <p>{error}</p>
+            </div>
+        );
+    }
     switch (step) {
       case 1:
         return (
