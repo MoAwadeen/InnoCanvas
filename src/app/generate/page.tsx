@@ -94,12 +94,14 @@ export default function BmcGeneratorPage() {
   const [bmcData, setBmcData] = useState<GenerateBMCOutput | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   
+  // Redirect unauthenticated users
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/login');
     }
   }, [user, authLoading, router]);
 
+  // Load canvas data if canvasId is present
   useEffect(() => {
       const loadCanvas = async () => {
         if (canvasId && user) {
@@ -135,7 +137,8 @@ export default function BmcGeneratorPage() {
         }
       };
 
-      if (!authLoading && user) {
+      // Only run this effect on the client side
+      if (typeof window !== 'undefined' && !authLoading && user) {
         loadCanvas();
       }
   }, [canvasId, user, authLoading, router, toast]);
@@ -154,6 +157,9 @@ export default function BmcGeneratorPage() {
   };
 
   const handleGenerateCanvas = async (regenerate = false) => {
+    // Ensure this runs only on the client
+    if (typeof window === 'undefined') return;
+
     if (!regenerate && Object.values(formData).some(v => v === '')) {
       toast({
         title: 'Missing Information',
@@ -184,6 +190,9 @@ export default function BmcGeneratorPage() {
   };
 
   const handleSave = async () => {
+    // Ensure this runs only on the client
+    if (typeof window === 'undefined') return;
+
     if (!user || !bmcData || !formData.businessDescription) {
         toast({ title: 'Error', description: 'Cannot save. Missing data or user not logged in.', variant: 'destructive' });
         return;
@@ -224,6 +233,9 @@ export default function BmcGeneratorPage() {
   };
   
   const handleExport = () => {
+    // Ensure this runs only on the client
+    if (typeof window === 'undefined') return;
+
     if (canvasRef.current) {
         toast({
             title: 'Exporting PDF...',
@@ -276,6 +288,9 @@ export default function BmcGeneratorPage() {
 };
 
   const handleShare = () => {
+      // Ensure this runs only on the client
+      if (typeof window === 'undefined') return;
+
       toast({
           title: 'Coming Soon!',
           description: 'Public link sharing is currently under development.',
@@ -370,7 +385,8 @@ export default function BmcGeneratorPage() {
                 onClick={() => handleGenerateCanvas(false)}
                 disabled={isLoading}
               >
-                {isLoading ? <><Loader className="mr-2 animate-spin" /> Generating...</> : 'Generate Canvas'}
+                {isLoading ? <><Loader className="mr-2 animate-spin" /> Generating...
+                </> : 'Generate Canvas'}
               </Button>
             </div>
           </motion.div>
@@ -431,7 +447,8 @@ export default function BmcGeneratorPage() {
     }
   };
 
-  if (authLoading && !canvasId) {
+  // Render a loading state or null during prerendering
+  if (typeof window === 'undefined' || (authLoading && !canvasId)) {
     return (
         <div className="min-h-screen w-full flex items-center justify-center bg-background">
             <Loader className="w-16 h-16 animate-spin text-primary" />
