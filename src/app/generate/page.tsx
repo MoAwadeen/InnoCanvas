@@ -355,16 +355,16 @@ function BmcGeneratorPageClient() {
   } as React.CSSProperties;
 
 
-  const initialBmcBlocks: BMCBlock[] = [
-    { title: 'Key Partners', icon: <Handshake className="w-5 h-5" />, keyProp: 'keyPartnerships' },
-    { title: 'Key Activities', icon: <Wrench className="w-5 h-5" />, keyProp: 'keyActivities' },
-    { title: 'Value Propositions', icon: <Lightbulb className="w-5 h-5" />, keyProp: 'valuePropositions' },
-    { title: 'Customer Relationships', icon: <Heart className="w-5 h-5" />, keyProp: 'customerRelationships' },
-    { title: 'Customer Segments', icon: <Users className="w-5 h-5" />, keyProp: 'customerSegments' },
-    { title: 'Key Resources', icon: <Package className="w-5 h-5" />, keyProp: 'keyResources' },
-    { title: 'Channels', icon: <Truck className="w-5 h-5" />, keyProp: 'channels' },
-    { title: 'Cost Structure', icon: <FileText className="w-5 h-5" />, keyProp: 'costStructure' },
-    { title: 'Revenue Streams', icon: <DollarSign className="w-5 h-5" />, keyProp: 'revenueStreams' },
+  const bmcLayout: { title: string; key: keyof GenerateBMCOutput; gridClass: string }[] = [
+      { title: "Key Partners", key: "keyPartnerships", gridClass: "col-span-2" },
+      { title: "Key Activities", key: "keyActivities", gridClass: "col-span-1" },
+      { title: "Value Propositions", key: "valuePropositions", gridClass: "col-span-2 row-span-2" },
+      { title: "Customer Relationships", key: "customerRelationships", gridClass: "col-span-1" },
+      { title: "Customer Segments", key: "customerSegments", gridClass: "col-span-2" },
+      { title: "Key Resources", key: "keyResources", gridClass: "col-span-1" },
+      { title: "Channels", key: "channels", gridClass: "col-span-1" },
+      { title: "Cost Structure", key: "costStructure", gridClass: "col-span-4" },
+      { title: "Revenue Streams", key: "revenueStreams", gridClass: "col-span-4" },
   ];
 
   const renderStep = () => {
@@ -538,49 +538,32 @@ function BmcGeneratorPageClient() {
 
                     {/* Right Column: Canvas */}
                     <div className="lg:col-span-3">
-                        <div className="w-full aspect-[16/9] bg-background rounded-xl p-4 border border-border">
-                           <div ref={styledCanvasRef} className="w-full h-full rounded-lg p-2 flex flex-col relative" style={canvasStyle}>
-                               <div className="relative grid grid-cols-5 grid-rows-[auto_1fr_1fr] gap-2 w-full h-full flex-grow">
-                                  {/* Row 1 */}
-                                   <div className="col-span-1 row-span-1 grid grid-cols-1 gap-2">
-                                    <StyledBmcBlock title={initialBmcBlocks[0].title} content={bmcData.keyPartnerships} isEditing={isEditing} onChange={(e) => handleBmcDataChange('keyPartnerships', e.target.value)} />
-                                  </div>
-                                  <div className="col-span-1 row-span-1 grid grid-cols-1 gap-2">
-                                      <StyledBmcBlock title={initialBmcBlocks[1].title} content={bmcData.keyActivities} isEditing={isEditing} onChange={(e) => handleBmcDataChange('keyActivities', e.target.value)} />
-                                  </div>
-                                  <StyledBmcBlock className="col-span-1 row-span-1" title={initialBmcBlocks[2].title} content={bmcData.valuePropositions} isEditing={isEditing} onChange={(e) => handleBmcDataChange('valuePropositions', e.target.value)} />
-                                  <div className="col-span-1 row-span-1 grid grid-cols-1 gap-2">
-                                      <StyledBmcBlock title={initialBmcBlocks[3].title} content={bmcData.customerRelationships} isEditing={isEditing} onChange={(e) => handleBmcDataChange('customerRelationships', e.target.value)} />
-                                  </div>
-                                  <StyledBmcBlock className="col-span-1 row-span-1" title={initialBmcBlocks[4].title} content={bmcData.customerSegments} isEditing={isEditing} onChange={(e) => handleBmcDataChange('customerSegments', e.target.value)} />
-
-                                  {/* Row 2 */}
-                                   <div className="col-span-1 row-span-1 grid grid-cols-1 gap-2">
-                                       {logoUrl ? <div className="bg-card rounded-lg flex items-center justify-center p-1 relative overflow-hidden"><Image src={logoUrl} alt="Logo" layout="fill" objectFit="contain" /></div> : <div />}
-                                   </div>
-                                    <div className="col-span-1 row-span-1 grid grid-cols-1 gap-2">
-                                      <StyledBmcBlock title={initialBmcBlocks[5].title} content={bmcData.keyResources} isEditing={isEditing} onChange={(e) => handleBmcDataChange('keyResources', e.target.value)} />
-                                  </div>
-                                   <div className="col-span-1 row-span-1"/>
-                                  <div className="col-span-1 row-span-1 grid grid-cols-1 gap-2">
-                                      <StyledBmcBlock title={initialBmcBlocks[6].title} content={bmcData.channels} isEditing={isEditing} onChange={(e) => handleBmcDataChange('channels', e.target.value)} />
-                                  </div>
-                                   <div className="col-span-1 row-span-1" />
-                                  
-                                  {/* Row 3 */}
-                                  <StyledBmcBlock className="col-span-2" title={initialBmcBlocks[7].title} content={bmcData.costStructure} isEditing={isEditing} onChange={(e) => handleBmcDataChange('costStructure', e.target.value)} />
-                                  <StyledBmcBlock className="col-span-3" title={initialBmcBlocks[8].title} content={bmcData.revenueStreams} isEditing={isEditing} onChange={(e) => handleBmcDataChange('revenueStreams', e.target.value)} />
-                                  
-                               </div>
-                                {!removeWatermark && (
-                                    <div className='absolute inset-0 flex items-center justify-center select-none pointer-events-none'>
-                                        <p className='text-[10rem] font-bold opacity-5' style={{ color: 'var(--theme-foreground)'}}>
-                                            InnoCanvas
-                                        </p>
-                                    </div>
-                                )}
-                           </div>
-                         </div>
+                         <div ref={styledCanvasRef} style={canvasStyle} className="w-full h-full bg-background rounded-2xl p-6 border-2 border-border relative">
+                            {logoUrl && (
+                                <div className="absolute top-4 right-4 h-16 w-32">
+                                    <Image src={logoUrl} alt="Logo" layout="fill" objectFit="contain" />
+                                </div>
+                            )}
+                            <div className="grid grid-cols-8 grid-rows-3 gap-4 h-full">
+                                {bmcLayout.map(block => (
+                                    <BmcCard 
+                                        key={block.key}
+                                        title={block.title}
+                                        content={bmcData[block.key]}
+                                        className={block.gridClass}
+                                        isEditing={isEditing}
+                                        onChange={e => handleBmcDataChange(block.key, e.target.value)}
+                                    />
+                                ))}
+                            </div>
+                            {!removeWatermark && (
+                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                    <p className="text-[8rem] font-bold text-white/5 select-none">
+                                        InnoCanvas
+                                    </p>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
               )
@@ -641,51 +624,23 @@ function BmcGeneratorPageClient() {
   );
 }
 
-const StyledBmcBlock = ({
-  title,
-  content,
-  className,
-  isEditing,
-  onChange,
-}: {
-  title: string;
-  content: string;
-  className?: string;
-  isEditing: boolean;
-  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-}) => {
-  return (
-    <div
-      className={cn(
-        "p-2 rounded-lg flex flex-col border border-white/10",
-        className
-      )}
-      style={{
-        backgroundColor: "var(--theme-card)",
-        color: "var(--theme-foreground)",
-      }}
-    >
-      <h3
-        className="font-bold text-xs mb-1 flex-shrink-0"
-        style={{ color: "var(--theme-primary)" }}
-      >
-        {title}
-      </h3>
-      {isEditing ? (
-        <Textarea
-          value={content}
-          onChange={onChange}
-          className={cn(
-            "text-xs whitespace-pre-wrap flex-grow bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 p-0 text-white leading-tight resize-y overflow-y-auto"
-          )}
-        />
-      ) : (
-        <div className="text-xs whitespace-pre-wrap flex-grow overflow-y-auto p-0 text-white leading-tight">
-          {content}
+const BmcCard = ({ title, content, className, isEditing, onChange }: { title: string; content: string; className?: string, isEditing: boolean, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void }) => {
+    return (
+        <div className={cn("bg-card p-4 rounded-lg flex flex-col gap-2", className)} style={{ backgroundColor: 'var(--theme-card)'}}>
+            <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary)'}}>{title}</h3>
+            {isEditing ? (
+                 <Textarea 
+                    value={content}
+                    onChange={onChange}
+                    className="text-xs bg-background/50 flex-grow resize-none"
+                 />
+            ) : (
+                <p className="text-xs text-foreground whitespace-pre-wrap flex-grow" style={{ color: 'var(--theme-foreground)'}}>
+                    {content}
+                </p>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
 
@@ -701,3 +656,4 @@ export default function BmcGeneratorPage() {
   )
 }
 
+    
