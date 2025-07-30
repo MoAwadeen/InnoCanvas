@@ -99,7 +99,7 @@ const refinementQuestions = [
 const DynamicFontSize = ({ children, className }: { children: React.ReactNode, className?: string }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
-    const [fontSize, setFontSize] = useState(10); // Start with a base font size in pixels
+    const [fontSize, setFontSize] = useState(10); 
 
     useEffect(() => {
         const adjustFontSize = () => {
@@ -107,10 +107,10 @@ const DynamicFontSize = ({ children, className }: { children: React.ReactNode, c
             const content = contentRef.current;
             if (!container || !content) return;
 
-            // Reset font size to measure accurately
-            content.style.fontSize = '12px'; // A reasonably large starting size
-            
-            let currentFontSize = 12;
+            // Start with a reasonable large font size
+            let currentFontSize = 12; 
+            content.style.fontSize = `${currentFontSize}px`;
+
             // Decrease font size until content fits
             while (content.scrollHeight > container.clientHeight && currentFontSize > 6) {
                 currentFontSize -= 0.5;
@@ -119,6 +119,7 @@ const DynamicFontSize = ({ children, className }: { children: React.ReactNode, c
             setFontSize(currentFontSize);
         };
         
+        // Adjust on initial render and when children change
         adjustFontSize();
         
         // Use ResizeObserver to readjust on container resize
@@ -127,13 +128,17 @@ const DynamicFontSize = ({ children, className }: { children: React.ReactNode, c
             resizeObserver.observe(containerRef.current);
         }
 
-        return () => resizeObserver.disconnect();
+        return () => {
+            if(containerRef.current) {
+                resizeObserver.unobserve(containerRef.current);
+            }
+        };
     }, [children]);
 
 
     return (
         <div ref={containerRef} className={cn("flex-grow overflow-hidden w-full h-full", className)}>
-             <div ref={contentRef} style={{ fontSize: `${fontSize}px`, lineHeight: '1.2' }} className="whitespace-pre-wrap h-full">
+             <div ref={contentRef} style={{ fontSize: `${fontSize}px`, lineHeight: 1.2 }} className="whitespace-pre-wrap h-full p-1">
                 {children}
             </div>
         </div>
@@ -585,34 +590,46 @@ function BmcGeneratorPageClient() {
                     {/* Right Column: Canvas */}
                     <div className="lg:col-span-3">
                         <div className="w-full aspect-[16/9] bg-background rounded-xl p-4 border border-border">
-                           <div ref={styledCanvasRef} className="w-full h-full rounded-lg p-2 flex flex-col" style={canvasStyle}>
-                               <div className="relative grid grid-cols-5 grid-rows-3 gap-2 w-full h-full flex-grow">
+                           <div ref={styledCanvasRef} className="w-full h-full rounded-lg p-2 flex flex-col relative" style={canvasStyle}>
+                               <div className="relative grid grid-cols-5 grid-rows-[auto_1fr_1fr] gap-2 w-full h-full flex-grow">
                                   {/* Row 1 */}
-                                  <div className="col-span-1 row-span-1 grid grid-cols-1 grid-rows-2 gap-2">
+                                   <div className="col-span-1 row-span-1 grid grid-cols-1 gap-2">
                                     <StyledBmcBlock title={initialBmcBlocks[0].title} content={isEditing ? <Textarea value={bmcData.keyPartnerships} onChange={(e) => handleBmcDataChange('keyPartnerships', e.target.value)} /> : bmcData.keyPartnerships} />
-                                    {logoUrl ? <div className="bg-card rounded-lg flex items-center justify-center p-1"><Image src={logoUrl} alt="Logo" layout="fill" objectFit="contain" className="!relative" /></div> : <div/>}
                                   </div>
-                                  <div className="col-span-1 row-span-1 grid grid-cols-1 grid-rows-2 gap-2">
+                                  <div className="col-span-1 row-span-1 grid grid-cols-1 gap-2">
                                       <StyledBmcBlock title={initialBmcBlocks[1].title} content={isEditing ? <Textarea value={bmcData.keyActivities} onChange={(e) => handleBmcDataChange('keyActivities', e.target.value)} /> : bmcData.keyActivities}/>
-                                      <StyledBmcBlock title={initialBmcBlocks[5].title} content={isEditing ? <Textarea value={bmcData.keyResources} onChange={(e) => handleBmcDataChange('keyResources', e.target.value)} /> : bmcData.keyResources}/>
                                   </div>
                                   <StyledBmcBlock className="col-span-1 row-span-1" title={initialBmcBlocks[2].title} content={isEditing ? <Textarea value={bmcData.valuePropositions} onChange={(e) => handleBmcDataChange('valuePropositions', e.target.value)} /> : bmcData.valuePropositions}/>
-                                  <div className="col-span-1 row-span-1 grid grid-cols-1 grid-rows-2 gap-2">
+                                  <div className="col-span-1 row-span-1 grid grid-cols-1 gap-2">
                                       <StyledBmcBlock title={initialBmcBlocks[3].title} content={isEditing ? <Textarea value={bmcData.customerRelationships} onChange={(e) => handleBmcDataChange('customerRelationships', e.target.value)} /> : bmcData.customerRelationships}/>
-                                      <StyledBmcBlock title={initialBmcBlocks[6].title} content={isEditing ? <Textarea value={bmcData.channels} onChange={(e) => handleBmcDataChange('channels', e.target.value)} /> : bmcData.channels}/>
                                   </div>
                                   <StyledBmcBlock className="col-span-1 row-span-1" title={initialBmcBlocks[4].title} content={isEditing ? <Textarea value={bmcData.customerSegments} onChange={(e) => handleBmcDataChange('customerSegments', e.target.value)} /> : bmcData.customerSegments}/>
 
                                   {/* Row 2 */}
+                                   <div className="col-span-1 row-span-1 grid grid-cols-1 gap-2">
+                                       {logoUrl ? <div className="bg-card rounded-lg flex items-center justify-center p-1 relative overflow-hidden"><Image src={logoUrl} alt="Logo" layout="fill" objectFit="contain" /></div> : <div />}
+                                   </div>
+                                    <div className="col-span-1 row-span-1 grid grid-cols-1 gap-2">
+                                      <StyledBmcBlock title={initialBmcBlocks[5].title} content={isEditing ? <Textarea value={bmcData.keyResources} onChange={(e) => handleBmcDataChange('keyResources', e.target.value)} /> : bmcData.keyResources}/>
+                                  </div>
+                                   <div className="col-span-1 row-span-1"/>
+                                  <div className="col-span-1 row-span-1 grid grid-cols-1 gap-2">
+                                      <StyledBmcBlock title={initialBmcBlocks[6].title} content={isEditing ? <Textarea value={bmcData.channels} onChange={(e) => handleBmcDataChange('channels', e.target.value)} /> : bmcData.channels}/>
+                                  </div>
+                                   <div className="col-span-1 row-span-1" />
+                                  
+                                  {/* Row 3 */}
                                   <StyledBmcBlock className="col-span-2" title={initialBmcBlocks[7].title} content={isEditing ? <Textarea value={bmcData.costStructure} onChange={(e) => handleBmcDataChange('costStructure', e.target.value)} /> : bmcData.costStructure}/>
                                   <StyledBmcBlock className="col-span-3" title={initialBmcBlocks[8].title} content={isEditing ? <Textarea value={bmcData.revenueStreams} onChange={(e) => handleBmcDataChange('revenueStreams', e.target.value)} /> : bmcData.revenueStreams}/>
                                   
-                                  {!removeWatermark && (
-                                    <div className='absolute bottom-2 right-4 text-xs select-none pointer-events-none' style={{ color: 'var(--theme-foreground)', opacity: 0.5}}>
-                                        Powered by InnoCanvas
-                                    </div>
-                                  )}
                                </div>
+                                {!removeWatermark && (
+                                    <div className='absolute inset-0 flex items-center justify-center select-none pointer-events-none'>
+                                        <p className='text-[10rem] font-bold opacity-5' style={{ color: 'var(--theme-foreground)'}}>
+                                            InnoCanvas
+                                        </p>
+                                    </div>
+                                )}
                            </div>
                          </div>
                     </div>
@@ -704,3 +721,5 @@ export default function BmcGeneratorPage() {
     </Suspense>
   )
 }
+
+    
