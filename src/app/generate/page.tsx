@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -71,7 +71,7 @@ const refinementQuestions = [
   },
 ];
 
-export default function BmcGeneratorPage() {
+function BmcGeneratorPageClient() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -137,8 +137,7 @@ export default function BmcGeneratorPage() {
         }
       };
 
-      // Only run this effect on the client side
-      if (typeof window !== 'undefined' && !authLoading && user) {
+      if (!authLoading && user) {
         loadCanvas();
       }
   }, [canvasId, user, authLoading, router, toast]);
@@ -157,9 +156,6 @@ export default function BmcGeneratorPage() {
   };
 
   const handleGenerateCanvas = async (regenerate = false) => {
-    // Ensure this runs only on the client
-    if (typeof window === 'undefined') return;
-
     if (!regenerate && Object.values(formData).some(v => v === '')) {
       toast({
         title: 'Missing Information',
@@ -190,9 +186,6 @@ export default function BmcGeneratorPage() {
   };
 
   const handleSave = async () => {
-    // Ensure this runs only on the client
-    if (typeof window === 'undefined') return;
-
     if (!user || !bmcData || !formData.businessDescription) {
         toast({ title: 'Error', description: 'Cannot save. Missing data or user not logged in.', variant: 'destructive' });
         return;
@@ -233,9 +226,6 @@ export default function BmcGeneratorPage() {
   };
   
   const handleExport = () => {
-    // Ensure this runs only on the client
-    if (typeof window === 'undefined') return;
-
     if (canvasRef.current) {
         toast({
             title: 'Exporting PDF...',
@@ -288,9 +278,6 @@ export default function BmcGeneratorPage() {
 };
 
   const handleShare = () => {
-      // Ensure this runs only on the client
-      if (typeof window === 'undefined') return;
-
       toast({
           title: 'Coming Soon!',
           description: 'Public link sharing is currently under development.',
@@ -447,8 +434,7 @@ export default function BmcGeneratorPage() {
     }
   };
 
-  // Render a loading state or null during prerendering
-  if (typeof window === 'undefined' || (authLoading && !canvasId)) {
+  if (authLoading && !canvasId) {
     return (
         <div className="min-h-screen w-full flex items-center justify-center bg-background">
             <Loader className="w-16 h-16 animate-spin text-primary" />
@@ -510,5 +496,17 @@ const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onConten
     )}
   </div>
 );
+
+export default function BmcGeneratorPage() {
+  return (
+    <Suspense fallback={
+        <div className="min-h-screen w-full flex items-center justify-center bg-background">
+            <Loader className="w-16 h-16 animate-spin text-primary" />
+        </div>
+    }>
+      <BmcGeneratorPageClient />
+    </Suspense>
+  )
+}
 
     
