@@ -39,7 +39,7 @@ import html2canvas from 'html2canvas';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { db } from '@/lib/firebase';
-import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, updateDoc } from 'firebase/firestore';
 import { Logo } from '@/components/logo';
 import Image from 'next/image';
 import { Switch } from '@/components/ui/switch';
@@ -70,31 +70,76 @@ const initialColors = {
 
 const refinementQuestions = [
     {
-        key: 'valuePropositions',
+        key: 'valuePropositions' as const,
         label: 'What core problem does your business solve?',
         options: ['Saving customers time or effort', 'Reducing cost or risk', 'Improving convenience or accessibility', 'Creating a new or better experience', 'Other'],
     },
     {
-        key: 'customerSegments',
+        key: 'customerSegments' as const,
         label: 'Who benefits most from your solution?',
         options: ['Individuals (mass market)', 'Businesses or organizations', 'Niche communities or segments', 'Professionals or specialists', 'Internal teams (B2E or SaaS-like model)'],
     },
     {
-        key: 'channels',
+        key: 'channels' as const,
         label: 'How do you reach and interact with your customers?',
         options: ['Website or app (direct digital access)', 'Social media and online content', 'Partner platforms or resellers', 'In-person sales or service', 'Mixed or hybrid approach'],
     },
     {
-        key: 'revenueStreams',
+        key: 'revenueStreams' as const,
         label: 'What is your main revenue model?',
         options: ['One-time product sales', 'Subscription or recurring payments', 'Commission or transaction-based', 'Advertising or sponsorships', 'Freemium → upgrade path'],
     },
     {
-        key: 'keyResources',
+        key: 'keyResources' as const,
         label: 'What is your most critical resource or asset?',
         options: ['Technical platform or software', 'Brand and community', 'Strategic partnerships', 'Expert knowledge or IP', 'Skilled human team'],
     },
 ];
+
+const DynamicFontSize = ({ children, className }: { children: React.ReactNode, className?: string }) => {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
+    const [fontSize, setFontSize] = useState(10); // Start with a base font size in pixels
+
+    useEffect(() => {
+        const adjustFontSize = () => {
+            const container = containerRef.current;
+            const content = contentRef.current;
+            if (!container || !content) return;
+
+            // Reset font size to measure accurately
+            content.style.fontSize = '12px'; // A reasonably large starting size
+            
+            let currentFontSize = 12;
+            // Decrease font size until content fits
+            while (content.scrollHeight > container.clientHeight && currentFontSize > 6) {
+                currentFontSize -= 0.5;
+                content.style.fontSize = `${currentFontSize}px`;
+            }
+            setFontSize(currentFontSize);
+        };
+        
+        adjustFontSize();
+        
+        // Use ResizeObserver to readjust on container resize
+        const resizeObserver = new ResizeObserver(adjustFontSize);
+        if(containerRef.current) {
+            resizeObserver.observe(containerRef.current);
+        }
+
+        return () => resizeObserver.disconnect();
+    }, [children]);
+
+
+    return (
+        <div ref={containerRef} className={cn("flex-grow overflow-hidden w-full h-full", className)}>
+             <div ref={contentRef} style={{ fontSize: `${fontSize}px`, lineHeight: '1.2' }} className="whitespace-pre-wrap h-full">
+                {children}
+            </div>
+        </div>
+    );
+};
+
 
 function BmcGeneratorPageClient() {
   const { user, loading: authLoading } = useAuth();
@@ -143,26 +188,16 @@ function BmcGeneratorPageClient() {
                 const canvasDocRef = doc(db, 'users', user.uid, 'canvases', canvasId);
                 const canvasDoc = await getDoc(canvasDocRef);
                 if (canvasDoc.exists()) {
-                    const data = canvasDoc.data() as GenerateBMCOutput & GenerateBMCInput;
-                    setBmcData({
-                        customerSegments: data.customerSegments,
-                        valuePropositions: data.valuePropositions,
-                        channels: data.channels,
-                        customerRelationships: data.customerRelationships,
-                        revenueStreams: data.revenueStreams,
-                        keyActivities: data.keyActivities,
-                        keyResources: data.keyResources,
-                        keyPartnerships: data.keyPartnerships,
-                        costStructure: data.costStructure,
-                    });
-                     setFormData({ 
-                        businessDescription: data.businessDescription,
-                        valuePropositions: data.valuePropositions,
-                        customerSegments: data.customerSegments,
-                        channels: data.channels,
-                        revenueStreams: data.revenueStreams,
-                        keyResources: data.keyResources,
-                     });
+                    const data = canvasDoc.data();
+                    const canvasData = data.canvasData as GenerateBMCOutput;
+                    const formData = data.formData as GenerateBMCInput;
+
+                    setBmcData(canvasData);
+                    setFormData(formData);
+                    setColors(data.colors || initialColors);
+                    setLogoUrl(data.logoUrl || null);
+                    setRemoveWatermark(data.removeWatermark || false);
+
                     setStep(3);
                 } else {
                      toast({ title: 'Error', description: 'Canvas not found.', variant: 'destructive' });
@@ -211,6 +246,7 @@ function BmcGeneratorPageClient() {
     }
 
     setIsLoading(true);
+    setSuggestions(null); // Clear old suggestions
     try {
       const result = await generateBMC(formData as GenerateBMCInput);
       setBmcData(result);
@@ -234,21 +270,26 @@ function BmcGeneratorPageClient() {
     
     setIsLoading(true);
     try {
-        const canvasData = {
-            ...bmcData,
-            businessDescription: formData.businessDescription,
+        const fullCanvasData = {
+            canvasData: bmcData,
+            formData: formData,
+            colors: colors,
+            logoUrl: logoUrl,
+            removeWatermark: removeWatermark,
             userId: user.uid,
+            // for query ordering
+            businessDescription: formData.businessDescription, 
         };
 
         if (canvasId) {
             const canvasDocRef = doc(db, 'users', user.uid, 'canvases', canvasId);
-            await setDoc(canvasDocRef, { ...canvasData, updatedAt: serverTimestamp() }, { merge: true });
+            await updateDoc(canvasDocRef, { ...fullCanvasData, updatedAt: serverTimestamp() });
              toast({
                 title: 'Canvas Updated!',
                 description: 'Your changes have been saved.',
             });
         } else {
-            const newCanvasRef = await addDoc(collection(db, 'users', user.uid, 'canvases'), { ...canvasData, createdAt: serverTimestamp() });
+            const newCanvasRef = await addDoc(collection(db, 'users', user.uid, 'canvases'), { ...fullCanvasData, createdAt: serverTimestamp() });
             router.replace(`/generate?canvasId=${newCanvasRef.id}`, { scroll: false }); 
             toast({
                 title: 'Canvas Saved!',
@@ -271,14 +312,15 @@ function BmcGeneratorPageClient() {
             description: 'Please wait while we generate your PDF.',
         });
         
-        // Temporarily increase resolution for better quality export
         const originalWidth = styledCanvasRef.current.offsetWidth;
         const scale = 1920 / originalWidth;
 
         html2canvas(styledCanvasRef.current!, {
             useCORS: true,
-            backgroundColor: null, // Transparent background for html2canvas
+            backgroundColor: null, 
             scale: scale, 
+            windowWidth: 1920,
+            windowHeight: 1080,
         }).then((canvas) => {
             const imgData = canvas.toDataURL('image/png');
             const pdf = new jsPDF({
@@ -424,8 +466,8 @@ function BmcGeneratorPageClient() {
                   <div key={q.key}>
                     <Label className="font-semibold text-lg mb-2 block text-card-foreground">{q.label}</Label>
                     <RadioGroup
-                      onValueChange={(value) => handleInputChange(q.key as keyof GenerateBMCInput, value)}
-                      value={formData[q.key as keyof GenerateBMCInput]}
+                      onValueChange={(value) => handleInputChange(q.key, value)}
+                      value={formData[q.key]}
                       className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
                     >
                       {q.options.map((opt) => (
@@ -543,12 +585,12 @@ function BmcGeneratorPageClient() {
                     {/* Right Column: Canvas */}
                     <div className="lg:col-span-3">
                         <div className="w-full aspect-[16/9] bg-background rounded-xl p-4 border border-border">
-                           <div ref={styledCanvasRef} className="w-full h-full rounded-lg p-2" style={canvasStyle}>
-                               <div className="relative grid grid-cols-5 grid-rows-3 gap-2 w-full h-full">
+                           <div ref={styledCanvasRef} className="w-full h-full rounded-lg p-2 flex flex-col" style={canvasStyle}>
+                               <div className="relative grid grid-cols-5 grid-rows-3 gap-2 w-full h-full flex-grow">
                                   {/* Row 1 */}
                                   <div className="col-span-1 row-span-1 grid grid-cols-1 grid-rows-2 gap-2">
                                     <StyledBmcBlock title={initialBmcBlocks[0].title} content={isEditing ? <Textarea value={bmcData.keyPartnerships} onChange={(e) => handleBmcDataChange('keyPartnerships', e.target.value)} /> : bmcData.keyPartnerships} />
-                                    {logoUrl && <div className="bg-card rounded-lg flex items-center justify-center p-1"><Image src={logoUrl} alt="Logo" layout="fill" objectFit="contain" className="!relative" /></div>}
+                                    {logoUrl ? <div className="bg-card rounded-lg flex items-center justify-center p-1"><Image src={logoUrl} alt="Logo" layout="fill" objectFit="contain" className="!relative" /></div> : <div/>}
                                   </div>
                                   <div className="col-span-1 row-span-1 grid grid-cols-1 grid-rows-2 gap-2">
                                       <StyledBmcBlock title={initialBmcBlocks[1].title} content={isEditing ? <Textarea value={bmcData.keyActivities} onChange={(e) => handleBmcDataChange('keyActivities', e.target.value)} /> : bmcData.keyActivities}/>
@@ -635,12 +677,12 @@ function BmcGeneratorPageClient() {
 
 
 const StyledBmcBlock = ({ title, content, className }: { title: string, content: string | React.ReactNode, className?: string}) => (
-    <div className={cn("p-2 rounded-lg flex flex-col", className)} style={{ backgroundColor: 'var(--theme-card)', color: 'var(--theme-foreground)' }}>
+    <div className={cn("p-2 rounded-lg flex flex-col border border-white/10", className)} style={{ backgroundColor: 'var(--theme-card)', color: 'var(--theme-foreground)' }}>
         <h3 className="font-bold text-xs mb-1 flex-shrink-0" style={{ color: 'var(--theme-primary)' }}>
             {title}
         </h3>
         {typeof content === 'string' ? (
-            <p className="text-[10px] whitespace-pre-wrap flex-grow overflow-y-auto">{content}</p>
+            <DynamicFontSize>{content}</DynamicFontSize>
         ) : (
             <div className="flex-grow flex flex-col">
                 {React.cloneElement(content as React.ReactElement, {
@@ -662,5 +704,3 @@ export default function BmcGeneratorPage() {
     </Suspense>
   )
 }
-
-    
