@@ -641,34 +641,52 @@ function BmcGeneratorPageClient() {
   );
 }
 
-const StyledBmcBlock = ({ 
-  title, 
-  content, 
+const StyledBmcBlock = ({
+  title,
+  content,
   className,
   isEditing,
   onChange,
-}: { 
-  title: string, 
-  content: string, 
-  className?: string,
-  isEditing: boolean,
-  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void,
-}) => (
-    <div className={cn("p-2 rounded-lg flex flex-col border border-white/10", className)} style={{ backgroundColor: 'var(--theme-card)', color: 'var(--theme-foreground)' }}>
-        <h3 className="font-bold text-xs mb-1 flex-shrink-0" style={{ color: 'var(--theme-primary)' }}>
-            {title}
-        </h3>
-        <Textarea 
-            value={content} 
-            onChange={onChange}
-            readOnly={!isEditing}
-            className={cn(
-                "text-xs whitespace-pre-wrap flex-grow overflow-y-auto bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 p-0 text-white leading-tight",
-                !isEditing ? "resize-none" : "resize-y" // Allow resize only when editing
-            )} 
+}: {
+  title: string;
+  content: string;
+  className?: string;
+  isEditing: boolean;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+}) => {
+  return (
+    <div
+      className={cn(
+        "p-2 rounded-lg flex flex-col border border-white/10",
+        className
+      )}
+      style={{
+        backgroundColor: "var(--theme-card)",
+        color: "var(--theme-foreground)",
+      }}
+    >
+      <h3
+        className="font-bold text-xs mb-1 flex-shrink-0"
+        style={{ color: "var(--theme-primary)" }}
+      >
+        {title}
+      </h3>
+      {isEditing ? (
+        <Textarea
+          value={content}
+          onChange={onChange}
+          className={cn(
+            "text-xs whitespace-pre-wrap flex-grow bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 p-0 text-white leading-tight resize-y overflow-y-auto"
+          )}
         />
+      ) : (
+        <div className="text-xs whitespace-pre-wrap flex-grow overflow-y-auto p-0 text-white leading-tight">
+          {content}
+        </div>
+      )}
     </div>
-);
+  );
+};
 
 
 export default function BmcGeneratorPage() {
@@ -683,4 +701,3 @@ export default function BmcGeneratorPage() {
   )
 }
 
-    
