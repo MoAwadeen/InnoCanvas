@@ -12,10 +12,10 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Logo } from "../logo";
+import { cn } from "@/lib/utils";
 
 export default function Header() {
   const navLinks = [
-    { name: "Home", href: "/" },
     { name: "Features", href: "#features" },
     { name: "Testimonials", href: "#testimonials" },
     { name: "Pricing", href: "#pricing" },
@@ -44,10 +44,10 @@ export default function Header() {
 
         <div className="hidden md:flex items-center gap-4">
             <Link href="/login">
-                <Button variant="outline">Log In</Button>
+                <Button variant="ghost">Log In</Button>
             </Link>
             <Link href="/register">
-                <Button variant="gradient">
+                <Button className="btn-gradient">
                     Get Started
                 </Button>
             </Link>
@@ -84,7 +84,7 @@ export default function Header() {
                     <Button variant="outline" className="w-full">Log In</Button>
                   </Link>
                   <Link href="/register" className="w-full">
-                    <Button variant="gradient" className="w-full">
+                    <Button className="w-full btn-gradient">
                         Get Started
                     </Button>
                   </Link>

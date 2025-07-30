@@ -40,6 +40,7 @@ export default function Pricing() {
       cta: "Go Pro",
       href: "/payment",
       variant: "gradient",
+      popular: true,
     },
     {
       name: "Premium",
@@ -53,29 +54,27 @@ export default function Pricing() {
       ],
       cta: "Go Premium",
       href: "/payment",
-      variant: "gradient",
-      popular: true,
+      variant: "outline",
     },
   ];
 
   return (
     <section id="pricing" className="container py-20 md:py-24">
       <div className="text-center max-w-3xl mx-auto mb-12">
-        <h2 className="headline-glow text-3xl md:text-4xl font-bold">Choose Your Plan</h2>
+        <h2 className="text-3xl md:text-4xl font-bold">Choose Your Plan</h2>
         <p className="mt-4 text-lg text-muted-foreground">
           Simple, transparent pricing. No hidden fees.
         </p>
       </div>
 
       <div className="flex justify-center items-center gap-4 mb-10">
-        <Label htmlFor="billing-cycle" className={cn("transition-colors font-medium", !isYearly ? "text-peach" : "text-muted-foreground")}>Monthly</Label>
+        <Label htmlFor="billing-cycle" className={cn("transition-colors font-medium", !isYearly ? "text-primary" : "text-muted-foreground")}>Monthly</Label>
         <Switch
           id="billing-cycle"
           checked={isYearly}
           onCheckedChange={setIsYearly}
-          data-state={isYearly ? 'checked' : 'unchecked'}
         />
-        <Label htmlFor="billing-cycle" className={cn("transition-colors font-medium", isYearly ? "text-vivid-pink" : "text-muted-foreground")}>
+        <Label htmlFor="billing-cycle" className={cn("transition-colors font-medium", isYearly ? "text-primary" : "text-muted-foreground")}>
             Yearly <span className="text-sm font-medium text-green-400">(Save 25%)</span>
         </Label>
       </div>
@@ -85,13 +84,13 @@ export default function Pricing() {
           <div
             key={plan.name}
             className={cn(
-              "card-glass flex flex-col transition-all duration-300 rounded-2xl relative text-left p-8",
-               plan.popular ? "border-primary/50" : ""
+              "bg-secondary/50 border border-border flex flex-col transition-all duration-300 rounded-2xl relative text-left p-8",
+               plan.popular ? "border-primary/80" : ""
             )}
           >
             {plan.popular && (
               <div className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2">
-                <div className="px-4 py-1 text-sm font-semibold text-accent bg-accent-foreground rounded-full shadow-md flex items-center gap-2">
+                <div className="px-4 py-1 text-sm font-semibold text-primary-foreground bg-primary rounded-full shadow-md flex items-center gap-2">
                   <Zap className="w-4 h-4" />
                   Recommended
                 </div>
@@ -110,7 +109,7 @@ export default function Pricing() {
             <ul className="space-y-4 mb-10 flex-1">
               {plan.features.map((feature) => (
                 <li key={feature} className="flex items-center gap-3 text-left text-foreground/90">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <CheckCircle className="w-5 h-5 text-primary" />
                   <span>{feature}</span>
                 </li>
               ))}
@@ -119,7 +118,7 @@ export default function Pricing() {
               <Button
                 size="lg"
                 variant={plan.variant as any}
-                className="w-full text-lg"
+                className={cn("w-full text-lg", plan.variant === 'gradient' && 'btn-gradient')}
               >
                 {plan.cta}
               </Button>

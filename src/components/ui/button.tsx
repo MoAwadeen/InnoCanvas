@@ -14,10 +14,10 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-lg",
         outline:
-          "border-2 border-vivid-pink bg-transparent hover:bg-soft-magenta hover:text-accent-foreground rounded-lg",
+          "border border-input bg-transparent hover:bg-accent hover:text-accent-foreground rounded-lg",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-lg",
-        ghost: "hover:bg-secondary hover:text-secondary-foreground rounded-lg",
+        ghost: "hover:bg-accent hover:text-accent-foreground rounded-lg",
         link: "text-primary underline-offset-4 hover:underline",
         gradient: "text-primary-foreground rounded-lg",
       },
@@ -42,30 +42,14 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, children, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
-
-    if (variant === 'gradient') {
-      return (
-        <Comp
-          className={cn(buttonVariants({ variant, size, className }), "btn-glow")}
-          ref={ref}
-          {...props}
-        >
-          <span className="relative">{children}</span>
-        </Comp>
-      );
-    }
-
-
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
         {...props}
-      >
-        {children}
-      </Comp>
+      />
     )
   }
 )

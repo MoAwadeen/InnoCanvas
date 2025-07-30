@@ -4,45 +4,26 @@
 
 @layer base {
   :root {
-    --background:166, 100%, 15%;
-    --foreground: 210 40% 98%;
-    --card: 217 33% 25%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 205 90.2% 48.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 217 33% 25%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 25%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 322 100% 60%;
-    --accent-foreground: 222 47% 11%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 25%;
-    --input: 217 33% 25%;
-    --ring: 205 90% 48%;
-    --vivid-pink: 322 100% 60%; /* #FF33AF */
-    --soft-magenta: 316 100% 71%; /* #FF6EDF */
-    --light-coral: 350 63% 78%; /* #F0A6B6 */
-    --peach: 24 100% 79%; /* #FFC398 */
-    --deep-navy: 241 100% 27%; /* #000987 */
-    --bright-cyan: 183 100% 45%; /* #00D7E5 */
-    --vibrant-orange: 16 94% 49%; /* #F6540F */
-    --green-yellow: 93, 79%, 67%;
-    --screamin-green: 133, 100%, 72%;
-    --brunswick-green: 164, 94%, 14%;
-    --dark-green: 167, 56%, 13%;
-    --jade: 151, 74%, 40%;
-
-    --pigment-green: 143, 64%, 43%;
-    --brunswick-green: 166, 100%, 15%;
-    --platinum: 220, 7%, 84%;
-    --white: 0, 0%, 100%;
-    --black: 0, 0%, 0%;
-    --eerie-black:  0%, 11%;
-    --radius: 0.5rem; /* Added default radius */
+    --background: 224 71.4% 4.1%;
+    --foreground: 210 20% 98%;
+    --card: 224 71.4% 4.1%;
+    --card-foreground: 210 20% 98%;
+    --popover: 224 71.4% 4.1%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 263.4 95.3% 52.5%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 215 27.9% 16.9%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+    --accent: 215 27.9% 16.9%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 215 27.9% 16.9%;
+    --input: 215 27.9% 16.9%;
+    --ring: 263.4 95.3% 52.5%;
+    --radius: 0.5rem;
   }
 }
 
@@ -67,94 +48,20 @@
   }
   .card-glass:hover {
     @apply border-white/20 bg-white/10;
-    box-shadow: 0 0 20px 0px hsl(var(--accent) / 0.2);
+    box-shadow: 0 0 20px 0px hsl(var(--primary) / 0.2);
   }
 
   /* Headline with Glow */
   .headline-glow {
-    @apply text-foreground drop-shadow-[0_0_10px_hsl(var(--vivid-pink)/0.5)] shadow-[0_0_2px_hsl(var(--background))];
-    animation: glow-pulse 2s ease-in-out infinite;
+    @apply text-foreground drop-shadow-[0_0_10px_hsl(var(--primary)/0.5)];
   }
 
-  /* Liquid Button */
-  .btn-glow {
-    position: relative;
-    overflow: hidden;
-    z-index: 1;
-    background: linear-gradient(45deg, hsl(var(--green-yellow)), hsl(var(--screamin-green)), hsl(var(--jade)), hsl(var(--vivid-pink)), hsl(var(--green-yellow)));
-    background-size: 200% 200%;
-    animation: gradient-animation 5s ease infinite;
-    transition: all 0.4s ease-in-out;
-    @apply text-foreground rounded-lg px-4 py-2;
-    box-shadow: 0 0 15px hsl(var(--screamin-green) / 0.5);
+  /* Gradient Button */
+  .btn-gradient {
+     background: hsl(var(--primary));
+     transition: background 0.3s ease;
   }
-  
-  .btn-glow:hover {
-    background-position: 100% 100%;
-    box-shadow: 0 0 25px hsl(var(--screamin-green) / 0.7);
-    transform: scale(1.05);
+  .btn-gradient:hover {
+    background: hsl(var(--primary) / 0.8);
   }
-
-  .btn-glow:focus {
-    outline: 2px solid hsl(var(--screamin-green));
-    outline-offset: 2px;
-  }
-
-
-  /* Pricing Switch Color */
-  [data-state='unchecked']#billing-cycle {
-    background-color: hsl(var(--peach));
-  }
-  [data-state='checked']#billing-cycle {
-    background-color: hsl(var(--vivid-pink));
-  }
-
-  /* Pricing Color Transition */
-  [data-state='yearly'] .price-container span {
-      color: hsl(var(--vivid-pink));
-  }
-
-  /* Breathing animation for CTA */
-  .breathing-cta {
-    animation: breathing 2.5s ease-in-out infinite;
-  }
-
-}
-
-@keyframes gradient-animation {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes glow-pulse {
-  0%, 100% {
-    drop-shadow: 0 0 20px hsl(var(--vivid-pink) / 0.9);
-  }
-  50% {
-    drop-shadow: 0 0 30px hsl(var(--vivid-pink) / 1);
-  }
-}
-
-@keyframes breathing {
-	0% {
-		transform: scale(1);
-    box-shadow: 0 0 0 0px hsl(var(--vivid-pink) / 0.7);
-	}
-
-	50% {
-		transform: scale(1.05);
-    box-shadow: 0 0 25px 5px hsl(var(--vivid-pink) / 0);
-	}
-
-	100% {
-		transform: scale(1);
-    box-shadow: 0 0 0 0px hsl(var(--vivid-pink) / 0.7);
-	}
 }
