@@ -38,6 +38,28 @@ const initialColors = {
     foreground: '#f0f8ff',
 }
 
+const bmcOrder: (keyof GenerateBMCOutput)[] = [
+    'keyPartnerships',
+    'keyActivities',
+    'valuePropositions',
+    'customerRelationships',
+    'customerSegments',
+    'keyResources',
+    'channels',
+    'costStructure',
+    'revenueStreams',
+];
+
+const BmcBlock = ({ title, content, className, style }: { title: string, content: string, className?: string, style: React.CSSProperties }) => (
+    <div className={cn("p-4 rounded-lg flex flex-col min-h-[140px]", className)} style={{ backgroundColor: 'var(--theme-background)', color: 'var(--theme-foreground)', ...style }}>
+        <h3 className="font-bold text-sm mb-2" style={{ color: 'var(--theme-primary)' }}>
+            {title.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+        </h3>
+        <p className="text-xs whitespace-pre-wrap flex-grow">{content}</p>
+    </div>
+);
+
+
 export default function PreviewPage() {
   const { user } = useAuth();
   const router = useRouter();
@@ -106,11 +128,13 @@ export default function PreviewPage() {
     if (!bmcData) return;
     setIsGettingSuggestions(true);
     try {
-      const bmcSections = { ...bmcData };
+      const bmcSections: Partial<BmcData> = { ...bmcData };
       delete bmcSections.businessDescription;
-
+      delete (bmcSections as any).createdAt;
+      delete (bmcSections as any).userId;
+      
       const result = await getAIImprovementSuggestions({
-        bmcData: bmcSections,
+        bmcData: bmcSections as Record<string, string>,
         businessDescription: bmcData.businessDescription || '',
       });
       setSuggestions(result);
@@ -171,9 +195,6 @@ export default function PreviewPage() {
         </div>
     );
   }
-  
-  const bmcBlocks = Object.entries(bmcData).filter(([key]) => key !== 'businessDescription' && key !== 'createdAt' && key !== 'userId');
-
 
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col" style={{ backgroundColor: colors.background }}>
@@ -230,34 +251,36 @@ export default function PreviewPage() {
         </div>
 
         {/* Right Column: Canvas Preview */}
-        <div className="lg:col-span-3 rounded-2xl p-6" style={canvasStyle}>
-           <div ref={canvasRef} className="grid grid-cols-5 gap-4 p-4 rounded-xl" style={{ backgroundColor: 'var(--theme-card)'}}>
-              {/* Logo block */}
-              <div className={cn( "p-4 rounded-lg flex items-center justify-center", "col-span-1" )} style={{ backgroundColor: 'var(--theme-background)' }}>
-                {logoUrl ? <Image src={logoUrl} alt="Logo" width={120} height={50} className="object-contain" /> : <span className="text-sm text-muted-foreground">Your Logo</span>}
-              </div>
-
-              {bmcBlocks.slice(1, 4).map(([key, value]) => (
-                <div key={key} className={cn( "p-4 rounded-lg flex flex-col min-h-[120px] col-span-1" )} style={{ backgroundColor: 'var(--theme-background)', color: 'var(--theme-foreground)' }}>
-                    <h3 className="font-bold text-sm mb-2" style={{ color: 'var(--theme-primary)'}}>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</h3>
-                    <p className="text-xs whitespace-pre-wrap">{value as string}</p>
+        <div className="lg:col-span-3 rounded-2xl p-6 flex items-center justify-center" style={canvasStyle}>
+           <div ref={canvasRef} className="aspect-[1.618] w-full max-w-7xl grid grid-cols-5 gap-2 p-2 rounded-xl" style={{ backgroundColor: 'var(--theme-card)'}}>
+              
+                {/* Row 1 */}
+                <BmcBlock title="Key Partners" content={bmcData.keyPartnerships} style={{ gridRow: '1 / 3' }} />
+                <div className="col-span-1 grid grid-rows-2 gap-2">
+                    <BmcBlock title="Key Activities" content={bmcData.keyActivities} />
+                    <BmcBlock title="Key Resources" content={bmcData.keyResources} />
                 </div>
-               ))}
-
-               {bmcBlocks.slice(4).map(([key, value]) => (
-                 <div key={key} className={cn(
-                  "p-4 rounded-lg flex flex-col min-h-[120px]",
-                  key === 'costStructure' ? 'col-span-2' : '',
-                  key === 'revenueStreams' ? 'col-span-3' : 'col-span-1',
-                )} style={{ backgroundColor: 'var(--theme-background)', color: 'var(--theme-foreground)' }}>
-                  <h3 className="font-bold text-sm mb-2" style={{ color: 'var(--theme-primary)'}}>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</h3>
-                  <p className="text-xs whitespace-pre-wrap">{value as string}</p>
+                <BmcBlock title="Value Propositions" content={bmcData.valuePropositions} style={{ gridRow: '1 / 3' }} />
+                <div className="col-span-1 grid grid-rows-2 gap-2">
+                     <BmcBlock title="Customer Relationships" content={bmcData.customerRelationships} />
+                     <BmcBlock title="Channels" content={bmcData.channels} />
                 </div>
-               ))}
+                <BmcBlock title="Customer Segments" content={bmcData.customerSegments} style={{ gridRow: '1 / 3' }} />
+
+                {/* Row 2 - Spanning blocks */}
+                <BmcBlock title="Cost Structure" content={bmcData.costStructure} style={{ gridColumn: '1 / 3' }} />
+                <BmcBlock title="Revenue Streams" content={bmcData.revenueStreams} style={{ gridColumn: '3 / 6' }} />
+
+                 {/* Logo & Watermark */}
+                 <div className="absolute top-4 left-4">
+                    {logoUrl && <Image src={logoUrl} alt="Logo" width={80} height={30} className="object-contain" />}
+                 </div>
+                 {!removeWatermark && (
+                    <div className='absolute bottom-4 right-4 text-xs' style={{ color: 'var(--theme-foreground)', opacity: 0.5}}>
+                        Powered by InnoCanvas
+                    </div>
+                )}
            </div>
-           {!removeWatermark && (
-            <div className='text-center text-xs mt-4' style={{ color: 'var(--theme-foreground)', opacity: 0.6}}>Powered by InnoCanvas</div>
-           )}
         </div>
       </main>
 
@@ -297,5 +320,3 @@ export default function PreviewPage() {
     </div>
   );
 }
-
-    
