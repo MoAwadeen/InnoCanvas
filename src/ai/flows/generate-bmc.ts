@@ -17,33 +17,33 @@ const GenerateBMCInputSchema = z.object({
   businessDescription: z
     .string()
     .describe('A short description of the business.'),
-  customerSegments: z
-    .string()
-    .describe('Clarifying question: Who are the target customers?'),
   valuePropositions: z
     .string()
-    .describe('Clarifying question: What value do you deliver to the customer?'),
+    .describe('Clarifying question: What core problem does your business solve?'),
+  customerSegments: z
+    .string()
+    .describe('Clarifying question: Who benefits most from your solution?'),
   channels: z
     .string()
-    .describe('Clarifying question: Through which channels do you reach your customers?'),
-  customerRelationships: z
-    .string()
-    .describe('Clarifying question: What type of relationship do you establish with your customers?'),
+    .describe('Clarifying question: How do you reach and interact with your customers?'),
   revenueStreams: z
     .string()
-    .describe('Clarifying question: What are the revenue streams?'),
-  keyActivities: z
-    .string()
-    .describe('Clarifying question: What key activities do you perform?'),
+    .describe('Clarifying question: What is your main revenue model?'),
   keyResources: z
     .string()
-    .describe('Clarifying question: What key resources do you require?'),
+    .describe('Clarifying question: What is your most critical resource or asset?'),
+  customerRelationships: z
+    .string()
+    .describe('Clarifying question: What type of relationship do you establish with your customers? (Defaulted)'),
+  keyActivities: z
+    .string()
+    .describe('Clarifying question: What key activities do you perform? (Defaulted)'),
   keyPartnerships: z
     .string()
-    .describe('Clarifying question: Who are your key partners?'),
+    .describe('Clarifying question: Who are your key partners? (Defaulted)'),
   costStructure: z
     .string()
-    .describe('Clarifying question: What are the most important costs in your business?'),
+    .describe('Clarifying question: What are the most important costs in your business? (Defaulted)'),
 });
 
 export type GenerateBMCInput = z.infer<typeof GenerateBMCInputSchema>;
@@ -84,15 +84,17 @@ const prompt = ai.definePrompt({
 Business Idea:
 {{{businessDescription}}}
 
-Customer Segment: {{{customerSegments}}}
-Value Proposition: {{{valuePropositions}}}
-Channels: {{{channels}}}
-Customer Relationships: {{{customerRelationships}}}
+Core Problem Solved: {{{valuePropositions}}}
+Primary Beneficiary: {{{customerSegments}}}
+Customer Channels: {{{channels}}}
 Revenue Model: {{{revenueStreams}}}
+Critical Resource: {{{keyResources}}}
+
+Defaulted Values (use for context):
 Key Activities: {{{keyActivities}}}
-Key Resources: {{{keyResources}}}
 Key Partnerships: {{{keyPartnerships}}}
 Cost Structure: {{{costStructure}}}
+Customer Relationships: {{{customerRelationships}}}
 ---
 `,
 });

@@ -44,31 +44,31 @@ type BMCBlock = {
 };
 
 const refinementQuestions = [
-  {
-    key: 'customerSegments',
-    label: 'What is your target customer segment?',
-    options: ['Students', 'SMEs', 'Tourists', 'Enterprises', 'Developers'],
-  },
-  {
-    key: 'valuePropositions',
-    label: 'What primary value do you provide?',
-    options: ['Convenience', 'Cost-Saving', 'AI Automation', 'Entertainment', 'Productivity'],
-  },
-  {
-    key: 'channels',
-    label: 'What channels do you plan to use?',
-    options: ['Social Media', 'Content Marketing', 'Direct Sales', 'Partnerships', 'App Stores'],
-  },
-  {
-    key: 'revenueStreams',
-    label: 'What is your revenue model?',
-    options: ['Subscription', 'Advertisements', 'One-time Sale', 'Freemium', 'Commission'],
-  },
-  {
-    key: 'keyResources',
-    label: 'What are your key resources?',
-    options: ['Proprietary Technology', 'Skilled Team', 'Brand Reputation', 'Capital', 'Patents'],
-  },
+    {
+        key: 'valuePropositions',
+        label: 'What core problem does your business solve?',
+        options: ['Saving customers time or effort', 'Reducing cost or risk', 'Improving convenience or accessibility', 'Creating a new or better experience', 'Other'],
+    },
+    {
+        key: 'customerSegments',
+        label: 'Who benefits most from your solution?',
+        options: ['Individuals (mass market)', 'Businesses or organizations', 'Niche communities or segments', 'Professionals or specialists', 'Internal teams (B2E or SaaS-like model)'],
+    },
+    {
+        key: 'channels',
+        label: 'How do you reach and interact with your customers?',
+        options: ['Website or app (direct digital access)', 'Social media and online content', 'Partner platforms or resellers', 'In-person sales or service', 'Mixed or hybrid approach'],
+    },
+    {
+        key: 'revenueStreams',
+        label: 'What is your main revenue model?',
+        options: ['One-time product sales', 'Subscription or recurring payments', 'Commission or transaction-based', 'Advertising or sponsorships', 'Freemium → upgrade path'],
+    },
+    {
+        key: 'keyResources',
+        label: 'What is your most critical resource or asset?',
+        options: ['Technical platform or software', 'Brand and community', 'Strategic partnerships', 'Expert knowledge or IP', 'Skilled human team'],
+    },
 ];
 
 function BmcGeneratorPageClient() {
@@ -86,6 +86,8 @@ function BmcGeneratorPageClient() {
     customerSegments: '',
     valuePropositions: '',
     channels: '',
+    revenueStreams: '',
+    keyResources: '',
     customerRelationships: 'Automated', // Default value
     keyActivities: 'Software Development', // Default
     keyPartnerships: 'Tech Providers', // Default
@@ -122,7 +124,14 @@ function BmcGeneratorPageClient() {
                         keyPartnerships: data.keyPartnerships,
                         costStructure: data.costStructure,
                     });
-                     setFormData({ businessDescription: data.businessDescription });
+                     setFormData({ 
+                        businessDescription: data.businessDescription,
+                        valuePropositions: data.valuePropositions,
+                        customerSegments: data.customerSegments,
+                        channels: data.channels,
+                        revenueStreams: data.revenueStreams,
+                        keyResources: data.keyResources,
+                     });
                     setStep(3);
                 } else {
                      toast({ title: 'Error', description: 'Canvas not found.', variant: 'destructive' });
@@ -156,7 +165,8 @@ function BmcGeneratorPageClient() {
   };
 
   const handleGenerateCanvas = async (regenerate = false) => {
-    if (!regenerate && Object.values(formData).some(v => v === '')) {
+    const requiredKeys: (keyof GenerateBMCInput)[] = ['businessDescription', 'customerSegments', 'valuePropositions', 'channels', 'revenueStreams', 'keyResources'];
+    if (!regenerate && requiredKeys.some(key => !formData[key])) {
       toast({
         title: 'Missing Information',
         description: 'Please fill out all refinement questions before generating.',
@@ -508,5 +518,3 @@ export default function BmcGeneratorPage() {
     </Suspense>
   )
 }
-
-    
