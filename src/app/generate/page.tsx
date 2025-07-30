@@ -593,7 +593,7 @@ function BmcGeneratorPageClient() {
                                 {logoUrl && <div className="relative w-24 h-12"><Image src={logoUrl} alt="Logo" layout="fill" objectFit="contain" /></div>}
                              </div>
 
-                             {/* Triangular Grid */}
+                             {/* Classic Grid */}
                              <div className="flex-grow grid grid-cols-10 grid-rows-6 gap-4 relative z-10">
                                 <div className="col-start-1 col-span-2 row-start-1 row-span-3">
                                     <StyledBmcBlock {...bmcLayout[0]} content={bmcData[bmcLayout[0].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[0].keyProp, e.target.value)} colors={colors} />
