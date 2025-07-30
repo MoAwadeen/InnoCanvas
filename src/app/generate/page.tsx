@@ -278,23 +278,48 @@ function BmcGeneratorPageClient() {
             description: 'Please wait while we generate your PDF.',
         });
         
-        const originalWidth = styledCanvasRef.current.offsetWidth;
-        const scale = 1920 / originalWidth;
+        const element = styledCanvasRef.current;
+        const targetWidth = 1920; 
+        const scale = targetWidth / element.offsetWidth;
 
-        html2canvas(styledCanvasRef.current!, {
+        html2canvas(element, {
             useCORS: true,
-            backgroundColor: null, 
-            scale: scale, 
-            windowWidth: styledCanvasRef.current.scrollWidth,
-            windowHeight: styledCanvasRef.current.scrollHeight,
+            backgroundColor: null,
+            scale: scale,
+            windowWidth: element.scrollWidth,
+            windowHeight: element.scrollHeight,
         }).then((canvas) => {
             const imgData = canvas.toDataURL('image/png', 1.0);
+            
+            // Standard A4 landscape dimensions in points: 841.89 x 595.28
+            const pdfWidth = 841.89;
+            const pdfHeight = 595.28;
+            
             const pdf = new jsPDF({
                 orientation: 'landscape',
-                unit: 'px',
-                format: [canvas.width, canvas.height]
+                unit: 'pt',
+                format: 'a4'
             });
-            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+
+            const canvasAspectRatio = canvas.width / canvas.height;
+            const pdfAspectRatio = pdfWidth / pdfHeight;
+
+            let finalWidth, finalHeight;
+            if (canvasAspectRatio > pdfAspectRatio) {
+                // Canvas is wider than PDF page
+                finalWidth = pdfWidth;
+                finalHeight = pdfWidth / canvasAspectRatio;
+            } else {
+                // Canvas is taller than PDF page
+                finalHeight = pdfHeight;
+                finalWidth = pdfHeight * canvasAspectRatio;
+            }
+
+            // Center the image on the PDF page
+            const x = (pdfWidth - finalWidth) / 2;
+            const y = (pdfHeight - finalHeight) / 2;
+
+            pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
             pdf.save('innocanvas-bmc.pdf');
 
             toast({
@@ -702,5 +727,3 @@ export default function BmcGeneratorPage() {
     </Suspense>
   )
 }
-
-    
