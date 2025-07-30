@@ -21,7 +21,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { PlusCircle, Trash2, User, LogOut, Loader, Eye } from 'lucide-react';
+import { PlusCircle, Trash2, User, LogOut, Loader } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { auth, db } from '@/lib/firebase';
@@ -197,9 +197,6 @@ export default function MyCanvasesPage() {
                     <div className="flex gap-2">
                         <Link href={`/generate?canvasId=${canvas.id}`}>
                             <Button variant="secondary">Open</Button>
-                        </Link>
-                        <Link href={`/preview?canvasId=${canvas.id}`}>
-                          <Button variant="secondary"><Eye className="mr-2 h-4 w-4"/>Preview</Button>
                         </Link>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>

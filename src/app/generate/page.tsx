@@ -22,9 +22,15 @@ import {
   Share2,
   Loader,
   ChevronRight,
+  Upload,
+  Palette,
+  Gem,
+  Sparkles,
+  ArrowLeft,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { generateBMC, GenerateBMCInput, GenerateBMCOutput } from '@/ai/flows/generate-bmc';
+import { getAIImprovementSuggestions, GetAIImprovementSuggestionsOutput } from '@/ai/flows/improve-bmc';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -35,6 +41,18 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { db } from '@/lib/firebase';
 import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc } from 'firebase/firestore';
 import { Logo } from '@/components/logo';
+import Image from 'next/image';
+import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 
 type BMCBlock = {
@@ -42,6 +60,13 @@ type BMCBlock = {
   icon: React.ReactNode;
   keyProp: keyof GenerateBMCOutput;
 };
+
+const initialColors = {
+    primary: '#09f',
+    card: '#192a41',
+    background: '#000987',
+    foreground: '#f0f8ff',
+}
 
 const refinementQuestions = [
     {
@@ -81,6 +106,8 @@ function BmcGeneratorPageClient() {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isGettingSuggestions, setIsGettingSuggestions] = useState(false);
+
   const [formData, setFormData] = useState<Partial<GenerateBMCInput>>({
     businessDescription: '',
     customerSegments: '',
@@ -94,16 +121,21 @@ function BmcGeneratorPageClient() {
     costStructure: 'Technology Infrastructure', // Default
   });
   const [bmcData, setBmcData] = useState<GenerateBMCOutput | null>(null);
-  const canvasRef = useRef<HTMLDivElement>(null);
+  const [suggestions, setSuggestions] = useState<GetAIImprovementSuggestionsOutput | null>(null);
   
-  // Redirect unauthenticated users
+  const [colors, setColors] = useState(initialColors);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [removeWatermark, setRemoveWatermark] = useState(false);
+  
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const styledCanvasRef = useRef<HTMLDivElement>(null);
+  
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/login');
     }
   }, [user, authLoading, router]);
 
-  // Load canvas data if canvasId is present
   useEffect(() => {
       const loadCanvas = async () => {
         if (canvasId && user) {
@@ -210,7 +242,6 @@ function BmcGeneratorPageClient() {
         };
 
         if (canvasId) {
-            // Update existing document
             const canvasDocRef = doc(db, 'users', user.uid, 'canvases', canvasId);
             await setDoc(canvasDocRef, { ...canvasData, updatedAt: serverTimestamp() }, { merge: true });
              toast({
@@ -218,9 +249,8 @@ function BmcGeneratorPageClient() {
                 description: 'Your changes have been saved.',
             });
         } else {
-            // Create new document
             const newCanvasRef = await addDoc(collection(db, 'users', user.uid, 'canvases'), { ...canvasData, createdAt: serverTimestamp() });
-            router.replace(`/generate?canvasId=${newCanvasRef.id}`, { scroll: false }); // Update URL to reflect new ID without reload
+            router.replace(`/generate?canvasId=${newCanvasRef.id}`, { scroll: false }); 
             toast({
                 title: 'Canvas Saved!',
                 description: 'Your masterpiece is safe in "My Canvases".',
@@ -236,48 +266,38 @@ function BmcGeneratorPageClient() {
   };
   
   const handleExport = () => {
-    if (canvasRef.current) {
+    if (styledCanvasRef.current) {
         toast({
             title: 'Exporting PDF...',
             description: 'Please wait while we generate your PDF.',
         });
         
-        const wasEditing = isEditing;
-        if (wasEditing) {
-            setIsEditing(false);
-        }
-
-        setTimeout(() => {
-            html2canvas(canvasRef.current!, {
-                useCORS: true,
-                backgroundColor: null,
-                scale: 2, 
-            }).then((canvas) => {
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF({
-                    orientation: 'landscape',
-                    unit: 'px',
-                    format: [canvas.width, canvas.height]
-                });
-                pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-                pdf.save('innocanvas-bmc.pdf');
-                
-                if(wasEditing) setIsEditing(true);
-
-                toast({
-                    title: 'PDF Exported!',
-                    description: 'Your canvas has been downloaded.',
-                });
-            }).catch(err => {
-                console.error("Error exporting PDF:", err);
-                toast({
-                    title: 'Error exporting',
-                    description: 'Failed to generate PDF. Please try again.',
-                    variant: 'destructive',
-                });
-                if(wasEditing) setIsEditing(true);
+        html2canvas(styledCanvasRef.current!, {
+            useCORS: true,
+            backgroundColor: colors.background,
+            scale: 2, 
+        }).then((canvas) => {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF({
+                orientation: 'landscape',
+                unit: 'px',
+                format: [canvas.width, canvas.height]
             });
-        }, 500); 
+            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+            pdf.save('innocanvas-bmc.pdf');
+
+            toast({
+                title: 'PDF Exported!',
+                description: 'Your canvas has been downloaded.',
+            });
+        }).catch(err => {
+            console.error("Error exporting PDF:", err);
+            toast({
+                title: 'Error exporting',
+                description: 'Failed to generate PDF. Please try again.',
+                variant: 'destructive',
+            });
+        });
     } else {
         toast({
             title: 'Error exporting',
@@ -293,6 +313,44 @@ function BmcGeneratorPageClient() {
           description: 'Public link sharing is currently under development.',
       });
   }
+
+  const handleGetSuggestions = async () => {
+    if (!bmcData) return;
+    setIsGettingSuggestions(true);
+    try {
+      const bmcSections: Partial<GenerateBMCOutput> = { ...bmcData };
+      
+      const result = await getAIImprovementSuggestions({
+        bmcData: bmcSections as Record<string, string>,
+        businessDescription: formData.businessDescription || '',
+      });
+      setSuggestions(result);
+    } catch (error) {
+      console.error("Error getting suggestions:", error);
+      toast({ title: "AI Error", description: "Could not get suggestions.", variant: "destructive" });
+    } finally {
+      setIsGettingSuggestions(false);
+    }
+  };
+
+  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      setLogoUrl(URL.createObjectURL(file));
+    }
+  };
+  
+  const handleColorChange = (key: keyof typeof colors, value: string) => {
+    setColors(prev => ({...prev, [key]: value}));
+  };
+
+  const canvasStyle = {
+    '--theme-primary': colors.primary,
+    '--theme-card': colors.card,
+    '--theme-background': colors.background,
+    '--theme-foreground': colors.foreground,
+  } as React.CSSProperties;
+
 
   const initialBmcBlocks: Omit<BMCBlock, 'content' | 'isEditing'>[] = [
     { title: 'Key Partners', icon: <Handshake className="w-5 h-5" />, keyProp: 'keyPartnerships' },
@@ -404,41 +462,115 @@ function BmcGeneratorPageClient() {
               </div>
             ) : (
               bmcData && (
-                <div>
-                    <div className="flex flex-wrap gap-4 justify-center mb-8">
-                        <Button variant="gradient" onClick={() => handleGenerateCanvas(true)} disabled={isLoading}>
-                            {isLoading ? <Loader className="mr-2 animate-spin" /> : <RefreshCw className="mr-2" />} 
-                            Regenerate
-                        </Button>
-                        <Button variant="secondary" onClick={() => setIsEditing(!isEditing)}>
-                            <Edit className="mr-2" /> {isEditing ? 'Done Editing' : 'Edit'}
-                        </Button>
-                        <Button variant="secondary" onClick={handleSave} disabled={isLoading}><Save className="mr-2" /> {canvasId ? 'Save Changes' : 'Save to My Canvases'}</Button>
-                        <Button variant="secondary" onClick={handleExport}><Download className="mr-2" /> Export as PDF</Button>
-                        <Button variant="secondary" onClick={handleShare}><Share2 className="mr-2" /> Share Public Link</Button>
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                    {/* Left Column: Controls */}
+                    <div className="lg:col-span-1 flex flex-col gap-8">
+                       <div className="card-glass p-6 rounded-2xl">
+                          <h2 className="text-2xl font-bold text-foreground mb-4">Controls</h2>
+                           <div className="flex flex-col gap-4">
+                              <Button variant="gradient" onClick={() => handleGenerateCanvas(true)} disabled={isLoading}>
+                                  {isLoading ? <Loader className="mr-2 animate-spin" /> : <RefreshCw className="mr-2" />} 
+                                  Regenerate
+                              </Button>
+                              <Button variant="secondary" onClick={() => setIsEditing(!isEditing)}>
+                                  <Edit className="mr-2" /> {isEditing ? 'Done Editing' : 'Edit Canvas'}
+                              </Button>
+                              <Button variant="secondary" onClick={handleSave} disabled={isLoading}><Save className="mr-2" /> {canvasId ? 'Save Changes' : 'Save to My Canvases'}</Button>
+                              <Button variant="secondary" onClick={handleShare}><Share2 className="mr-2" /> Share Public Link</Button>
+                           </div>
+                       </div>
+                       <div className="card-glass p-6 rounded-2xl">
+                          <h2 className="text-2xl font-bold text-foreground mb-4">Branding</h2>
+                          <div className="space-y-6">
+                            <div>
+                              <Label className="font-semibold text-lg mb-2 block text-foreground">Logo</Label>
+                              <input type="file" id="logo-upload" className="hidden" accept="image/*" onChange={handleLogoUpload} />
+                              <Button asChild variant="outline">
+                                <label htmlFor="logo-upload" className="cursor-pointer">
+                                  <Upload className="mr-2"/>
+                                  Upload Logo
+                                </label>
+                              </Button>
+                            </div>
+                            <div>
+                               <Label className="font-semibold text-lg mb-2 block text-foreground">Color Theme</Label>
+                               <div className="grid grid-cols-2 gap-4">
+                                  {Object.entries(colors).map(([key, value]) => (
+                                      <div key={key} className="flex flex-col gap-1">
+                                          <Label htmlFor={`color-${key}`} className="text-sm capitalize">{key}</Label>
+                                          <div className="relative">
+                                              <input type="color" id={`color-${key}`} value={value} onChange={(e) => handleColorChange(key as keyof typeof colors, e.target.value)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"/>
+                                              <div className="h-10 w-full rounded-md border border-border" style={{ backgroundColor: value }} />
+                                          </div>
+                                      </div>
+                                  ))}
+                               </div>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <Label htmlFor="remove-watermark" className="font-semibold text-lg flex items-center gap-2">
+                                <Gem className="text-vivid-pink" /> Remove Watermark
+                              </Label>
+                              <div className='flex items-center gap-2'>
+                                  <Badge variant="outline" className='border-vivid-pink text-vivid-pink'>PRO</Badge>
+                                  <Switch id="remove-watermark" checked={removeWatermark} onCheckedChange={setRemoveWatermark}/>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                         <div className="card-glass p-6 rounded-2xl">
+                              <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2"><Sparkles className='text-primary'/> AI Suggestions</h2>
+                              <p className='text-muted-foreground mb-4'>Let our AI analyze your canvas and provide actionable feedback.</p>
+                              <Button variant='secondary' onClick={handleGetSuggestions} disabled={isGettingSuggestions}>
+                                  {isGettingSuggestions ? <Loader className="mr-2 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4" />}
+                                  Get Feedback
+                              </Button>
+                         </div>
                     </div>
-                  <div ref={canvasRef} className="relative grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 p-4 bg-transparent">
-                     <div className="absolute inset-0 flex items-center justify-center -z-10">
-                        <h1 className="text-8xl font-extrabold text-foreground/5 select-none transform -rotate-12">
-                            Powered by InnoCanvas
-                        </h1>
+
+                    {/* Right Column: Canvas */}
+                    <div className="lg:col-span-3">
+                         <div ref={styledCanvasRef} className="p-4 rounded-xl" style={canvasStyle}>
+                           <div ref={canvasRef} className="relative grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 p-4 bg-transparent">
+                              <div className="absolute inset-0 flex items-center justify-center -z-10">
+                                 <h1 className="text-8xl font-extrabold text-foreground/5 select-none transform -rotate-12">
+                                     Powered by InnoCanvas
+                                 </h1>
+                              </div>
+                              {/* Top Row */}
+                              <div className="lg:col-span-1 flex flex-col gap-2">
+                                  <div className="h-1/4 p-2 flex items-center justify-center">
+                                     {logoUrl && <Image src={logoUrl} alt="Logo" width={80} height={40} className="object-contain" />}
+                                  </div>
+                                  <BmcCard {...initialBmcBlocks[0]} content={bmcData.keyPartnerships} isEditing={isEditing} onContentChange={handleBmcDataChange} className="h-3/4" />
+                              </div>
+                              <div className="lg:col-span-1 grid grid-rows-2 gap-4">
+                                <BmcCard key={initialBmcBlocks[1].keyProp} {...initialBmcBlocks[1]} content={bmcData.keyActivities} isEditing={isEditing} onContentChange={handleBmcDataChange} />
+                                <BmcCard key={initialBmcBlocks[2].keyProp} {...initialBmcBlocks[2]} content={bmcData.keyResources} isEditing={isEditing} onContentChange={handleBmcDataChange} />
+                              </div>
+                              <BmcCard key={initialBmcBlocks[3].keyProp} {...initialBmcBlocks[3]} content={bmcData.valuePropositions} className="lg:col-span-1" isEditing={isEditing} onContentChange={handleBmcDataChange} />
+                              <div className="lg:col-span-1 grid grid-rows-2 gap-4">
+                                <BmcCard key={initialBmcBlocks[4].keyProp} {...initialBmcBlocks[4]} content={bmcData.customerRelationships} isEditing={isEditing} onContentChange={handleBmcDataChange} />
+                                <BmcCard key={initialBmcBlocks[5].keyProp} {...initialBmcBlocks[5]} content={bmcData.channels} isEditing={isEditing} onContentChange={handleBmcDataChange} />
+                              </div>
+                              <BmcCard key={initialBmcBlocks[6].keyProp} {...initialBmcBlocks[6]} content={bmcData.customerSegments} className="lg:col-span-1" isEditing={isEditing} onContentChange={handleBmcDataChange} />
+                              {/* Bottom Row */}
+                              <BmcCard key={initialBmcBlocks[7].keyProp} {...initialBmcBlocks[7]} content={bmcData.costStructure} className="md:col-span-2 lg:col-span-2" isEditing={isEditing} onContentChange={handleBmcDataChange} />
+                              <BmcCard key={initialBmcBlocks[8].keyProp} {...initialBmcBlocks[8]} content={bmcData.revenueStreams} className="md:col-span-1 lg:col-span-3" isEditing={isEditing} onContentChange={handleBmcDataChange} />
+                              
+                              {!removeWatermark && (
+                                <div className='absolute bottom-2 right-4 text-xs' style={{ color: 'var(--theme-foreground)', opacity: 0.5}}>
+                                    Powered by InnoCanvas
+                                </div>
+                               )}
+                           </div>
+                         </div>
+                         <div className="mt-8 flex justify-center">
+                              <Button size="lg" variant="gradient" onClick={handleExport} disabled={isLoading}>
+                                <Download className="mr-2" />
+                                Export Styled PDF
+                              </Button>
+                         </div>
                     </div>
-                    {/* Top Row */}
-                    <BmcCard key={initialBmcBlocks[0].keyProp} {...initialBmcBlocks[0]} content={bmcData.keyPartnerships} className="lg:col-span-1" isEditing={isEditing} onContentChange={handleBmcDataChange} />
-                    <div className="lg:col-span-1 grid grid-rows-2 gap-4">
-                      <BmcCard key={initialBmcBlocks[1].keyProp} {...initialBmcBlocks[1]} content={bmcData.keyActivities} isEditing={isEditing} onContentChange={handleBmcDataChange} />
-                      <BmcCard key={initialBmcBlocks[2].keyProp} {...initialBmcBlocks[2]} content={bmcData.keyResources} isEditing={isEditing} onContentChange={handleBmcDataChange} />
-                    </div>
-                    <BmcCard key={initialBmcBlocks[3].keyProp} {...initialBmcBlocks[3]} content={bmcData.valuePropositions} className="lg:col-span-1" isEditing={isEditing} onContentChange={handleBmcDataChange} />
-                    <div className="lg:col-span-1 grid grid-rows-2 gap-4">
-                      <BmcCard key={initialBmcBlocks[4].keyProp} {...initialBmcBlocks[4]} content={bmcData.customerRelationships} isEditing={isEditing} onContentChange={handleBmcDataChange} />
-                      <BmcCard key={initialBmcBlocks[5].keyProp} {...initialBmcBlocks[5]} content={bmcData.channels} isEditing={isEditing} onContentChange={handleBmcDataChange} />
-                    </div>
-                    <BmcCard key={initialBmcBlocks[6].keyProp} {...initialBmcBlocks[6]} content={bmcData.customerSegments} className="lg:col-span-1" isEditing={isEditing} onContentChange={handleBmcDataChange} />
-                    {/* Bottom Row */}
-                    <BmcCard key={initialBmcBlocks[7].keyProp} {...initialBmcBlocks[7]} content={bmcData.costStructure} className="md:col-span-2 lg:col-span-2" isEditing={isEditing} onContentChange={handleBmcDataChange} />
-                    <BmcCard key={initialBmcBlocks[8].keyProp} {...initialBmcBlocks[8]} content={bmcData.revenueStreams} className="md:col-span-1 lg:col-span-3" isEditing={isEditing} onContentChange={handleBmcDataChange} />
-                  </div>
                 </div>
               )
             )}
@@ -472,6 +604,26 @@ function BmcGeneratorPageClient() {
       <main className="flex flex-col items-center justify-center">
         <AnimatePresence mode="wait">{renderStep()}</AnimatePresence>
       </main>
+       <AlertDialog open={!!suggestions} onOpenChange={() => setSuggestions(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className='flex items-center gap-2'><Sparkles className='text-primary' /> AI Suggestions</AlertDialogTitle>
+            <AlertDialogDescription>
+              Here are some suggestions to improve your Business Model Canvas:
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="max-h-80 overflow-y-auto pr-4">
+            <ul className="space-y-3 list-disc list-inside text-sm text-foreground/90">
+                {suggestions?.suggestions.map((suggestion, index) => (
+                    <li key={index}>{suggestion}</li>
+                ))}
+            </ul>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setSuggestions(null)}>Got it, thanks!</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
@@ -482,6 +634,16 @@ type BmcCardProps = Omit<BMCBlock, 'content'> & {
   content: string;
   onContentChange: (key: keyof GenerateBMCOutput, value: string) => void;
 };
+
+const StyledBmcBlock = ({ title, content, className, style }: { title: string, content: string, className?: string, style?: React.CSSProperties }) => (
+    <div className={cn("p-4 rounded-lg flex flex-col min-h-[140px]", className)} style={{ backgroundColor: 'var(--theme-card)', color: 'var(--theme-foreground)', ...style }}>
+        <h3 className="font-bold text-sm mb-2" style={{ color: 'var(--theme-primary)' }}>
+            {title.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+        </h3>
+        <p className="text-xs whitespace-pre-wrap flex-grow">{content}</p>
+    </div>
+);
+
 
 const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onContentChange }: BmcCardProps) => (
     <div className={cn(
