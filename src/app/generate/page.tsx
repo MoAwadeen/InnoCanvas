@@ -62,9 +62,9 @@ type BMCBlock = {
 };
 
 const initialColors = {
-    primary: '#09f',
-    card: '#192a41',
-    background: '#000987',
+    primary: '#0099ff',
+    card: '#161d2f',
+    background: '#0a0f1c',
     foreground: '#f0f8ff',
 }
 
@@ -127,7 +127,6 @@ function BmcGeneratorPageClient() {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [removeWatermark, setRemoveWatermark] = useState(false);
   
-  const canvasRef = useRef<HTMLDivElement>(null);
   const styledCanvasRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -272,10 +271,14 @@ function BmcGeneratorPageClient() {
             description: 'Please wait while we generate your PDF.',
         });
         
+        // Temporarily increase resolution for better quality export
+        const originalWidth = styledCanvasRef.current.offsetWidth;
+        const scale = 1920 / originalWidth;
+
         html2canvas(styledCanvasRef.current!, {
             useCORS: true,
-            backgroundColor: colors.background,
-            scale: 2, 
+            backgroundColor: null, // Transparent background for html2canvas
+            scale: scale, 
         }).then((canvas) => {
             const imgData = canvas.toDataURL('image/png');
             const pdf = new jsPDF({
@@ -336,7 +339,11 @@ function BmcGeneratorPageClient() {
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      setLogoUrl(URL.createObjectURL(file));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
   
@@ -352,14 +359,14 @@ function BmcGeneratorPageClient() {
   } as React.CSSProperties;
 
 
-  const initialBmcBlocks: Omit<BMCBlock, 'content' | 'isEditing'>[] = [
+  const initialBmcBlocks: BMCBlock[] = [
     { title: 'Key Partners', icon: <Handshake className="w-5 h-5" />, keyProp: 'keyPartnerships' },
     { title: 'Key Activities', icon: <Wrench className="w-5 h-5" />, keyProp: 'keyActivities' },
-    { title: 'Key Resources', icon: <Package className="w-5 h-5" />, keyProp: 'keyResources' },
     { title: 'Value Propositions', icon: <Lightbulb className="w-5 h-5" />, keyProp: 'valuePropositions' },
     { title: 'Customer Relationships', icon: <Heart className="w-5 h-5" />, keyProp: 'customerRelationships' },
-    { title: 'Channels', icon: <Truck className="w-5 h-5" />, keyProp: 'channels' },
     { title: 'Customer Segments', icon: <Users className="w-5 h-5" />, keyProp: 'customerSegments' },
+    { title: 'Key Resources', icon: <Package className="w-5 h-5" />, keyProp: 'keyResources' },
+    { title: 'Channels', icon: <Truck className="w-5 h-5" />, keyProp: 'channels' },
     { title: 'Cost Structure', icon: <FileText className="w-5 h-5" />, keyProp: 'costStructure' },
     { title: 'Revenue Streams', icon: <DollarSign className="w-5 h-5" />, keyProp: 'revenueStreams' },
   ];
@@ -419,7 +426,7 @@ function BmcGeneratorPageClient() {
                     <RadioGroup
                       onValueChange={(value) => handleInputChange(q.key as keyof GenerateBMCInput, value)}
                       value={formData[q.key as keyof GenerateBMCInput]}
-                      className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"
+                      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
                     >
                       {q.options.map((opt) => (
                         <div key={opt} className="flex items-center">
@@ -433,16 +440,18 @@ function BmcGeneratorPageClient() {
                   </div>
                 ))}
               </div>
-              <Button
-                size="lg"
-                variant="gradient"
-                className="mt-8"
-                onClick={() => handleGenerateCanvas(false)}
-                disabled={isLoading}
-              >
-                {isLoading ? <><Loader className="mr-2 animate-spin" /> Generating...
-                </> : 'Generate Canvas'}
-              </Button>
+              <div className="flex items-center justify-between mt-8">
+                <Button variant="outline" onClick={() => setStep(1)}><ArrowLeft className="mr-2" /> Back</Button>
+                <Button
+                  size="lg"
+                  variant="gradient"
+                  onClick={() => handleGenerateCanvas(false)}
+                  disabled={isLoading}
+                >
+                  {isLoading ? <><Loader className="mr-2 animate-spin" /> Generating...
+                  </> : 'Generate Canvas'}
+                </Button>
+              </div>
             </div>
           </motion.div>
         );
@@ -464,10 +473,10 @@ function BmcGeneratorPageClient() {
               bmcData && (
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                     {/* Left Column: Controls */}
-                    <div className="lg:col-span-1 flex flex-col gap-8">
+                    <div className="lg:col-span-1 flex flex-col gap-6">
                        <div className="card-glass p-6 rounded-2xl">
-                          <h2 className="text-2xl font-bold text-foreground mb-4">Controls</h2>
-                           <div className="flex flex-col gap-4">
+                          <h2 className="text-xl font-bold text-foreground mb-4">Canvas Controls</h2>
+                           <div className="flex flex-col gap-3">
                               <Button variant="gradient" onClick={() => handleGenerateCanvas(true)} disabled={isLoading}>
                                   {isLoading ? <Loader className="mr-2 animate-spin" /> : <RefreshCw className="mr-2" />} 
                                   Regenerate
@@ -476,16 +485,20 @@ function BmcGeneratorPageClient() {
                                   <Edit className="mr-2" /> {isEditing ? 'Done Editing' : 'Edit Canvas'}
                               </Button>
                               <Button variant="secondary" onClick={handleSave} disabled={isLoading}><Save className="mr-2" /> {canvasId ? 'Save Changes' : 'Save to My Canvases'}</Button>
+                              <Button variant="secondary" onClick={handleExport} disabled={isLoading}>
+                                <Download className="mr-2" />
+                                Export as PDF
+                              </Button>
                               <Button variant="secondary" onClick={handleShare}><Share2 className="mr-2" /> Share Public Link</Button>
                            </div>
                        </div>
                        <div className="card-glass p-6 rounded-2xl">
-                          <h2 className="text-2xl font-bold text-foreground mb-4">Branding</h2>
-                          <div className="space-y-6">
+                          <h2 className="text-xl font-bold text-foreground mb-4">Branding</h2>
+                          <div className="space-y-4">
                             <div>
-                              <Label className="font-semibold text-lg mb-2 block text-foreground">Logo</Label>
+                              <Label className="font-semibold text-base mb-2 block text-foreground">Logo</Label>
                               <input type="file" id="logo-upload" className="hidden" accept="image/*" onChange={handleLogoUpload} />
-                              <Button asChild variant="outline">
+                              <Button asChild variant="outline" className='w-full'>
                                 <label htmlFor="logo-upload" className="cursor-pointer">
                                   <Upload className="mr-2"/>
                                   Upload Logo
@@ -493,21 +506,21 @@ function BmcGeneratorPageClient() {
                               </Button>
                             </div>
                             <div>
-                               <Label className="font-semibold text-lg mb-2 block text-foreground">Color Theme</Label>
+                               <Label className="font-semibold text-base mb-2 block text-foreground">Color Theme</Label>
                                <div className="grid grid-cols-2 gap-4">
                                   {Object.entries(colors).map(([key, value]) => (
                                       <div key={key} className="flex flex-col gap-1">
-                                          <Label htmlFor={`color-${key}`} className="text-sm capitalize">{key}</Label>
-                                          <div className="relative">
+                                          <Label htmlFor={`color-${key}`} className="text-sm capitalize text-muted-foreground">{key}</Label>
+                                          <div className="relative h-10 w-full rounded-md border border-border overflow-hidden">
                                               <input type="color" id={`color-${key}`} value={value} onChange={(e) => handleColorChange(key as keyof typeof colors, e.target.value)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"/>
-                                              <div className="h-10 w-full rounded-md border border-border" style={{ backgroundColor: value }} />
+                                              <div className="w-full h-full" style={{ backgroundColor: value }} />
                                           </div>
                                       </div>
                                   ))}
                                </div>
                             </div>
-                            <div className="flex items-center justify-between">
-                              <Label htmlFor="remove-watermark" className="font-semibold text-lg flex items-center gap-2">
+                            <div className="flex items-center justify-between pt-2">
+                              <Label htmlFor="remove-watermark" className="font-semibold text-base flex items-center gap-2">
                                 <Gem className="text-vivid-pink" /> Remove Watermark
                               </Label>
                               <div className='flex items-center gap-2'>
@@ -518,9 +531,9 @@ function BmcGeneratorPageClient() {
                           </div>
                         </div>
                          <div className="card-glass p-6 rounded-2xl">
-                              <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2"><Sparkles className='text-primary'/> AI Suggestions</h2>
-                              <p className='text-muted-foreground mb-4'>Let our AI analyze your canvas and provide actionable feedback.</p>
-                              <Button variant='secondary' onClick={handleGetSuggestions} disabled={isGettingSuggestions}>
+                              <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2"><Sparkles className='text-primary'/> AI Suggestions</h2>
+                              <p className='text-muted-foreground mb-4 text-sm'>Let our AI analyze your canvas and provide actionable feedback.</p>
+                              <Button variant='secondary' onClick={handleGetSuggestions} disabled={isGettingSuggestions} className='w-full'>
                                   {isGettingSuggestions ? <Loader className="mr-2 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4" />}
                                   Get Feedback
                               </Button>
@@ -529,46 +542,36 @@ function BmcGeneratorPageClient() {
 
                     {/* Right Column: Canvas */}
                     <div className="lg:col-span-3">
-                         <div ref={styledCanvasRef} className="p-4 rounded-xl" style={canvasStyle}>
-                           <div ref={canvasRef} className="relative grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 p-4 bg-transparent">
-                              <div className="absolute inset-0 flex items-center justify-center -z-10">
-                                 <h1 className="text-8xl font-extrabold text-foreground/5 select-none transform -rotate-12">
-                                     Powered by InnoCanvas
-                                 </h1>
-                              </div>
-                              {/* Top Row */}
-                              <div className="lg:col-span-1 flex flex-col gap-2">
-                                  <div className="h-1/4 p-2 flex items-center justify-center">
-                                     {logoUrl && <Image src={logoUrl} alt="Logo" width={80} height={40} className="object-contain" />}
+                        <div className="w-full aspect-[16/9] bg-background rounded-xl p-4 border border-border">
+                           <div ref={styledCanvasRef} className="w-full h-full rounded-lg p-2" style={canvasStyle}>
+                               <div className="relative grid grid-cols-5 grid-rows-3 gap-2 w-full h-full">
+                                  {/* Row 1 */}
+                                  <div className="col-span-1 row-span-1 grid grid-cols-1 grid-rows-2 gap-2">
+                                    <StyledBmcBlock title={initialBmcBlocks[0].title} content={isEditing ? <Textarea value={bmcData.keyPartnerships} onChange={(e) => handleBmcDataChange('keyPartnerships', e.target.value)} /> : bmcData.keyPartnerships} />
+                                    {logoUrl && <div className="bg-card rounded-lg flex items-center justify-center p-1"><Image src={logoUrl} alt="Logo" layout="fill" objectFit="contain" className="!relative" /></div>}
                                   </div>
-                                  <BmcCard {...initialBmcBlocks[0]} content={bmcData.keyPartnerships} isEditing={isEditing} onContentChange={handleBmcDataChange} className="h-3/4" />
-                              </div>
-                              <div className="lg:col-span-1 grid grid-rows-2 gap-4">
-                                <BmcCard key={initialBmcBlocks[1].keyProp} {...initialBmcBlocks[1]} content={bmcData.keyActivities} isEditing={isEditing} onContentChange={handleBmcDataChange} />
-                                <BmcCard key={initialBmcBlocks[2].keyProp} {...initialBmcBlocks[2]} content={bmcData.keyResources} isEditing={isEditing} onContentChange={handleBmcDataChange} />
-                              </div>
-                              <BmcCard key={initialBmcBlocks[3].keyProp} {...initialBmcBlocks[3]} content={bmcData.valuePropositions} className="lg:col-span-1" isEditing={isEditing} onContentChange={handleBmcDataChange} />
-                              <div className="lg:col-span-1 grid grid-rows-2 gap-4">
-                                <BmcCard key={initialBmcBlocks[4].keyProp} {...initialBmcBlocks[4]} content={bmcData.customerRelationships} isEditing={isEditing} onContentChange={handleBmcDataChange} />
-                                <BmcCard key={initialBmcBlocks[5].keyProp} {...initialBmcBlocks[5]} content={bmcData.channels} isEditing={isEditing} onContentChange={handleBmcDataChange} />
-                              </div>
-                              <BmcCard key={initialBmcBlocks[6].keyProp} {...initialBmcBlocks[6]} content={bmcData.customerSegments} className="lg:col-span-1" isEditing={isEditing} onContentChange={handleBmcDataChange} />
-                              {/* Bottom Row */}
-                              <BmcCard key={initialBmcBlocks[7].keyProp} {...initialBmcBlocks[7]} content={bmcData.costStructure} className="md:col-span-2 lg:col-span-2" isEditing={isEditing} onContentChange={handleBmcDataChange} />
-                              <BmcCard key={initialBmcBlocks[8].keyProp} {...initialBmcBlocks[8]} content={bmcData.revenueStreams} className="md:col-span-1 lg:col-span-3" isEditing={isEditing} onContentChange={handleBmcDataChange} />
-                              
-                              {!removeWatermark && (
-                                <div className='absolute bottom-2 right-4 text-xs' style={{ color: 'var(--theme-foreground)', opacity: 0.5}}>
-                                    Powered by InnoCanvas
-                                </div>
-                               )}
+                                  <div className="col-span-1 row-span-1 grid grid-cols-1 grid-rows-2 gap-2">
+                                      <StyledBmcBlock title={initialBmcBlocks[1].title} content={isEditing ? <Textarea value={bmcData.keyActivities} onChange={(e) => handleBmcDataChange('keyActivities', e.target.value)} /> : bmcData.keyActivities}/>
+                                      <StyledBmcBlock title={initialBmcBlocks[5].title} content={isEditing ? <Textarea value={bmcData.keyResources} onChange={(e) => handleBmcDataChange('keyResources', e.target.value)} /> : bmcData.keyResources}/>
+                                  </div>
+                                  <StyledBmcBlock className="col-span-1 row-span-1" title={initialBmcBlocks[2].title} content={isEditing ? <Textarea value={bmcData.valuePropositions} onChange={(e) => handleBmcDataChange('valuePropositions', e.target.value)} /> : bmcData.valuePropositions}/>
+                                  <div className="col-span-1 row-span-1 grid grid-cols-1 grid-rows-2 gap-2">
+                                      <StyledBmcBlock title={initialBmcBlocks[3].title} content={isEditing ? <Textarea value={bmcData.customerRelationships} onChange={(e) => handleBmcDataChange('customerRelationships', e.target.value)} /> : bmcData.customerRelationships}/>
+                                      <StyledBmcBlock title={initialBmcBlocks[6].title} content={isEditing ? <Textarea value={bmcData.channels} onChange={(e) => handleBmcDataChange('channels', e.target.value)} /> : bmcData.channels}/>
+                                  </div>
+                                  <StyledBmcBlock className="col-span-1 row-span-1" title={initialBmcBlocks[4].title} content={isEditing ? <Textarea value={bmcData.customerSegments} onChange={(e) => handleBmcDataChange('customerSegments', e.target.value)} /> : bmcData.customerSegments}/>
+
+                                  {/* Row 2 */}
+                                  <StyledBmcBlock className="col-span-2" title={initialBmcBlocks[7].title} content={isEditing ? <Textarea value={bmcData.costStructure} onChange={(e) => handleBmcDataChange('costStructure', e.target.value)} /> : bmcData.costStructure}/>
+                                  <StyledBmcBlock className="col-span-3" title={initialBmcBlocks[8].title} content={isEditing ? <Textarea value={bmcData.revenueStreams} onChange={(e) => handleBmcDataChange('revenueStreams', e.target.value)} /> : bmcData.revenueStreams}/>
+                                  
+                                  {!removeWatermark && (
+                                    <div className='absolute bottom-2 right-4 text-xs select-none pointer-events-none' style={{ color: 'var(--theme-foreground)', opacity: 0.5}}>
+                                        Powered by InnoCanvas
+                                    </div>
+                                  )}
+                               </div>
                            </div>
-                         </div>
-                         <div className="mt-8 flex justify-center">
-                              <Button size="lg" variant="gradient" onClick={handleExport} disabled={isLoading}>
-                                <Download className="mr-2" />
-                                Export Styled PDF
-                              </Button>
                          </div>
                     </div>
                 </div>
@@ -593,13 +596,15 @@ function BmcGeneratorPageClient() {
     <div className="min-h-screen w-full bg-background text-foreground p-4 md:p-8">
        <header className="flex justify-between items-center mb-8">
           <Logo />
-          <div className="flex items-center gap-2 text-sm font-medium">
-            <span className={step === 1 ? 'text-primary' : 'text-muted-foreground'}>Step 1</span>
-            <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            <span className={step === 2 ? 'text-primary' : 'text-muted-foreground'}>Step 2</span>
-            <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            <span className={step === 3 ? 'text-primary' : 'text-muted-foreground'}>Step 3</span>
-          </div>
+           {step > 1 && (
+            <div className="flex items-center gap-2 text-sm font-medium">
+                <span className={step === 1 ? 'text-primary' : 'text-muted-foreground'}>Idea</span>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                <span className={step === 2 ? 'text-primary' : 'text-muted-foreground'}>Refine</span>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                <span className={step === 3 ? 'text-primary' : 'text-muted-foreground'}>Canvas</span>
+            </div>
+           )}
         </header>
       <main className="flex flex-col items-center justify-center">
         <AnimatePresence mode="wait">{renderStep()}</AnimatePresence>
@@ -628,50 +633,22 @@ function BmcGeneratorPageClient() {
   );
 }
 
-type BmcCardProps = Omit<BMCBlock, 'content'> & {
-  className?: string;
-  isEditing: boolean;
-  content: string;
-  onContentChange: (key: keyof GenerateBMCOutput, value: string) => void;
-};
 
-const StyledBmcBlock = ({ title, content, className, style }: { title: string, content: string, className?: string, style?: React.CSSProperties }) => (
-    <div className={cn("p-4 rounded-lg flex flex-col min-h-[140px]", className)} style={{ backgroundColor: 'var(--theme-card)', color: 'var(--theme-foreground)', ...style }}>
-        <h3 className="font-bold text-sm mb-2" style={{ color: 'var(--theme-primary)' }}>
-            {title.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+const StyledBmcBlock = ({ title, content, className }: { title: string, content: string | React.ReactNode, className?: string}) => (
+    <div className={cn("p-2 rounded-lg flex flex-col", className)} style={{ backgroundColor: 'var(--theme-card)', color: 'var(--theme-foreground)' }}>
+        <h3 className="font-bold text-xs mb-1 flex-shrink-0" style={{ color: 'var(--theme-primary)' }}>
+            {title}
         </h3>
-        <p className="text-xs whitespace-pre-wrap flex-grow">{content}</p>
-    </div>
-);
-
-
-const BmcCard = ({ title, icon, content, className, isEditing, keyProp, onContentChange }: BmcCardProps) => (
-    <div className={cn(
-        "rounded-2xl p-4 shadow-sm flex flex-col transition-all overflow-hidden bg-card border-border border-2",
-        className
-    )}>
-    <div className={cn("flex items-center gap-2 mb-2 text-card-foreground")}>
-      {icon}
-      <h3 className="font-bold text-lg">{title}</h3>
-    </div>
-    {isEditing ? (
-       <Textarea
-        value={content}
-        onChange={(e) => onContentChange(keyProp, e.target.value)}
-        className={cn(
-          "bg-background border-0 text-base flex-grow resize-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0",
-          "cursor-text text-foreground/80 placeholder:text-muted-foreground",
-          "border-t mt-2 pt-2 border-border"
+        {typeof content === 'string' ? (
+            <p className="text-[10px] whitespace-pre-wrap flex-grow overflow-y-auto">{content}</p>
+        ) : (
+            <div className="flex-grow flex flex-col">
+                {React.cloneElement(content as React.ReactElement, {
+                     className: "text-[10px] whitespace-pre-wrap flex-grow overflow-y-auto bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 p-0 text-white"
+                })}
+            </div>
         )}
-      />
-    ) : (
-      <div className={cn(
-        "text-base flex-grow whitespace-pre-wrap overflow-auto text-card-foreground/80 pt-2",
-      )}>
-        {content}
-      </div>
-    )}
-  </div>
+    </div>
 );
 
 export default function BmcGeneratorPage() {
@@ -685,3 +662,5 @@ export default function BmcGeneratorPage() {
     </Suspense>
   )
 }
+
+    
