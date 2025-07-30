@@ -1,36 +1,37 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 224 71.4% 4.1%;
+    --background: 227 15% 12%; /* Dark Blue-Gray */
     --foreground: 210 20% 98%;
 
-    --card: 224 71.4% 4.1%;
+    --card: 227 15% 18%;
     --card-foreground: 210 20% 98%;
 
-    --popover: 224 71.4% 4.1%;
+    --popover: 227 15% 12%;
     --popover-foreground: 210 20% 98%;
 
-    --primary: 206 100% 50%; /* #0099FF */
+    --primary: 212 100% 60%; /* Bright Blue */
     --primary-foreground: 210 20% 98%;
 
-    --secondary: 215 27.9% 16.9%;
+    --secondary: 227 15% 25%;
     --secondary-foreground: 210 20% 98%;
 
-    --muted: 215 27.9% 16.9%;
+    --muted: 227 15% 25%;
     --muted-foreground: 217.9 10.6% 64.9%;
 
-    --accent: 215 27.9% 16.9%;
+    --accent: 260 80% 65%; /* Purple */
     --accent-foreground: 210 20% 98%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 20% 98%;
 
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 206 100% 50%;
+    --border: 227 15% 30%;
+    --input: 227 15% 25%;
+    --ring: 212 100% 60%;
     
     --vivid-pink: 327 100% 60%;
     
@@ -53,7 +54,7 @@
 @layer components {
   /* Glass Card */
   .card-glass {
-    background: rgba(22, 29, 47, 0.45);
+    background: rgba(28, 35, 51, 0.45);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -66,7 +67,7 @@
 
   /* Gradient Button */
   .btn-gradient {
-     background-image: linear-gradient(45deg, hsl(var(--primary)), hsl(var(--vivid-pink)));
+     background-image: linear-gradient(45deg, hsl(var(--primary)), hsl(var(--accent)));
      background-size: 200% auto;
      transition: background-position 0.4s ease;
   }
@@ -100,6 +101,79 @@
   .shine-effect:hover::after {
     opacity: 1;
     transform: translateX(25%) rotate(25deg);
+  }
+
+  /* New BMC styles */
+  .bmc-container {
+    @apply bg-no-repeat bg-cover bg-center rounded-2xl p-6 lg:p-10 relative flex flex-col;
+    background-image: url('https://images.unsplash.com/photo-1517423568346-d5a690224de6?q=80&w=1920&auto=format&fit=crop'); /* Replace with a fitting dark tech background */
+    aspect-ratio: 16/9;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+  .bmc-container::before {
+    content: '';
+    @apply absolute inset-0 bg-background/80 backdrop-blur-sm rounded-2xl;
+  }
+
+  .bmc-header {
+    @apply relative flex justify-between items-center mb-6;
+  }
+
+  .bmc-title {
+    @apply text-3xl md:text-4xl font-bold text-white;
+  }
+  
+  .bmc-logo {
+    @apply relative h-12 w-40;
+  }
+
+  .bmc-grid {
+    @apply relative grid grid-cols-5 gap-4 flex-grow;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+
+  .bmc-block {
+    @apply p-4 rounded-xl flex flex-col relative overflow-hidden transition-all duration-300;
+    border: 1px solid transparent;
+  }
+  
+  .bmc-block::before {
+    content: '';
+    @apply absolute -inset-px rounded-xl border-2 border-dashed opacity-30 transition-all duration-300;
+  }
+
+  .bmc-block:hover::before {
+     @apply opacity-70;
+  }
+
+  .bmc-block-purple {
+     background-color: rgba(147, 112, 219, 0.15); /* Purple, translucent */
+     border-color: rgba(147, 112, 219, 0.5);
+  }
+   .bmc-block-purple::before {
+     border-color: rgba(147, 112, 219, 0.8);
+   }
+
+  .bmc-block-blue {
+    background-color: rgba(0, 122, 255, 0.15); /* Blue, translucent */
+    border-color: rgba(0, 122, 255, 0.5);
+  }
+  .bmc-block-blue::before {
+     border-color: rgba(0, 122, 255, 0.8);
+   }
+
+
+  .bmc-block .lucide {
+    @apply w-7 h-7 text-white/90;
+  }
+
+  .bmc-footer {
+    @apply relative flex justify-between items-center mt-6 text-xs text-white/60;
+  }
+  
+  .bmc-footer span {
+    @apply bg-black/20 px-3 py-1 rounded-full;
   }
 }
 

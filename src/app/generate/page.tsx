@@ -27,6 +27,12 @@ import {
   Gem,
   Sparkles,
   ArrowLeft,
+  LayoutList,
+  Globe,
+  BarChart,
+  Wallet,
+  Gift,
+  Link as LinkIcon
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { generateBMC, GenerateBMCInput, GenerateBMCOutput } from '@/ai/flows/generate-bmc';
@@ -59,6 +65,8 @@ type BMCBlock = {
   title: string;
   icon: React.ReactNode;
   keyProp: keyof GenerateBMCOutput;
+  description: string;
+  color: 'purple' | 'blue';
 };
 
 const initialColors = {
@@ -124,7 +132,6 @@ function BmcGeneratorPageClient() {
   const [bmcData, setBmcData] = useState<GenerateBMCOutput | null>(null);
   const [suggestions, setSuggestions] = useState<GetAIImprovementSuggestionsOutput | null>(null);
   
-  const [colors, setColors] = useState(initialColors);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [removeWatermark, setRemoveWatermark] = useState(false);
   
@@ -150,7 +157,6 @@ function BmcGeneratorPageClient() {
 
                     setBmcData(canvasData);
                     setFormData(formData);
-                    setColors(data.colors || initialColors);
                     setLogoUrl(data.logoUrl || null);
                     setRemoveWatermark(data.removeWatermark || false);
 
@@ -229,7 +235,6 @@ function BmcGeneratorPageClient() {
         const fullCanvasData = {
             canvasData: bmcData,
             formData: formData,
-            colors: colors,
             logoUrl: logoUrl,
             removeWatermark: removeWatermark,
             userId: user.uid,
@@ -274,10 +279,10 @@ function BmcGeneratorPageClient() {
             useCORS: true,
             backgroundColor: null, 
             scale: scale, 
-            windowWidth: 1920,
-            windowHeight: 1080,
+            windowWidth: styledCanvasRef.current.scrollWidth,
+            windowHeight: styledCanvasRef.current.scrollHeight,
         }).then((canvas) => {
-            const imgData = canvas.toDataURL('image/png');
+            const imgData = canvas.toDataURL('image/png', 1.0);
             const pdf = new jsPDF({
                 orientation: 'landscape',
                 unit: 'px',
@@ -343,29 +348,17 @@ function BmcGeneratorPageClient() {
       reader.readAsDataURL(file);
     }
   };
-  
-  const handleColorChange = (key: keyof typeof colors, value: string) => {
-    setColors(prev => ({...prev, [key]: value}));
-  };
 
-  const canvasStyle = {
-    '--theme-primary': colors.primary,
-    '--theme-card': colors.card,
-    '--theme-background': colors.background,
-    '--theme-foreground': colors.foreground,
-  } as React.CSSProperties;
-
-
-  const bmcLayout: { title: string; key: keyof GenerateBMCOutput; gridClass: string }[] = [
-      { title: "Key Partners", key: "keyPartnerships", gridClass: "col-span-2" },
-      { title: "Key Activities", key: "keyActivities", gridClass: "col-span-1" },
-      { title: "Value Propositions", key: "valuePropositions", gridClass: "col-span-2 row-span-2" },
-      { title: "Customer Relationships", key: "customerRelationships", gridClass: "col-span-1" },
-      { title: "Customer Segments", key: "customerSegments", gridClass: "col-span-2" },
-      { title: "Key Resources", key: "keyResources", gridClass: "col-span-1" },
-      { title: "Channels", key: "channels", gridClass: "col-span-1" },
-      { title: "Cost Structure", key: "costStructure", gridClass: "col-span-4" },
-      { title: "Revenue Streams", key: "revenueStreams", gridClass: "col-span-4" },
+  const bmcLayout: BMCBlock[] = [
+    { title: "Key Resources", keyProp: "keyResources", description: "Determine the essential assets needed to operate your business.", icon: <Wrench />, color: 'purple' },
+    { title: "Key Activities", keyProp: "keyActivities", description: "Outline the most important tasks for your business success.", icon: <LayoutList />, color: 'blue' },
+    { title: "Channels", keyProp: "channels", description: "Discover the best ways to reach your customers.", icon: <Globe />, color: 'purple' },
+    { title: "Revenue Streams", keyProp: "revenueStreams", description: "Explore different ways to generate income.", icon: <BarChart />, color: 'blue' },
+    { title: "Cost Structure", keyProp: "costStructure", description: "Analyze your business costs and streamline expenses.", icon: <Wallet />, color: 'purple' },
+    { title: "Customer Segments", keyProp: "customerSegments", description: "Identify and target your key customers.", icon: <Users />, color: 'purple' },
+    { title: "Customer Relationships", keyProp: "customerRelationships", description: "Build and maintain strong connections with your customers.", icon: <Handshake />, color: 'blue' },
+    { title: "Value Propositions", keyProp: "valuePropositions", description: "Define what makes your product or service unique.", icon: <Gift />, color: 'purple' },
+    { title: "Key Partnerships", keyProp: "keyPartnerships", description: "Identify the essential partners and suppliers.", icon: <LinkIcon />, color: 'blue' },
   ];
 
   const renderStep = () => {
@@ -510,20 +503,6 @@ function BmcGeneratorPageClient() {
                                 </label>
                               </Button>
                             </div>
-                            <div>
-                               <Label className="font-semibold text-base mb-2 block text-foreground">Color Theme</Label>
-                               <div className="grid grid-cols-2 gap-4">
-                                  {Object.entries(colors).map(([key, value]) => (
-                                      <div key={key} className="flex flex-col gap-1">
-                                          <Label htmlFor={`color-${key}`} className="text-sm capitalize text-muted-foreground">{key}</Label>
-                                          <div className="relative h-10 w-full rounded-md border border-border overflow-hidden">
-                                              <input type="color" id={`color-${key}`} value={value} onChange={(e) => handleColorChange(key as keyof typeof colors, e.target.value)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"/>
-                                              <div className="w-full h-full" style={{ backgroundColor: value }} />
-                                          </div>
-                                      </div>
-                                  ))}
-                               </div>
-                            </div>
                             <div className="flex items-center justify-between pt-2">
                               <Label htmlFor="remove-watermark" className="font-semibold text-base flex items-center gap-2">
                                 <Gem className="text-vivid-pink" /> Remove Watermark
@@ -547,27 +526,46 @@ function BmcGeneratorPageClient() {
 
                     {/* Right Column: Canvas */}
                     <div className="lg:col-span-3">
-                         <div ref={styledCanvasRef} style={canvasStyle} className="w-full h-full bg-background rounded-2xl p-6 border-2 border-border relative">
-                            {logoUrl && (
-                                <div className="absolute top-4 right-4 h-16 w-32">
-                                    <Image src={logoUrl} alt="Logo" layout="fill" objectFit="contain" />
-                                </div>
-                            )}
-                            <div className="grid grid-cols-8 grid-rows-3 gap-4 h-full">
-                                {bmcLayout.map(block => (
-                                    <BmcCard 
-                                        key={block.key}
-                                        title={block.title}
-                                        content={bmcData[block.key]}
-                                        className={block.gridClass}
+                         <div ref={styledCanvasRef} className="bmc-container">
+                            <div className="bmc-header">
+                                <h2 className="bmc-title">Business Model Canvas</h2>
+                                {logoUrl && (
+                                    <div className="bmc-logo">
+                                        <Image src={logoUrl} alt="Logo" layout="fill" objectFit="contain" />
+                                    </div>
+                                )}
+                            </div>
+                            <div className="bmc-grid">
+                                {bmcLayout.slice(0, 5).map(block => (
+                                    <BmcBlock 
+                                        key={block.keyProp}
+                                        {...block}
+                                        content={bmcData[block.keyProp]}
                                         isEditing={isEditing}
-                                        onChange={e => handleBmcDataChange(block.key, e.target.value)}
+                                        onChange={e => handleBmcDataChange(block.keyProp, e.target.value)}
+                                    />
+                                ))}
+                                {bmcLayout.slice(5, 9).map(block => (
+                                    <BmcBlock 
+                                        key={block.keyProp}
+                                        {...block}
+                                        content={bmcData[block.keyProp]}
+                                        isEditing={isEditing}
+                                        onChange={e => handleBmcDataChange(block.keyProp, e.target.value)}
+                                        className={cn({
+                                          'col-span-2': block.keyProp === 'customerRelationships',
+                                        })}
                                     />
                                 ))}
                             </div>
+                             <div className="bmc-footer">
+                                <span>Designed For: {user?.displayName || 'Jamie Chastain'}</span>
+                                <span>Designed By: Hannah Morales</span>
+                                <span>Date: {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                            </div>
                             {!removeWatermark && (
                                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                    <p className="text-[8rem] font-bold text-white/5 select-none">
+                                    <p className="text-[8rem] font-bold text-white/5 select-none -rotate-12">
                                         InnoCanvas
                                     </p>
                                 </div>
@@ -596,15 +594,20 @@ function BmcGeneratorPageClient() {
     <div className="min-h-screen w-full bg-background text-foreground p-4 md:p-8">
        <header className="flex justify-between items-center mb-8">
           <Logo />
-           {step > 1 && (
-            <div className="flex items-center gap-2 text-sm font-medium">
-                <span className={step === 1 ? 'text-primary' : 'text-muted-foreground'}>Idea</span>
-                <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                <span className={step === 2 ? 'text-primary' : 'text-muted-foreground'}>Refine</span>
-                <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                <span className={step === 3 ? 'text-primary' : 'text-muted-foreground'}>Canvas</span>
-            </div>
-           )}
+           <div className="flex items-center gap-4">
+            <Link href="/my-canvases">
+                <Button variant="secondary">Back to My Canvases</Button>
+            </Link>
+             {step > 1 && (
+              <div className="hidden md:flex items-center gap-2 text-sm font-medium">
+                  <span className={step === 1 ? 'text-primary' : 'text-muted-foreground'}>Idea</span>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  <span className={step === 2 ? 'text-primary' : 'text-muted-foreground'}>Refine</span>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  <span className={step === 3 ? 'text-primary' : 'text-muted-foreground'}>Canvas</span>
+              </div>
+             )}
+           </div>
         </header>
       <main className="flex flex-col items-center justify-center">
         <AnimatePresence mode="wait">{renderStep()}</AnimatePresence>
@@ -633,21 +636,29 @@ function BmcGeneratorPageClient() {
   );
 }
 
-const BmcCard = ({ title, content, className, isEditing, onChange }: { title: string; content: string; className?: string, isEditing: boolean, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void }) => {
+const BmcBlock = ({ title, content, description, icon, className, isEditing, onChange, color }: { title: string; content: string; description: string; icon: React.ReactNode; className?: string, isEditing: boolean, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void, color: 'purple' | 'blue' }) => {
     return (
-        <div className={cn("bg-card p-4 rounded-lg flex flex-col gap-2", className)} style={{ backgroundColor: 'var(--theme-card)'}}>
-            <h3 className="text-sm font-bold" style={{ color: 'var(--theme-primary)'}}>{title}</h3>
-            {isEditing ? (
-                 <Textarea 
-                    value={content}
-                    onChange={onChange}
-                    className="text-xs bg-background/50 flex-grow resize-none"
-                 />
-            ) : (
-                <p className="text-xs text-foreground whitespace-pre-wrap flex-grow" style={{ color: 'var(--theme-foreground)'}}>
-                    {content}
-                </p>
-            )}
+        <div className={cn("bmc-block", `bmc-block-${color}`, className)}>
+            <div className='flex items-start gap-3'>
+              <div className="b-10">{icon}</div>
+              <div>
+                <h3 className="text-lg font-bold">{title}</h3>
+                {isEditing ? null : <p className="text-xs text-white/70 mt-1">{description}</p>}
+              </div>
+            </div>
+            <div className="mt-2 flex-grow">
+              {isEditing ? (
+                  <Textarea 
+                      value={content}
+                      onChange={onChange}
+                      className="w-full h-full bg-transparent border-0 text-sm p-0 focus-visible:ring-0 resize-none text-white"
+                  />
+              ) : (
+                  <p className="text-sm text-white/90 whitespace-pre-wrap">
+                      {content}
+                  </p>
+              )}
+            </div>
         </div>
     );
 };
@@ -664,5 +675,3 @@ export default function BmcGeneratorPage() {
     </Suspense>
   )
 }
-
-    
