@@ -3,12 +3,13 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Upload, Palette, Gem, Download, Sparkles, Loader } from 'lucide-react';
+import { Upload, Palette, Gem, Download, Sparkles, Loader, ArrowLeft } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { doc, getDoc } from 'firebase/firestore';
@@ -38,20 +39,8 @@ const initialColors = {
     foreground: '#f0f8ff',
 }
 
-const bmcOrder: (keyof GenerateBMCOutput)[] = [
-    'keyPartnerships',
-    'keyActivities',
-    'valuePropositions',
-    'customerRelationships',
-    'customerSegments',
-    'keyResources',
-    'channels',
-    'costStructure',
-    'revenueStreams',
-];
-
-const BmcBlock = ({ title, content, className, style }: { title: string, content: string, className?: string, style: React.CSSProperties }) => (
-    <div className={cn("p-4 rounded-lg flex flex-col min-h-[140px]", className)} style={{ backgroundColor: 'var(--theme-background)', color: 'var(--theme-foreground)', ...style }}>
+const BmcBlock = ({ title, content, className, style }: { title: string, content: string, className?: string, style?: React.CSSProperties }) => (
+    <div className={cn("p-4 rounded-lg flex flex-col min-h-[140px]", className)} style={{ backgroundColor: 'var(--theme-card)', color: 'var(--theme-foreground)', ...style }}>
         <h3 className="font-bold text-sm mb-2" style={{ color: 'var(--theme-primary)' }}>
             {title.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
         </h3>
@@ -198,7 +187,12 @@ export default function PreviewPage() {
 
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col" style={{ backgroundColor: colors.background }}>
-      <main className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-8 p-8">
+       <header className="p-4 flex justify-start">
+         <Link href="/my-canvases">
+            <Button variant="secondary"><ArrowLeft className="mr-2"/>Back to My Canvases</Button>
+         </Link>
+       </header>
+      <main className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-8 p-8 pt-0">
         {/* Left Column: Branding Controls */}
         <div className="lg:col-span-1 flex flex-col gap-8">
           <div className="card-glass p-6 rounded-2xl">
@@ -213,7 +207,6 @@ export default function PreviewPage() {
                     Upload Logo
                   </label>
                 </Button>
-                 {logoUrl && <Image src={logoUrl} alt="Uploaded logo" width={100} height={40} className="mt-4 rounded-lg object-contain" />}
               </div>
               <div>
                  <Label className="font-semibold text-lg mb-2 block text-foreground">Color Theme</Label>
@@ -252,29 +245,31 @@ export default function PreviewPage() {
 
         {/* Right Column: Canvas Preview */}
         <div className="lg:col-span-3 rounded-2xl p-6 flex items-center justify-center" style={canvasStyle}>
-           <div ref={canvasRef} className="aspect-[1.618] w-full max-w-7xl grid grid-cols-5 gap-2 p-2 rounded-xl" style={{ backgroundColor: 'var(--theme-card)'}}>
+           <div ref={canvasRef} className="aspect-[1.618] w-full max-w-7xl grid grid-cols-5 gap-2 p-4 rounded-xl relative" style={{ backgroundColor: 'var(--theme-card)'}}>
               
-                {/* Row 1 */}
-                <BmcBlock title="Key Partners" content={bmcData.keyPartnerships} style={{ gridRow: '1 / 3' }} />
-                <div className="col-span-1 grid grid-rows-2 gap-2">
+                {/* Top Row */}
+                 <div className="lg:col-span-1 flex flex-col gap-2">
+                    <div className="h-1/4">
+                       {logoUrl && <Image src={logoUrl} alt="Logo" width={80} height={30} className="object-contain" />}
+                    </div>
+                    <BmcBlock title="Key Partners" content={bmcData.keyPartnerships} className='h-3/4'/>
+                 </div>
+
+                <div className="lg:col-span-1 grid grid-rows-2 gap-2">
                     <BmcBlock title="Key Activities" content={bmcData.keyActivities} />
                     <BmcBlock title="Key Resources" content={bmcData.keyResources} />
                 </div>
-                <BmcBlock title="Value Propositions" content={bmcData.valuePropositions} style={{ gridRow: '1 / 3' }} />
-                <div className="col-span-1 grid grid-rows-2 gap-2">
+                <BmcBlock title="Value Propositions" content={bmcData.valuePropositions} />
+                <div className="lg:col-span-1 grid grid-rows-2 gap-2">
                      <BmcBlock title="Customer Relationships" content={bmcData.customerRelationships} />
                      <BmcBlock title="Channels" content={bmcData.channels} />
                 </div>
-                <BmcBlock title="Customer Segments" content={bmcData.customerSegments} style={{ gridRow: '1 / 3' }} />
+                <BmcBlock title="Customer Segments" content={bmcData.customerSegments} />
 
-                {/* Row 2 - Spanning blocks */}
-                <BmcBlock title="Cost Structure" content={bmcData.costStructure} style={{ gridColumn: '1 / 3' }} />
-                <BmcBlock title="Revenue Streams" content={bmcData.revenueStreams} style={{ gridColumn: '3 / 6' }} />
+                {/* Bottom Row */}
+                <BmcBlock title="Cost Structure" content={bmcData.costStructure} className="lg:col-span-2" />
+                <BmcBlock title="Revenue Streams" content={bmcData.revenueStreams} className="lg:col-span-3" />
 
-                 {/* Logo & Watermark */}
-                 <div className="absolute top-4 left-4">
-                    {logoUrl && <Image src={logoUrl} alt="Logo" width={80} height={30} className="object-contain" />}
-                 </div>
                  {!removeWatermark && (
                     <div className='absolute bottom-4 right-4 text-xs' style={{ color: 'var(--theme-foreground)', opacity: 0.5}}>
                         Powered by InnoCanvas
@@ -320,3 +315,5 @@ export default function PreviewPage() {
     </div>
   );
 }
+
+    
