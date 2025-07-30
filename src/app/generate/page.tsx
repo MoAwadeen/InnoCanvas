@@ -593,36 +593,36 @@ function BmcGeneratorPageClient() {
                                 {logoUrl && <div className="relative w-24 h-12"><Image src={logoUrl} alt="Logo" layout="fill" objectFit="contain" /></div>}
                              </div>
 
-                             {/* Classic Grid */}
-                             <div className="flex-grow grid grid-cols-10 grid-rows-6 gap-4 relative z-10">
-                                <div className="col-start-1 col-span-2 row-start-1 row-span-3">
-                                    <StyledBmcBlock {...bmcLayout[0]} content={bmcData[bmcLayout[0].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[0].keyProp, e.target.value)} colors={colors} />
+                            <div className="flex-grow flex flex-col gap-4 relative z-10">
+                                <div className="flex flex-row gap-4 flex-grow">
+                                    <div className="flex flex-col gap-4 w-1/4">
+                                        <StyledBmcBlock {...bmcLayout[0]} content={bmcData[bmcLayout[0].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[0].keyProp, e.target.value)} colors={colors} />
+                                    </div>
+                                    <div className="flex flex-col gap-4 w-1/2">
+                                        <StyledBmcBlock {...bmcLayout[1]} content={bmcData[bmcLayout[1].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[1].keyProp, e.target.value)} colors={colors} />
+                                        <StyledBmcBlock {...bmcLayout[2]} content={bmcData[bmcLayout[2].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[2].keyProp, e.target.value)} colors={colors} />
+                                    </div>
+                                    <div className="flex flex-col gap-4 w-1/4">
+                                        <StyledBmcBlock {...bmcLayout[4]} content={bmcData[bmcLayout[4].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[4].keyProp, e.target.value)} colors={colors} />
+                                        <StyledBmcBlock {...bmcLayout[5]} content={bmcData[bmcLayout[5].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[5].keyProp, e.target.value)} colors={colors} />
+                                    </div>
                                 </div>
-                                <div className="col-start-3 col-span-2 row-start-1 row-span-2">
-                                     <StyledBmcBlock {...bmcLayout[1]} content={bmcData[bmcLayout[1].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[1].keyProp, e.target.value)} colors={colors} />
+                                <div className="flex flex-row gap-4 flex-grow">
+                                    <div className="w-1/4 h-full">
+                                        <StyledBmcBlock {...bmcLayout[6]} content={bmcData[bmcLayout[6].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[6].keyProp, e.target.value)} colors={colors} />
+                                    </div>
+                                    <div className="w-3/4 h-full">
+                                        <StyledBmcBlock {...bmcLayout[3]} content={bmcData[bmcLayout[3].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[3].keyProp, e.target.value)} colors={colors} />
+                                    </div>
                                 </div>
-                                <div className="col-start-3 col-span-2 row-start-3 row-span-2">
-                                     <StyledBmcBlock {...bmcLayout[2]} content={bmcData[bmcLayout[2].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[2].keyProp, e.target.value)} colors={colors} />
+                                <div className="flex flex-row gap-4 h-1/3">
+                                    <div className="w-1/2">
+                                      <StyledBmcBlock {...bmcLayout[7]} content={bmcData[bmcLayout[7].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[7].keyProp, e.target.value)} colors={colors} />
+                                    </div>
+                                     <div className="w-1/2">
+                                      <StyledBmcBlock {...bmcLayout[8]} content={bmcData[bmcLayout[8].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[8].keyProp, e.target.value)} colors={colors} />
+                                    </div>
                                 </div>
-                                <div className="col-start-5 col-span-2 row-start-1 row-span-4">
-                                     <StyledBmcBlock {...bmcLayout[3]} content={bmcData[bmcLayout[3].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[3].keyProp, e.target.value)} colors={colors} />
-                                </div>
-                                <div className="col-start-7 col-span-2 row-start-1 row-span-2">
-                                     <StyledBmcBlock {...bmcLayout[4]} content={bmcData[bmcLayout[4].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[4].keyProp, e.target.value)} colors={colors} />
-                                </div>
-                                 <div className="col-start-7 col-span-2 row-start-3 row-span-2">
-                                     <StyledBmcBlock {...bmcLayout[5]} content={bmcData[bmcLayout[5].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[5].keyProp, e.target.value)} colors={colors} />
-                                </div>
-                                <div className="col-start-9 col-span-2 row-start-1 row-span-3">
-                                    <StyledBmcBlock {...bmcLayout[6]} content={bmcData[bmcLayout[6].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[6].keyProp, e.target.value)} colors={colors} />
-                                </div>
-                                 <div className="col-start-1 col-span-5 row-start-5 row-span-2">
-                                     <StyledBmcBlock {...bmcLayout[7]} content={bmcData[bmcLayout[7].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[7].keyProp, e.target.value)} colors={colors} />
-                                </div>
-                                 <div className="col-start-6 col-span-5 row-start-5 row-span-2">
-                                     <StyledBmcBlock {...bmcLayout[8]} content={bmcData[bmcLayout[8].keyProp]} isEditing={isEditing} onChange={e => handleBmcDataChange(bmcLayout[8].keyProp, e.target.value)} colors={colors} />
-                                </div>
-
                              </div>
                         </div>
                     </div>
