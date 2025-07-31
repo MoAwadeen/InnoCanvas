@@ -15,12 +15,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader } from "lucide-react";
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, User } from 'firebase/auth';
-import { auth, db } from '@/lib/firebase';
+// import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, User } from 'firebase/auth'; // Remove Firebase imports
+// import { auth, db } from '@/lib/firebase'; // Remove Firebase imports
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from "@/hooks/useAuth";
-import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
+// import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore"; // Remove Firestore imports
 import { Logo } from "@/components/logo";
+import { supabase } from '@/lib/supabase'; // Import Supabase client
+import { User } from '@supabase/supabase-js'; // Import Supabase User type
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -32,29 +34,38 @@ export default function LoginPage() {
 
   useEffect(() => {
     // Redirect if user is already logged in and data is loaded
-    if (!authLoading && user && userData) {
-        if (!userData.age || !userData.country || !userData.useCase) {
-            router.push('/profile');
-        } else {
-            router.push('/my-canvases');
-        }
+    if (!authLoading && user) { // Check for user existence
+        // We will refine the redirection logic after migrating user data
+        router.push('/my-canvases'); // Redirect to a default page for now
     }
-  }, [user, userData, authLoading, router]);
+  }, [user, authLoading, router]); // Depend on user and authLoading
 
   const handleSuccessfulLogin = async (loggedInUser: User) => {
     // The useEffect will handle redirection once userData is loaded by the hook
     toast({
         title: 'Login Successful!',
-        description: `Welcome ${loggedInUser.displayName || 'back'}!`,
+        description: `Welcome ${loggedInUser.email || 'back'}!`,
     });
+    // No need to manually fetch or set user data here for now
   }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      await handleSuccessfulLogin(userCredential.user);
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data.user) {
+        await handleSuccessfulLogin(data.user);
+      }
+
     } catch (error: any) {
       toast({
         title: 'Login Failed',
@@ -68,27 +79,20 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     setIsLoading(true);
-    const provider = new GoogleAuthProvider();
     try {
-      const result = await signInWithPopup(auth, provider);
-       const loggedInUser = result.user;
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+            redirectTo: `${window.location.origin}/auth/callback` // Configure this in Supabase
+        }
+      });
 
-      const userDocRef = doc(db, "users", loggedInUser.uid);
-      const userDoc = await getDoc(userDocRef);
-
-      if (!userDoc.exists()) {
-        await setDoc(userDocRef, {
-            uid: loggedInUser.uid,
-            fullName: loggedInUser.displayName,
-            email: loggedInUser.email,
-            createdAt: serverTimestamp(),
-            age: '',
-            gender: '',
-            country: '',
-            useCase: '',
-        });
+      if (error) {
+        throw error;
       }
-      await handleSuccessfulLogin(loggedInUser);
+
+      // Supabase will handle the redirect and session creation
+
     } catch (error: any) {
        toast({
         title: 'Login Failed',
@@ -178,5 +182,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-    
