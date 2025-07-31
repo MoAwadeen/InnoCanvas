@@ -18,18 +18,24 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { countries } from "@/lib/countries"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { useAuth } from "@/hooks/useAuth"
-import { auth, db } from "@/lib/firebase"
-import { doc, updateDoc } from "firebase/firestore"
-import { signOut, updateProfile as updateAuthProfile } from "firebase/auth"
+import { useAuth, UserProfile } from "@/hooks/useAuth"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { useState, useEffect } from "react"
 import { Logo } from "@/components/logo"
+import { supabase } from "@/lib/supabase"
+
+type ProfileFormData = {
+    fullName: string;
+    age: string;
+    gender: string;
+    country: string;
+    useCase: string;
+};
 
 export default function ProfilePage() {
     const { user, userData, loading: authLoading } = useAuth();
-    const [profileData, setProfileData] = useState({
+    const [profileData, setProfileData] = useState<ProfileFormData>({
         fullName: '',
         age: '',
         gender: '',
@@ -43,14 +49,14 @@ export default function ProfilePage() {
     useEffect(() => {
         if (userData) {
             setProfileData({
-                fullName: userData.fullName || user?.displayName || '',
-                age: userData.age || '',
+                fullName: userData.full_name || '',
+                age: userData.age?.toString() || '',
                 gender: userData.gender || '',
                 country: userData.country || '',
-                useCase: userData.useCase || '',
+                useCase: userData.use_case || '',
             });
         } else if (user) {
-             setProfileData(prev => ({ ...prev, fullName: user.displayName || '' }));
+             setProfileData(prev => ({ ...prev, fullName: user.user_metadata.full_name || user.email || '' }));
         }
     }, [userData, user]);
     
@@ -63,18 +69,25 @@ export default function ProfilePage() {
         if (!user) return;
         setIsLoading(true);
         try {
-            const userRef = doc(db, 'users', user.uid);
-            await updateDoc(userRef, {
-                fullName: profileData.fullName,
-                age: profileData.age,
+            const updates: Partial<UserProfile> = {
+                id: user.id,
+                full_name: profileData.fullName,
+                age: parseInt(profileData.age, 10),
                 gender: profileData.gender,
                 country: profileData.country,
-                useCase: profileData.useCase
-            });
+                use_case: profileData.useCase,
+                updated_at: new Date().toISOString(),
+            };
+
+            const { error } = await supabase.from('profiles').upsert(updates);
             
-            if (auth.currentUser && auth.currentUser.displayName !== profileData.fullName) {
-                await updateAuthProfile(auth.currentUser, { displayName: profileData.fullName });
-            }
+            if (error) throw error;
+            
+            const { error: userUpdateError } = await supabase.auth.updateUser({
+                data: { full_name: profileData.fullName }
+            })
+
+            if (userUpdateError) throw userUpdateError;
 
             toast({
                 title: 'Profile Updated',
@@ -96,18 +109,19 @@ export default function ProfilePage() {
     
     const handleLogout = async () => {
         try {
-        await signOut(auth);
-        toast({
-            title: 'Logged Out',
-            description: 'You have been successfully logged out.',
-        });
-        router.push('/login');
-        } catch (error) {
-        toast({
-            title: 'Logout Failed',
-            description: 'There was an error logging you out.',
-            variant: 'destructive',
-        });
+            const { error } = await supabase.auth.signOut();
+            if (error) throw error;
+            toast({
+                title: 'Logged Out',
+                description: 'You have been successfully logged out.',
+            });
+            router.push('/login');
+        } catch (error: any) {
+            toast({
+                title: 'Logout Failed',
+                description: 'There was an error logging you out.',
+                variant: 'destructive',
+            });
         }
     };
     
@@ -119,8 +133,8 @@ export default function ProfilePage() {
         );
     }
     
-    const displayName = profileData.fullName || user.displayName || 'Innovator';
-    const displayInitial = (profileData.fullName || user.displayName || 'I').charAt(0).toUpperCase();
+    const displayName = profileData.fullName || user.email || 'Innovator';
+    const displayInitial = displayName.charAt(0).toUpperCase();
 
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center p-4 md:p-8">
@@ -139,7 +153,7 @@ export default function ProfilePage() {
             <CardHeader>
                 <div className="flex items-center gap-4">
                     <Avatar className="w-20 h-20 border-2 border-primary">
-                        <AvatarImage src={user.photoURL || `https://placehold.co/100x100.png/000987/FFFFFF?text=${displayInitial}`} alt={displayName} />
+                        <AvatarImage src={userData?.avatar_url || `https://placehold.co/100x100.png/0a0f1c/FFFFFF?text=${displayInitial}`} alt={displayName} />
                         <AvatarFallback>{displayInitial}</AvatarFallback>
                     </Avatar>
                     <div>

@@ -24,13 +24,11 @@ import {
 import { PlusCircle, Trash2, User, LogOut, Loader } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
-import { auth, db } from '@/lib/firebase';
-import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
-import { useEffect, useState } from 'react';
-import { collection, query, onSnapshot, deleteDoc, doc, orderBy } from 'firebase/firestore';
+import { useEffect, useState, useCallback } from 'react';
 import { Logo } from '@/components/logo';
+import { supabase } from '@/lib/supabase';
 
 interface Canvas {
   id: string;
@@ -40,66 +38,89 @@ interface Canvas {
 }
 
 export default function MyCanvasesPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, userData, loading: authLoading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const [canvases, setCanvases] = useState<Canvas[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const fetchCanvases = useCallback(async () => {
+    if (!user) return;
+    setIsLoading(true);
+    try {
+        const { data, error } = await supabase
+            .from('canvases')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        
+        const userCanvases = data.map(canvas => {
+            const canvasData = canvas.canvas_data || {};
+            const previewContent = [canvasData.valuePropositions, canvasData.customerSegments, canvasData.revenueStreams].filter(Boolean).join(' · ');
+            return {
+                id: canvas.id,
+                title: canvas.business_description || 'Untitled Canvas',
+                preview: previewContent,
+                date: new Date(canvas.created_at).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                }),
+            };
+        });
+        setCanvases(userCanvases);
+    } catch (error: any) {
+        console.error("Error fetching canvases: ", error);
+        toast({
+            title: 'Error',
+            description: 'Could not fetch your canvases.',
+            variant: 'destructive'
+        });
+    } finally {
+        setIsLoading(false);
+    }
+  }, [user, toast]);
+
   useEffect(() => {
-    if (authLoading) return; 
+    if (authLoading) return;
     if (!user) {
       router.push('/login');
       return;
     }
+    fetchCanvases();
+  }, [user, authLoading, router, fetchCanvases]);
 
-    setIsLoading(true);
-    const q = query(collection(db, 'users', user.uid, 'canvases'), orderBy('createdAt', 'desc'));
+  useEffect(() => {
+    if(!user) return;
 
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const userCanvases = querySnapshot.docs.map(doc => {
-          const data = doc.data();
-          const canvasData = data.canvasData || {};
-          const previewContent = [canvasData.valuePropositions, canvasData.customerSegments, canvasData.revenueStreams].filter(Boolean).join(' · ');
-          return {
-            id: doc.id,
-            title: data.businessDescription || 'Untitled Canvas',
-            preview: previewContent,
-            date: data.createdAt?.toDate().toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            }) || new Date().toLocaleDateString(),
-          }
-      });
-      setCanvases(userCanvases);
-      setIsLoading(false);
-    }, (error) => {
-      console.error("Error fetching canvases: ", error);
-      toast({
-        title: 'Error',
-        description: 'Could not fetch your canvases.',
-        variant: 'destructive'
-      });
-      setIsLoading(false);
-    });
+    const channel = supabase.channel(`public:canvases:user_id=eq.${user.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'canvases', filter: `user_id=eq.${user.id}` },
+        (payload) => {
+           fetchCanvases();
+        }
+      ).subscribe();
 
-    return () => unsubscribe();
+    return () => {
+        supabase.removeChannel(channel);
+    }
+  }, [user, fetchCanvases]);
 
-  }, [user, authLoading, router, toast]);
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
       toast({
         title: 'Logged Out',
         description: 'You have been successfully logged out.',
       });
       router.push('/login');
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: 'Logout Failed',
-        description: 'There was an error logging you out.',
+        description: error.message,
         variant: 'destructive',
       });
     }
@@ -108,21 +129,23 @@ export default function MyCanvasesPage() {
   const handleDelete = async (canvasId: string) => {
     if (!user) return;
     try {
-      await deleteDoc(doc(db, 'users', user.uid, 'canvases', canvasId));
+      const { error } = await supabase.from('canvases').delete().eq('id', canvasId);
+      if (error) throw error;
+
       toast({
         title: 'Canvas Deleted',
         description: 'Your canvas has been successfully deleted.',
       });
-    } catch (error) {
+    } catch (error: any) {
        toast({
         title: 'Error',
-        description: 'Failed to delete canvas.',
+        description: error.message,
         variant: 'destructive'
       });
     }
   };
   
-  const displayName = user?.displayName || 'Innovator';
+  const displayName = userData?.full_name || user?.email || 'Innovator';
 
   if (authLoading) {
       return (

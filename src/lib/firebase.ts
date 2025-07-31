@@ -1,8 +1,9 @@
 
-// Import the functions you need from the SDKs you need
+// This file is no longer needed for core authentication and can be removed
+// if all functionality is migrated to Supabase.
+// For now, we leave it in case some minor feature still depends on it.
+
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -16,7 +17,9 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
-const db = getFirestore(app);
 
-export { app, auth, db };
+// We are now using Supabase for Auth and DB.
+// const auth = getAuth(app);
+// const db = getFirestore(app);
+
+export { app };

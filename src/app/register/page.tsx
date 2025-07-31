@@ -19,9 +19,6 @@ import { Loader } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { countries } from "@/lib/countries";
-import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile } from "firebase/auth";
-import { auth, db } from "@/lib/firebase";
-import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useForm } from 'react-hook-form';
@@ -29,6 +26,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Logo } from "@/components/logo";
+import { supabase } from "@/lib/supabase";
 
 
 const formSchema = z.object({
@@ -80,27 +78,37 @@ export default function RegisterPage() {
 
   const handleSignUp = async (values: z.infer<typeof formSchema>) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-      const newUser = userCredential.user;
-      
-      await updateProfile(newUser, { displayName: values.fullName });
-
-      await setDoc(doc(db, "users", newUser.uid), {
-        uid: newUser.uid,
-        fullName: values.fullName,
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: values.email,
-        age: values.age,
-        gender: values.gender,
-        country: values.country,
-        useCase: values.useCase,
-        createdAt: serverTimestamp(),
+        password: values.password,
+        options: {
+          data: {
+            full_name: values.fullName,
+          }
+        }
       });
+      
+      if (signUpError) throw signUpError;
+      if (!signUpData.user) throw new Error("User not created.");
+
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: signUpData.user.id,
+          full_name: values.fullName,
+          age: values.age,
+          gender: values.gender,
+          country: values.country,
+          use_case: values.useCase,
+        });
+      
+      if (profileError) throw profileError;
 
       toast({
         title: 'Account Created!',
-        description: "Welcome to InnoCanvas. Let's build something great.",
+        description: "Please check your email to verify your account before logging in.",
       });
-      // The useEffect hook will handle redirection.
+      router.push('/login');
     } catch (error: any) {
       toast({
         title: 'Registration Failed',
@@ -111,36 +119,16 @@ export default function RegisterPage() {
   };
 
   const handleGoogleSignUp = async () => {
-    const provider = new GoogleAuthProvider();
     try {
-      const result = await signInWithPopup(auth, provider);
-      const newUser = result.user;
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
 
-      const userDocRef = doc(db, "users", newUser.uid);
-      const userDoc = await getDoc(userDocRef);
-
-      if (!userDoc.exists()) {
-        await setDoc(userDocRef, {
-          uid: newUser.uid,
-          fullName: newUser.displayName,
-          email: newUser.email,
-          createdAt: serverTimestamp(),
-          age: '',
-          gender: '',
-          country: '',
-          useCase: '',
-        });
-         toast({
-          title: 'Account Created!',
-          description: "Welcome to InnoCanvas. Let's build something great.",
-        });
-      } else {
-         toast({
-          title: 'Welcome Back!',
-          description: "You've successfully signed in.",
-        });
-      }
-      // The useEffect hook will handle redirection.
+      if (error) throw error;
+      
     } catch (error: any) {
        toast({
         title: 'Registration Failed',
@@ -325,5 +313,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-
-    

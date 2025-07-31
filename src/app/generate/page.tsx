@@ -45,8 +45,6 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { db } from '@/lib/firebase';
-import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, updateDoc } from 'firebase/firestore';
 import { Logo } from '@/components/logo';
 import Image from 'next/image';
 import { Switch } from '@/components/ui/switch';
@@ -61,6 +59,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Separator } from '@/components/ui/separator';
+import { supabase } from '@/lib/supabase';
 
 
 type BMCBlock = {
@@ -161,17 +160,23 @@ function BmcGeneratorPageClient() {
         if (canvasId && user) {
             setIsLoading(true);
             try {
-                const canvasDocRef = doc(db, 'users', user.uid, 'canvases', canvasId);
-                const canvasDoc = await getDoc(canvasDocRef);
-                if (canvasDoc.exists()) {
-                    const data = canvasDoc.data();
-                    const canvasData = data.canvasData as GenerateBMCOutput;
-                    const formData = data.formData as GenerateBMCInput;
+                const { data, error } = await supabase
+                  .from('canvases')
+                  .select('*')
+                  .eq('id', canvasId)
+                  .eq('user_id', user.id)
+                  .single();
+                
+                if (error) throw error;
+                
+                if (data) {
+                    const canvasData = data.canvas_data as GenerateBMCOutput;
+                    const formData = data.form_data as GenerateBMCInput;
 
                     setBmcData(canvasData);
                     setFormData(formData);
-                    setLogoUrl(data.logoUrl || null);
-                    setRemoveWatermark(data.removeWatermark || false);
+                    setLogoUrl(data.logo_url || null);
+                    setRemoveWatermark(data.remove_watermark || false);
                     setColors(data.colors || initialColors);
                     setStep(3);
                 } else {
@@ -249,35 +254,47 @@ function BmcGeneratorPageClient() {
     
     setIsLoading(true);
     try {
-        const fullCanvasData = {
-            canvasData: bmcData,
-            formData: formData,
-            logoUrl: logoUrl,
-            removeWatermark: removeWatermark,
+        const canvasDataToSave = {
+            canvas_data: bmcData,
+            form_data: formData,
+            logo_url: logoUrl,
+            remove_watermark: removeWatermark,
             colors: colors,
-            userId: user.uid,
-            businessDescription: formData.businessDescription, 
+            user_id: user.uid,
+            business_description: formData.businessDescription, 
         };
 
         if (canvasId) {
-            const canvasDocRef = doc(db, 'users', user.uid, 'canvases', canvasId);
-            await updateDoc(canvasDocRef, { ...fullCanvasData, updatedAt: serverTimestamp() });
-             toast({
+            const { error } = await supabase
+              .from('canvases')
+              .update({ ...canvasDataToSave, updated_at: new Date().toISOString() })
+              .eq('id', canvasId);
+            
+            if (error) throw error;
+            
+            toast({
                 title: 'Canvas Updated!',
                 description: 'Your changes have been saved.',
             });
         } else {
-            const newCanvasRef = await addDoc(collection(db, 'users', user.uid, 'canvases'), { ...fullCanvasData, createdAt: serverTimestamp() });
-            router.replace(`/generate?canvasId=${newCanvasRef.id}`, { scroll: false }); 
+             const { data, error } = await supabase
+                .from('canvases')
+                .insert({ ...canvasDataToSave })
+                .select('id')
+                .single();
+            
+            if (error) throw error;
+            
+            router.replace(`/generate?canvasId=${data.id}`, { scroll: false }); 
             toast({
                 title: 'Canvas Saved!',
                 description: 'Your masterpiece is safe in "My Canvases".',
             });
         }
         setIsEditing(false);
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error saving canvas:", error);
-        toast({ title: 'Error', description: 'Failed to save canvas.', variant: 'destructive' });
+        toast({ title: 'Error', description: error.message, variant: 'destructive' });
     } finally {
         setIsLoading(false);
     }
@@ -294,14 +311,13 @@ function BmcGeneratorPageClient() {
         
         html2canvas(element, {
             useCORS: true,
-            backgroundColor: null, // Capture with transparent background
-            scale: 2, // Increase scale for higher resolution
+            backgroundColor: null,
+            scale: 2,
         }).then((canvas) => {
             const imgData = canvas.toDataURL('image/png', 1.0);
             const imgWidth = canvas.width;
             const imgHeight = canvas.height;
             
-            // Create PDF with dimensions matching the captured image
             const pdf = new jsPDF({
                 orientation: imgWidth > imgHeight ? 'landscape' : 'portrait',
                 unit: 'px',
@@ -694,7 +710,3 @@ export default function BmcGeneratorPage() {
     </Suspense>
   )
 }
-
-
-
-    
