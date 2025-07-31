@@ -59,7 +59,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Separator } from '@/components/ui/separator';
-import { supabase } from '@/lib/supabase';
+import { getPublicUrl, supabase } from '@/lib/supabase';
 
 
 type BMCBlock = {
@@ -125,7 +125,7 @@ function BmcGeneratorPageClient() {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [isGettingSuggestions, setIsGettingSuggestions] = useState(isEditing);
+  const [isGettingSuggestions, setIsGettingSuggestions] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<Partial<GenerateBMCInput>>({
@@ -144,6 +144,7 @@ function BmcGeneratorPageClient() {
   const [suggestions, setSuggestions] = useState<GetAIImprovementSuggestionsOutput | null>(null);
   
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [removeWatermark, setRemoveWatermark] = useState(false);
   const [colors, setColors] = useState(initialColors);
   
@@ -175,7 +176,11 @@ function BmcGeneratorPageClient() {
 
                     setBmcData(canvasData);
                     setFormData(formData);
-                    setLogoUrl(data.logo_url || null);
+                    if (data.logo_url) {
+                       setLogoUrl(getPublicUrl('logos', data.logo_url));
+                    } else {
+                       setLogoUrl(null);
+                    }
                     setRemoveWatermark(data.remove_watermark || false);
                     setColors(data.colors || initialColors);
                     setStep(3);
@@ -254,13 +259,15 @@ function BmcGeneratorPageClient() {
     
     setIsLoading(true);
     try {
+        const logoPath = logoUrl ? logoUrl.split('/').pop() : null;
+
         const canvasDataToSave = {
             canvas_data: bmcData,
             form_data: formData,
-            logo_url: logoUrl,
+            logo_url: logoPath,
             remove_watermark: removeWatermark,
             colors: colors,
-            user_id: user.uid,
+            user_id: user.id,
             business_description: formData.businessDescription, 
         };
 
@@ -374,14 +381,33 @@ function BmcGeneratorPageClient() {
     }
   };
 
-  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
+  const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0] && user) {
       const file = event.target.files[0];
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setLogoUrl(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+        toast({ title: "File too large", description: "Logo should be less than 2MB.", variant: "destructive"});
+        return;
+      }
+
+      setIsUploadingLogo(true);
+      try {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('logos')
+          .upload(filePath, file);
+
+        if (uploadError) throw uploadError;
+
+        setLogoUrl(getPublicUrl('logos', filePath));
+        toast({ title: 'Logo uploaded!', description: 'Remember to save your canvas.' });
+      } catch (error: any) {
+        toast({ title: "Upload failed", description: error.message, variant: "destructive"});
+      } finally {
+        setIsUploadingLogo(false);
+      }
     }
   };
 
@@ -511,10 +537,10 @@ function BmcGeneratorPageClient() {
                         
                         <div className='flex items-center gap-3'>
                             <Label className="font-semibold text-base text-foreground">Logo</Label>
-                            <input type="file" id="logo-upload" className="hidden" accept="image/*" onChange={handleLogoUpload} />
+                            <input type="file" id="logo-upload" className="hidden" accept="image/png, image/jpeg, image/svg+xml" onChange={handleLogoUpload} disabled={isUploadingLogo}/>
                             <Button asChild variant="outline" size="sm">
                               <label htmlFor="logo-upload" className="cursor-pointer">
-                                <Upload className="mr-2"/>
+                                {isUploadingLogo ? <Loader className="mr-2 animate-spin" /> : <Upload className="mr-2"/>}
                                 Upload
                               </label>
                             </Button>
@@ -710,3 +736,5 @@ export default function BmcGeneratorPage() {
     </Suspense>
   )
 }
+
+    

@@ -1,18 +1,18 @@
 
 'use client';
 
-import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import { useState, useEffect, createContext, useContext, ReactNode, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { User } from '@supabase/supabase-js';
 
 export interface UserProfile {
   id: string;
   full_name: string;
-  age: number;
+  age: number | null;
   gender: string;
   country: string;
   use_case: string;
-  avatar_url?: string;
+  avatar_url: string | null;
   updated_at: string;
 }
 
@@ -20,12 +20,14 @@ interface AuthContextType {
   user: User | null;
   userData: UserProfile | null;
   loading: boolean;
+  fetchUserProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   userData: null,
   loading: true,
+  fetchUserProfile: async () => {},
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -33,22 +35,49 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userData, setUserData] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchUserProfile = useCallback(async () => {
+    if (user) {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (error && error.code !== 'PGRST116') { // PGRST116: "object not found"
+          console.error("Error fetching user data:", error);
+          setUserData(null);
+        } else {
+          setUserData(data);
+        }
+    }
+  }, [user]);
+
+
   useEffect(() => {
     const fetchSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error } = await supabase.auth.getSession();
+       if (error) {
+        console.error("Error fetching session:", error)
+        setLoading(false);
+        return;
+      }
       setUser(session?.user ?? null);
-      setLoading(false);
-    }
+      // Loading will be set to false after user data is fetched or confirmed absent
+    };
     
     fetchSession();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       const currentUser = session?.user || null;
       setUser(currentUser);
-      if (!currentUser) {
+      if (event === 'USER_UPDATED') {
+          if(currentUser) {
+              setUserData(prev => prev ? {...prev, full_name: currentUser.user_metadata.full_name} : null);
+          }
+      }
+      if (event === 'SIGNED_OUT') {
         setUserData(null);
       }
-      // setLoading(false) is handled in the userData useEffect
     });
 
     return () => {
@@ -57,54 +86,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    let unsubscribe: any;
-
     if (user) {
         setLoading(true);
-        
-        const fetchUserProfile = async () => {
-          const { data, error } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', user.id)
-            .single();
-
-          if (error && error.code !== 'PGRST116') { // PGRST116: "object not found"
-            console.error("Error fetching user data:", error);
-            setUserData(null);
-          } else {
-            setUserData(data);
-          }
-          setLoading(false);
-        };
-        
-        fetchUserProfile();
-
-        const channel = supabase
-          .channel(`public:profiles:id=eq.${user.id}`)
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}`},
-            (payload) => {
-              setUserData(payload.new as UserProfile);
-            }
-          ).subscribe();
-          
-        unsubscribe = () => {
-            supabase.removeChannel(channel);
-        };
-
+        fetchUserProfile().finally(() => setLoading(false));
     } else {
       setUserData(null);
       setLoading(false);
     }
+  }, [user, fetchUserProfile]);
 
-    return () => {
-        if (unsubscribe) {
-          unsubscribe();
-        }
-    };
-  }, [user]);
-
-  const value = { user, userData, loading };
+  const value = { user, userData, loading, fetchUserProfile };
 
   return (
     <AuthContext.Provider value={value}>
@@ -120,3 +111,5 @@ export const useAuth = () => {
     }
     return context;
 };
+
+    

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { LogOut, Loader } from "lucide-react"
+import { LogOut, Loader, Upload } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { countries } from "@/lib/countries"
@@ -23,7 +23,7 @@ import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { useState, useEffect } from "react"
 import { Logo } from "@/components/logo"
-import { supabase } from "@/lib/supabase"
+import { getPublicUrl, supabase } from "@/lib/supabase"
 
 type ProfileFormData = {
     fullName: string;
@@ -31,18 +31,21 @@ type ProfileFormData = {
     gender: string;
     country: string;
     useCase: string;
+    avatarUrl: string;
 };
 
 export default function ProfilePage() {
-    const { user, userData, loading: authLoading } = useAuth();
+    const { user, userData, loading: authLoading, fetchUserProfile } = useAuth();
     const [profileData, setProfileData] = useState<ProfileFormData>({
         fullName: '',
         age: '',
         gender: '',
         country: '',
         useCase: '',
+        avatarUrl: '',
     });
     const [isLoading, setIsLoading] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
     const router = useRouter();
     const { toast } = useToast();
 
@@ -54,6 +57,7 @@ export default function ProfilePage() {
                 gender: userData.gender || '',
                 country: userData.country || '',
                 useCase: userData.use_case || '',
+                avatarUrl: userData.avatar_url ? getPublicUrl('avatars', userData.avatar_url) : '',
             });
         } else if (user) {
              setProfileData(prev => ({ ...prev, fullName: user.user_metadata.full_name || user.email || '' }));
@@ -64,6 +68,49 @@ export default function ProfilePage() {
         setProfileData(prev => ({...prev, [field]: value}))
     }
 
+    const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (!user) return;
+        if (event.target.files && event.target.files[0]) {
+            const file = event.target.files[0];
+            if (file.size > 2 * 1024 * 1024) { // 2MB limit
+                toast({ title: "File too large", description: "Image should be less than 2MB.", variant: "destructive"});
+                return;
+            }
+            
+            setIsUploading(true);
+            try {
+                // To ensure uniqueness and prevent overwriting, we can use the user's ID
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${user.id}.${fileExt}`;
+                const filePath = `${fileName}`;
+
+                const { error: uploadError } = await supabase.storage
+                    .from('avatars')
+                    .upload(filePath, file, { upsert: true });
+
+                if (uploadError) throw uploadError;
+
+                // Update the profile with the new avatar path
+                 const { error: updateError } = await supabase
+                    .from('profiles')
+                    .update({ avatar_url: filePath, updated_at: new Date().toISOString() })
+                    .eq('id', user.id);
+
+                if (updateError) throw updateError;
+                
+                // Refresh user data to get new avatar URL
+                await fetchUserProfile();
+
+                toast({ title: 'Avatar updated!' });
+            } catch (error: any) {
+                toast({ title: "Upload failed", description: error.message, variant: "destructive"});
+            } finally {
+                setIsUploading(false);
+            }
+        }
+    };
+
+
     const handleSaveChanges = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!user) return;
@@ -72,7 +119,7 @@ export default function ProfilePage() {
             const updates: Partial<UserProfile> = {
                 id: user.id,
                 full_name: profileData.fullName,
-                age: parseInt(profileData.age, 10),
+                age: parseInt(profileData.age, 10) || null,
                 gender: profileData.gender,
                 country: profileData.country,
                 use_case: profileData.useCase,
@@ -83,7 +130,7 @@ export default function ProfilePage() {
             
             if (error) throw error;
             
-            const { error: userUpdateError } = await supabase.auth.updateUser({
+            const { data, error: userUpdateError } = await supabase.auth.updateUser({
                 data: { full_name: profileData.fullName }
             })
 
@@ -94,8 +141,11 @@ export default function ProfilePage() {
                 description: 'Your changes have been saved successfully.',
             });
             
-            router.push('/my-canvases');
-
+            // Re-fetch user data to update the UI, especially the name in the header
+            if (data.user) {
+                await fetchUserProfile();
+            }
+            
         } catch(error: any) {
             toast({
                 title: 'Update Failed',
@@ -157,11 +207,19 @@ export default function ProfilePage() {
         <h1 className="text-4xl md:text-5xl font-bold mb-8">Your Profile</h1>
         <Card className="mx-auto max-w-3xl w-full border-border bg-card">
             <CardHeader>
-                <div className="flex items-center gap-4">
-                    <Avatar className="w-20 h-20 border-2 border-primary">
-                        <AvatarImage src={userData?.avatar_url || `https://placehold.co/100x100.png/0a0f1c/FFFFFF?text=${displayInitial}`} alt={displayName} />
-                        <AvatarFallback>{displayInitial}</AvatarFallback>
-                    </Avatar>
+                <div className="flex items-center gap-6">
+                    <div className="relative">
+                        <Avatar className="w-24 h-24 border-2 border-primary">
+                            <AvatarImage src={profileData.avatarUrl} alt={displayName} />
+                            <AvatarFallback>{displayInitial}</AvatarFallback>
+                        </Avatar>
+                        <input type="file" id="avatar-upload" className="hidden" accept="image/png, image/jpeg" onChange={handleAvatarUpload} disabled={isUploading} />
+                        <Button size="icon" className="absolute bottom-0 right-0 rounded-full h-8 w-8" asChild>
+                           <label htmlFor="avatar-upload" className="cursor-pointer">
+                             {isUploading ? <Loader className="animate-spin" /> : <Upload />}
+                           </label>
+                        </Button>
+                    </div>
                     <div>
                         <CardTitle className="text-2xl text-card-foreground">{displayName}</CardTitle>
                         <CardDescription>{user.email}</CardDescription>
@@ -254,3 +312,5 @@ export default function ProfilePage() {
     </div>
   )
 }
+
+    
