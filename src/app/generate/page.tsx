@@ -561,7 +561,7 @@ function BmcGeneratorPageClient() {
 
                              <div className="flex justify-between items-start mb-4 relative z-10">
                                  <h2 className="text-3xl font-bold" style={{color: colors.primary}}>Business Model Canvas</h2>
-                                {logoUrl && <div className="relative w-24 h-12"><Image src={logoUrl} alt="Logo" layout="fill" objectFit="contain" /></div>}
+                                {logoUrl && <div className="relative w-40 h-20"><Image src={logoUrl} alt="Logo" layout="fill" objectFit="contain" /></div>}
                              </div>
 
                             <div className="flex-grow grid grid-cols-10 grid-rows-6 gap-2 relative z-10">
@@ -697,4 +697,5 @@ export default function BmcGeneratorPage() {
     </Suspense>
   )
 }
+
 
