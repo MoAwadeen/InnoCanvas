@@ -291,27 +291,30 @@ function BmcGeneratorPageClient() {
         });
         
         const element = styledCanvasRef.current;
-        const targetWidth = 1920; 
-        const scale = targetWidth / element.offsetWidth;
+        
+        // Define target HD resolution
+        const targetWidth = 1920;
+        const targetHeight = 1080;
 
         html2canvas(element, {
             useCORS: true,
-            backgroundColor: null, // Transparent background for the capture
-            scale: scale,
-            windowWidth: element.scrollWidth,
-            windowHeight: element.scrollHeight,
+            backgroundColor: null, 
+            scale: 1, // Capture at native resolution first
+            width: targetWidth,
+            height: targetHeight,
+            windowWidth: targetWidth,
+            windowHeight: targetHeight,
         }).then((canvas) => {
             const imgData = canvas.toDataURL('image/png', 1.0);
-            const imgWidth = canvas.width;
-            const imgHeight = canvas.height;
-
+            
+            // PDF dimensions should match the captured image exactly
             const pdf = new jsPDF({
-                orientation: imgWidth > imgHeight ? 'landscape' : 'portrait',
+                orientation: 'landscape',
                 unit: 'px',
-                format: [imgWidth, imgHeight] // Set PDF size to image size
+                format: [targetWidth, targetHeight]
             });
 
-            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+            pdf.addImage(imgData, 'PNG', 0, 0, targetWidth, targetHeight);
             pdf.save('innocanvas-bmc.pdf');
 
             toast({
@@ -699,3 +702,5 @@ export default function BmcGeneratorPage() {
 }
 
 
+
+    
