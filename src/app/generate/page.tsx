@@ -292,29 +292,23 @@ function BmcGeneratorPageClient() {
         
         const element = styledCanvasRef.current;
         
-        // Define target HD resolution
-        const targetWidth = 1920;
-        const targetHeight = 1080;
-
         html2canvas(element, {
             useCORS: true,
-            backgroundColor: null, 
-            scale: 1, // Capture at native resolution first
-            width: targetWidth,
-            height: targetHeight,
-            windowWidth: targetWidth,
-            windowHeight: targetHeight,
+            backgroundColor: null, // Capture with transparent background
+            scale: 2, // Increase scale for higher resolution
         }).then((canvas) => {
             const imgData = canvas.toDataURL('image/png', 1.0);
+            const imgWidth = canvas.width;
+            const imgHeight = canvas.height;
             
-            // PDF dimensions should match the captured image exactly
+            // Create PDF with dimensions matching the captured image
             const pdf = new jsPDF({
-                orientation: 'landscape',
+                orientation: imgWidth > imgHeight ? 'landscape' : 'portrait',
                 unit: 'px',
-                format: [targetWidth, targetHeight]
+                format: [imgWidth, imgHeight]
             });
 
-            pdf.addImage(imgData, 'PNG', 0, 0, targetWidth, targetHeight);
+            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
             pdf.save('innocanvas-bmc.pdf');
 
             toast({
