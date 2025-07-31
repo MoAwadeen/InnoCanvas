@@ -163,7 +163,7 @@ export default function MyCanvasesPage() {
   return (
     <div className="min-h-screen w-full bg-background text-foreground p-4 md:p-8">
       <header className="flex justify-between items-center mb-12">
-        <Logo />
+        <Logo href="/my-canvases" />
         <div className="flex items-center gap-4">
            <Link href="/profile">
             <Button variant="secondary"><User className="mr-2"/>Profile</Button>

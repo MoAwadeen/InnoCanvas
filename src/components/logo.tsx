@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-export const Logo = ({ className, href = "/my-canvases" }: { className?: string, href?: string }) => {
+export const Logo = ({ className, href }: { className?: string, href?: string }) => {
     return (
-        <Link href={href} className={cn("flex items-center gap-2 group", className)}>
+        <Link href={href || "/"} className={cn("flex items-center gap-2 group", className)}>
             <div className="w-12 h-auto flex-shrink-0">
                  <svg width="166" height="93" viewBox="0 0 166 93" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
                     <defs>

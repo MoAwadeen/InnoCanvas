@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { LogOut, User, Loader } from "lucide-react"
+import { LogOut, Loader } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { countries } from "@/lib/countries"
@@ -125,6 +125,12 @@ export default function ProfilePage() {
         }
     };
     
+    useEffect(() => {
+        if (!authLoading && !user) {
+          router.push('/login');
+        }
+    }, [user, authLoading, router]);
+
     if (authLoading || !user) {
         return (
             <div className="min-h-screen w-full flex items-center justify-center bg-background">
@@ -139,7 +145,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center p-4 md:p-8">
         <header className="w-full max-w-5xl flex justify-between items-center mb-8">
-            <Logo />
+            <Logo href="/my-canvases" />
             <div className="flex items-center gap-4">
                 <Link href="/my-canvases">
                     <Button variant="secondary">My Canvases</Button>

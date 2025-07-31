@@ -47,7 +47,7 @@ const formSchema = z.object({
 export default function RegisterPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const { user, userData, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -65,15 +65,11 @@ export default function RegisterPage() {
   const { isSubmitting } = form.formState;
 
   useEffect(() => {
-    // Redirect if user is already logged in and data is loaded
-    if (!authLoading && user && userData) {
-      if (!userData.age || !userData.country || !userData.useCase) {
-        router.push('/profile');
-      } else {
+    // Redirect if user is already logged in
+    if (!authLoading && user) {
         router.push('/my-canvases');
-      }
     }
-  }, [user, userData, authLoading, router]);
+  }, [user, authLoading, router]);
 
 
   const handleSignUp = async (values: z.infer<typeof formSchema>) => {
@@ -84,7 +80,8 @@ export default function RegisterPage() {
         options: {
           data: {
             full_name: values.fullName,
-          }
+          },
+          redirectTo: `${window.location.origin}/auth/callback`,
         }
       });
       
@@ -106,9 +103,9 @@ export default function RegisterPage() {
 
       toast({
         title: 'Account Created!',
-        description: "Please check your email to verify your account before logging in.",
+        description: "Please check your email to verify your account.",
       });
-      router.push('/login');
+
     } catch (error: any) {
       toast({
         title: 'Registration Failed',
@@ -138,7 +135,7 @@ export default function RegisterPage() {
     }
   };
   
-  if (authLoading) {
+  if (authLoading || user) {
     return (
       <div className="min-h-screen w-full flex items-center justify-center bg-background">
         <Loader className="w-16 h-16 animate-spin text-primary" />
