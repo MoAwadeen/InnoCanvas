@@ -296,39 +296,22 @@ function BmcGeneratorPageClient() {
 
         html2canvas(element, {
             useCORS: true,
-            backgroundColor: null,
+            backgroundColor: null, // Transparent background for the capture
             scale: scale,
             windowWidth: element.scrollWidth,
             windowHeight: element.scrollHeight,
         }).then((canvas) => {
             const imgData = canvas.toDataURL('image/png', 1.0);
-            
-            // Standard A4 landscape dimensions in points: 841.89 x 595.28
-            const pdfWidth = 841.89;
-            const pdfHeight = 595.28;
-            
+            const imgWidth = canvas.width;
+            const imgHeight = canvas.height;
+
             const pdf = new jsPDF({
-                orientation: 'landscape',
-                unit: 'pt',
-                format: 'a4'
+                orientation: imgWidth > imgHeight ? 'landscape' : 'portrait',
+                unit: 'px',
+                format: [imgWidth, imgHeight] // Set PDF size to image size
             });
 
-            const canvasAspectRatio = canvas.width / canvas.height;
-            const pdfAspectRatio = pdfWidth / pdfHeight;
-
-            let finalWidth, finalHeight;
-            if (canvasAspectRatio > pdfAspectRatio) {
-                finalWidth = pdfWidth;
-                finalHeight = pdfWidth / canvasAspectRatio;
-            } else {
-                finalHeight = pdfHeight;
-                finalWidth = pdfHeight * canvasAspectRatio;
-            }
-
-            const x = (pdfWidth - finalWidth) / 2;
-            const y = (pdfHeight - finalHeight) / 2;
-
-            pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
+            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
             pdf.save('innocanvas-bmc.pdf');
 
             toast({
