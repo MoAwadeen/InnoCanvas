@@ -3,6 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { AuthProvider } from '@/hooks/useAuth';
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: 'InnoCanvas: AI Business Model Canvas Generator',
   description: 'Turn your idea into a business model instantly with InnoCanvas. Generate AI-powered Business Model Canvases with beautiful visual templates.',

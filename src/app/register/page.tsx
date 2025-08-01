@@ -29,6 +29,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Logo } from "@/components/logo";
 import { supabase, handleSupabaseError } from "@/lib/supabase";
 
+export const dynamic = "force-dynamic";
 
 const formSchema = z.object({
   fullName: z.string().min(2, { message: "Name must be at least 2 characters." }).max(50, { message: "Name cannot be longer than 50 characters." }),
@@ -89,8 +90,7 @@ export default function RegisterPage() {
             country: values.country,
             use_case: values.useCase,
           },
-          redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined,
-        }
+        },
       });
       
       if (signUpError) throw signUpError;

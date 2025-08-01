@@ -17,6 +17,8 @@ import { CheckCircle, CreditCard } from "lucide-react"
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 
+export const dynamic = "force-dynamic";
+
 const plans = [
     {
       name: "Pro",

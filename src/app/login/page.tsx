@@ -21,6 +21,8 @@ import { Logo } from "@/components/logo";
 import { supabase, handleSupabaseError } from '@/lib/supabase';
 import { User } from '@supabase/supabase-js';
 
+export const dynamic = "force-dynamic";
+
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -38,14 +40,16 @@ export default function LoginPage() {
 
   // Check for email verification message
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const message = urlParams.get('message');
-    
-    if (message === 'check-email') {
-      toast({
-        title: 'Check Your Email',
-        description: 'Please check your email to verify your account before signing in.',
-      });
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const message = urlParams.get('message');
+      
+      if (message === 'check-email') {
+        toast({
+          title: 'Check Your Email',
+          description: 'Please check your email to verify your account before signing in.',
+        });
+      }
     }
   }, [toast]);
 

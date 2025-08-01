@@ -31,6 +31,8 @@ import { Logo } from '@/components/logo';
 import { supabase, handleSupabaseError } from '@/lib/supabase';
 import { Greeting } from '@/components/greeting';
 
+export const dynamic = "force-dynamic";
+
 interface Canvas {
   id: string;
   title: string;
