@@ -1,25 +1,60 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-// Only throw error in client-side or when actually using the client
-if (typeof window !== 'undefined' && (!supabaseUrl || !supabaseAnonKey)) {
-  throw new Error('Missing Supabase environment variables. Please check your .env.local file.');
-}
+// Check if we have valid environment variables
+const hasValidConfig = supabaseUrl && supabaseAnonKey && 
+  supabaseUrl !== 'your_supabase_url_here' && 
+  supabaseAnonKey !== 'your_supabase_anon_key_here';
 
-export const supabase = createClient(supabaseUrl || 'https://placeholder.supabase.co', supabaseAnonKey || 'placeholder', {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true
-  }
-});
+// Create a mock client for development when env vars are not set
+const createMockClient = () => {
+  return {
+    auth: {
+      signUp: async () => ({ error: { message: 'Supabase not configured' } }),
+      signInWithPassword: async () => ({ error: { message: 'Supabase not configured' } }),
+      signInWithOAuth: async () => ({ error: { message: 'Supabase not configured' } }),
+      signOut: async () => ({ error: { message: 'Supabase not configured' } }),
+      updateUser: async () => ({ error: { message: 'Supabase not configured' } }),
+      getSession: async () => ({ data: { session: null }, error: null }),
+      onAuthStateChange: () => ({ data: { subscription: null } }),
+    },
+    from: () => ({
+      select: () => ({ eq: () => ({ single: async () => ({ data: null, error: { message: 'Supabase not configured' } }) }) }),
+      insert: () => ({ select: () => ({ single: async () => ({ data: null, error: { message: 'Supabase not configured' } }) }) }),
+      update: () => ({ eq: () => ({ error: { message: 'Supabase not configured' } }) }),
+      upsert: () => ({ error: { message: 'Supabase not configured' } }),
+    }),
+    storage: {
+      from: () => ({
+        upload: async () => ({ error: { message: 'Supabase not configured' } }),
+        getPublicUrl: () => ({ data: { publicUrl: null } }),
+      }),
+    },
+  };
+};
+
+// Create the actual Supabase client or mock client
+export const supabase = hasValidConfig 
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true
+      }
+    })
+  : createMockClient();
 
 export const getPublicUrl = (bucket: string, path: string) => {
     if (!path || !path.trim()) return null;
     if (!bucket || !bucket.trim()) return null;
+    
+    if (!hasValidConfig) {
+      console.warn('Supabase not configured - cannot get public URL');
+      return null;
+    }
     
     try {
         const { data } = supabase.storage.from(bucket).getPublicUrl(path);
