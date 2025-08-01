@@ -11,7 +11,6 @@ if (!googleAIKey) {
 export const ai = genkit({
   plugins: [googleAI({ apiKey: googleAIKey })],
   model: 'googleai/gemini-2.0-flash',
-  enableTracingAndMetrics: true,
 });
 
 // Helper function to handle AI generation errors
