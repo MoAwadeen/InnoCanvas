@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Sparkles, Zap, Target, Users } from "lucide-react";
+import { Sparkles, Zap, Target, Users, Shield, BarChart3, Clock } from "lucide-react";
 
 export default function Hero() {
   return (
@@ -9,56 +9,58 @@ export default function Hero() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60rem] h-[60rem] bg-gradient-to-tr from-primary/30 to-vivid-pink/30 rounded-full blur-3xl animate-[gradient-blob_8s_ease-in-out_infinite]" />
       </div>
 
-      <div className="relative card-glass p-8 md:p-12 lg:p-16">
-         <div className="flex flex-col items-center gap-6 text-center max-w-4xl">
-            <div>
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tighter leading-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
-                  InnoCanvas
-              </h1>
-            </div>
-            
-            <div>
-              <p className="max-w-2xl text-lg md:text-xl text-muted-foreground">
-                  Reimagine your business model with AI-powered insights. Create, visualize, and optimize your strategy in minutes.
-              </p>
-            </div>
+      <div className="relative text-center max-w-4xl mx-auto">
+        <div className="flex flex-col items-center gap-8">
+          <div>
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tighter leading-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400 mb-6">
+              Reimagine Your BMC With AI
+            </h1>
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
+              An Intelligent Co-Founder for the First Step of Your Startup. Each canvas is uniquely generated for your business.
+            </p>
+          </div>
 
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Sparkles className="h-4 w-4 text-yellow-500" />
-              <span>Powered by Google Gemini AI</span>
-              <Zap className="h-4 w-4 text-blue-500" />
-              <span>Real-time collaboration</span>
-            </div>
+          <div className="flex flex-col sm:flex-row gap-4 mt-8">
+            <Link href="/register">
+              <Button size="lg" className="btn-gradient animation-pulse-glow text-lg px-8 py-6">
+                <Target className="mr-2 h-6 w-6" />
+                Get 14 Days Free Trial
+              </Button>
+            </Link>
+            <Link href="#pricing">
+              <Button size="lg" variant="outline" className="text-lg px-8 py-6">
+                <Users className="mr-2 h-6 w-6" />
+                Book A Free Demo
+              </Button>
+            </Link>
+          </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 mt-6">
-                <Link href="/register">
-                    <Button size="lg" className="btn-gradient animation-pulse-glow">
-                        <Target className="mr-2 h-5 w-5" />
-                        Start Free Trial
-                    </Button>
-                </Link>
-                <Link href="#pricing">
-                    <Button size="lg" variant="outline">
-                        <Users className="mr-2 h-5 w-5" />
-                        View Plans
-                    </Button>
-                </Link>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 max-w-4xl">
+            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+              <Shield className="h-5 w-5 text-green-500" />
+              <span>Private & Secure</span>
             </div>
+            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+              <BarChart3 className="h-5 w-5 text-blue-500" />
+              <span>Real-Time Insights</span>
+            </div>
+            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+              <Clock className="h-5 w-5 text-purple-500" />
+              <span>Automated Follow-Ups</span>
+            </div>
+          </div>
 
-            <div className="flex items-center gap-6 text-xs text-muted-foreground mt-8">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span>No credit card required</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                <span>Free forever plan</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
-                <span>AI-powered insights</span>
-              </div>
+          <div className="mt-12">
+            <p className="text-sm text-muted-foreground mb-4">Trusted by 17,000+ founders & business owners</p>
+            <div className="flex items-center justify-center gap-8 opacity-60">
+              {/* Placeholder for company logos */}
+              <div className="w-16 h-8 bg-muted rounded"></div>
+              <div className="w-16 h-8 bg-muted rounded"></div>
+              <div className="w-16 h-8 bg-muted rounded"></div>
+              <div className="w-16 h-8 bg-muted rounded"></div>
+              <div className="w-16 h-8 bg-muted rounded"></div>
             </div>
+          </div>
         </div>
       </div>
     </section>

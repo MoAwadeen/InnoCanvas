@@ -1,128 +1,105 @@
 
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Zap } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { cn } from "@/lib/utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Check } from "lucide-react";
 import Link from "next/link";
 
 export default function Pricing() {
-  const [isYearly, setIsYearly] = useState(false);
-
   const plans = [
     {
-      name: "Free",
-      price: { monthly: 0, yearly: 0 },
-      description: "For individuals & students getting started.",
+      name: "Silver Plan",
+      price: "$59",
+      period: "/month",
+      description: "Perfect for startups and small teams",
       features: [
-        "1 Canvas",
-        "Basic BMC Generation",
-        "JPG Download (with watermark)",
+        "Up to 10 users",
+        "Smart pipeline management", 
+        "AI-driven sales insights",
+        "5 automation workflows",
+        "Email & chat support"
       ],
-      cta: "Start with Free",
-      href: "/register",
-      variant: "outline"
+      popular: false,
+      cta: "Book A Free Demo"
     },
     {
-      name: "Pro",
-      price: { monthly: 8, yearly: 72 },
-      description: "For professionals and small teams.",
+      name: "Gold Plan",
+      price: "$49",
+      period: "/month", 
+      description: "Built for growing businesses",
       features: [
-        "10 Canvases",
-        "PDF Download (no watermark)",
-        "Access to all Templates",
-        "Custom Color Palettes",
+        "Unlimited users",
+        "Advanced forecasting & reporting",
+        "Custom automation rules",
+        "CRM & tool integrations",
+        "24/7 AI priority support"
       ],
-      cta: "Upgrade Now",
-      href: "/payment",
-      variant: "outline",
-    },
-    {
-      name: "Premium",
-      price: { monthly: 15, yearly: 144 },
-      description: "For businesses and power users.",
-      features: [
-        "Unlimited Canvases",
-        "AI Consultation (Select Persona)",
-        "Real-time Editing & Collaboration",
-        "Custom Branding",
-      ],
-      cta: "Upgrade Now",
-      href: "/payment",
-      variant: "gradient",
       popular: true,
-    },
+      cta: "Book A Free Demo"
+    }
   ];
 
   return (
-    <section id="pricing" className="container py-20 md:py-24">
-      <div className="text-center max-w-3xl mx-auto mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold">Plans that Grow with You</h2>
-        <p className="mt-4 text-lg text-muted-foreground">
-          Simple, transparent pricing. No hidden fees.
+    <section id="pricing" className="container py-24">
+      <div className="text-center mb-16">
+        <h2 className="text-4xl md:text-5xl font-bold mb-6">
+          Find the right plan for your needs
+        </h2>
+        <p className="text-muted-foreground max-w-2xl mx-auto">
+          Supporters receive a 30% discount on early access plus an extra 20% off the yearly plan.
         </p>
       </div>
 
-      <div className="flex justify-center items-center gap-4 mb-10">
-        <Label htmlFor="billing-cycle" className={cn("transition-colors font-medium", !isYearly ? "text-primary" : "text-muted-foreground")}>Monthly</Label>
-        <Switch
-          id="billing-cycle"
-          checked={isYearly}
-          onCheckedChange={setIsYearly}
-        />
-        <Label htmlFor="billing-cycle" className={cn("transition-colors font-medium", isYearly ? "text-primary" : "text-muted-foreground")}>
-            Yearly <span className="text-sm font-medium text-green-400">(Save 25%)</span>
-        </Label>
+      <div className="flex justify-center mb-8">
+        <div className="flex items-center gap-4 p-1 bg-muted rounded-lg">
+          <Button variant="ghost" size="sm" className="rounded-md">
+            Monthly
+          </Button>
+          <Button variant="default" size="sm" className="rounded-md">
+            Yearly
+          </Button>
+          <Badge variant="secondary" className="ml-2">SAVE 20%</Badge>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto items-start">
-        {plans.map((plan) => (
-          <div
-            key={plan.name}
-            className={cn(
-              "card-glass flex flex-col transition-all duration-300 relative text-left p-8 h-full",
-               plan.popular ? "border-primary/80 ring-2 ring-primary/50" : "border-white/10"
-            )}
-          >
+      <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        {plans.map((plan, index) => (
+          <Card key={index} className={`card-glass border-border/50 relative ${plan.popular ? 'border-primary/50 ring-2 ring-primary/20' : ''}`}>
             {plan.popular && (
-              <div className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2">
-                <div className="px-4 py-1 text-sm font-semibold text-primary-foreground bg-primary rounded-full shadow-md flex items-center gap-2">
-                  <Zap className="w-4 h-4" />
-                  Recommended
-                </div>
-              </div>
+              <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground">
+                Most Popular
+              </Badge>
             )}
-            <h3 className="text-2xl font-bold text-foreground mb-2">{plan.name}</h3>
-            <p className="text-muted-foreground mb-6 h-10">{plan.description}</p>
-            <div className="mb-8" data-state={isYearly ? 'yearly' : 'monthly'}>
-              <div className="price-container transition-colors duration-300">
-                <span className="text-5xl font-extrabold text-foreground">
-                  ${isYearly ? (plan.price.yearly / 12).toFixed(0) : plan.price.monthly}
-                </span>
-                <span className="text-muted-foreground text-lg">/month</span>
+            <CardHeader className="text-center pb-4">
+              <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
+              <div className="flex items-baseline justify-center gap-1">
+                <span className="text-4xl font-bold">{plan.price}</span>
+                <span className="text-muted-foreground">{plan.period}</span>
               </div>
-            </div>
-            <ul className="space-y-4 mb-10 flex-1">
-              {plan.features.map((feature) => (
-                <li key={feature} className="flex items-center gap-3 text-left text-foreground/90">
-                  <CheckCircle className="w-5 h-5 text-primary" />
-                  <span>{feature}</span>
-                </li>
-              ))}
-            </ul>
-            <Link href={plan.href} className="w-full mt-auto">
-              <Button
-                size="lg"
-                variant={plan.variant as any}
-                className={cn("w-full text-lg", plan.variant === 'gradient' && 'btn-gradient')}
-              >
-                {plan.cta}
-              </Button>
-            </Link>
-          </div>
+              <p className="text-muted-foreground">{plan.description}</p>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <Link href="/register">
+                <Button className="w-full" variant={plan.popular ? "default" : "outline"}>
+                  {plan.cta}
+                </Button>
+              </Link>
+              
+              <div className="space-y-4">
+                <p className="text-sm font-semibold">Features Included:</p>
+                <ul className="space-y-3">
+                  {plan.features.map((feature, featureIndex) => (
+                    <li key={featureIndex} className="flex items-center gap-3">
+                      <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                      <span className="text-sm">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
     </section>

@@ -19,7 +19,6 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, loading } = useAuth();
 
-
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
@@ -31,7 +30,7 @@ export default function Header() {
   const navLinks = [
     { name: "Features", href: "#features" },
     { name: "Pricing", href: "#pricing" },
-    { name: "How it Works", href: "#how-it-works" },
+    { name: "Reviews", href: "#testimonials" },
   ];
 
   return (
@@ -61,7 +60,7 @@ export default function Header() {
             {!loading && (
               user ? (
                  <Link href="/my-canvases">
-                    <Button variant="secondary">My Canvases</Button>
+                    <Button variant="secondary">Dashboard</Button>
                 </Link>
               ) : (
                 <>
@@ -70,7 +69,7 @@ export default function Header() {
                   </Link>
                   <Link href="/register">
                       <Button className="btn-gradient">
-                          Sign Up
+                          Get Started
                       </Button>
                   </Link>
                 </>
@@ -104,7 +103,7 @@ export default function Header() {
                   {!loading && (
                     user ? (
                       <Link href="/my-canvases" className="w-full col-span-2">
-                        <Button variant="secondary" className="w-full">My Canvases</Button>
+                        <Button variant="secondary" className="w-full">Dashboard</Button>
                       </Link>
                     ) : (
                       <>
@@ -113,7 +112,7 @@ export default function Header() {
                         </Link>
                         <Link href="/register" className="w-full">
                           <Button className="w-full btn-gradient">
-                              Sign Up
+                              Get Started
                           </Button>
                         </Link>
                       </>

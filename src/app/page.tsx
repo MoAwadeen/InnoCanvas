@@ -8,6 +8,10 @@ import Hero from "@/components/landing/hero";
 import HowItWorks from "@/components/landing/how-it-works";
 import Pricing from "@/components/landing/pricing";
 import Testimonials from "@/components/landing/testimonials";
+import Stats from "@/components/landing/stats";
+import AIConsultant from "@/components/landing/ai-consultant";
+import Workflow from "@/components/landing/workflow";
+import Insights from "@/components/landing/insights";
 
 export default function LandingPage() {
   return (
@@ -15,8 +19,11 @@ export default function LandingPage() {
       <Header />
       <main className="flex-grow">
         <Hero />
+        <AIConsultant />
+        <Workflow />
         <Features />
-        <HowItWorks />
+        <Stats />
+        <Insights />
         <Testimonials />
         <Pricing />
         <Faq />

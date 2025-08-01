@@ -7,47 +7,53 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { HelpCircle } from "lucide-react";
 
 export default function Faq() {
   const faqs = [
     {
-      question: "What is a Business Model Canvas?",
-      answer: "A Business Model Canvas (BMC) is a strategic management template for developing new or documenting existing business models. It is a visual chart with elements describing a firm's or product's value proposition, infrastructure, customers, and finances.",
+      question: "What is InnoCanvas?",
+      answer: "InnoCanvas is an AI-powered Business Model Canvas generator that helps entrepreneurs, startups, and businesses create, visualize, and optimize their business strategies using intelligent insights from Google Gemini AI."
     },
     {
-      question: "How does the AI generation work?",
-      answer: "You provide a description of your business idea and answer a few clarifying questions. Our AI model, trained on thousands of business models, then analyzes your input to generate the content for each section of the BMC, tailored to your specific concept.",
+      question: "Does InnoCanvas integrate with other tools?",
+      answer: "Yes, InnoCanvas integrates with various business tools and platforms. We support exports to PDF, image formats, and are working on integrations with popular business software."
     },
     {
-      question: "Can I customize the generated canvas?",
-      answer: "Yes! Once the canvas is generated, all sections are fully editable. You can refine the AI-generated text, add your own insights, and use our branding tools (on paid plans) to change colors, fonts, and logos to match your brand identity.",
+      question: "Is there a free trial available?",
+      answer: "Yes! We offer a 14-day free trial with full access to all features. No credit card required to start your trial."
     },
     {
-      question: "What are the export options?",
-      answer: "Our Free plan allows you to export your canvas as a PNG file. Pro and Premium plans unlock high-resolution PDF exports, perfect for printing and professional presentations.",
-    },
-    {
-      question: "Can I cancel my subscription at any time?",
-      answer: "Absolutely. You can manage your subscription, upgrade, downgrade, or cancel at any time from your account settings. If you cancel, you will retain access to your plan's features until the end of the current billing period.",
-    },
+      question: "How does InnoCanvas use AI?",
+      answer: "InnoCanvas uses Google Gemini AI to analyze your business description and generate comprehensive Business Model Canvas sections. The AI provides intelligent suggestions, validates your business model, and helps optimize your strategy."
+    }
   ];
 
   return (
-    <section id="faq" className="container py-20 md:py-24">
-      <div className="text-center max-w-3xl mx-auto mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold">Frequently Asked Questions</h2>
-        <p className="mt-4 text-lg text-muted-foreground">
-          Find answers to common questions about InnoCanvas.
-        </p>
+    <section className="container py-24">
+      <div className="text-center mb-16">
+        <h2 className="text-4xl md:text-5xl font-bold mb-6">
+          Frequently Asked Questions
+        </h2>
       </div>
-      <Accordion type="single" collapsible className="w-full max-w-3xl mx-auto">
-        {faqs.map((faq, index) => (
-          <AccordionItem key={index} value={`item-${index}`} className="bg-secondary/50 border border-border rounded-xl mb-4 px-6">
-            <AccordionTrigger className="text-lg text-left hover:no-underline">{faq.question}</AccordionTrigger>
-            <AccordionContent className="text-base text-muted-foreground text-left">{faq.answer}</AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
+
+      <div className="max-w-3xl mx-auto">
+        <Accordion type="single" collapsible className="space-y-4">
+          {faqs.map((faq, index) => (
+            <AccordionItem key={index} value={`item-${index}`} className="card-glass border-border/50">
+              <AccordionTrigger className="text-left px-6 py-4 hover:no-underline">
+                <div className="flex items-center gap-3">
+                  <HelpCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                  <span className="font-semibold">{faq.question}</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="px-6 pb-4">
+                <p className="text-muted-foreground">{faq.answer}</p>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
     </section>
   );
 }
