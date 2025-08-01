@@ -42,15 +42,18 @@ export async function GET(request: Request) {
 
       if (!profile && !profileError) {
         const fullName = user.user_metadata.full_name || user.email?.split('@')[0] || 'Unknown'
-        await supabase.from('profiles').insert({
+        const { error: insertError } = await supabase.from('profiles').insert({
           id: user.id,
           full_name: fullName,
-          // Default values for other fields
-          age: null,
-          gender: 'prefer-not-to-say',
-          country: 'Unknown',
-          use_case: 'other',
+          age: user.user_metadata.age || null,
+          gender: user.user_metadata.gender || 'prefer-not-to-say',
+          country: user.user_metadata.country || 'Unknown',
+          use_case: user.user_metadata.use_case || 'other',
         })
+        
+        if (insertError) {
+          console.error('Error creating profile:', insertError)
+        }
       }
     }
 

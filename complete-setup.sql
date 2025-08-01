@@ -1,5 +1,5 @@
--- InnoCanvas Database Schema
--- Run this SQL in your Supabase SQL editor
+-- Complete InnoCanvas Setup Script
+-- Run this in your Supabase SQL editor
 
 -- Create profiles table
 CREATE TABLE IF NOT EXISTS profiles (
@@ -101,11 +101,18 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
 
 -- Storage policies for logos bucket
--- Note: You need to create the 'logos' bucket in Supabase Storage first
--- Then run these policies:
+-- Note: Make sure you've created the 'logos' bucket in Storage first
+CREATE POLICY "Users can upload logos" ON storage.objects
+  FOR INSERT WITH CHECK (bucket_id = 'logos' AND auth.uid()::text = (storage.foldername(name))[1]);
 
--- CREATE POLICY "Users can upload logos" ON storage.objects
---   FOR INSERT WITH CHECK (bucket_id = 'logos' AND auth.uid()::text = (storage.foldername(name))[1]);
+CREATE POLICY "Users can view logos" ON storage.objects
+  FOR SELECT USING (bucket_id = 'logos');
 
--- CREATE POLICY "Users can view logos" ON storage.objects
---   FOR SELECT USING (bucket_id = 'logos'); 
+CREATE POLICY "Users can update own logos" ON storage.objects
+  FOR UPDATE USING (bucket_id = 'logos' AND auth.uid()::text = (storage.foldername(name))[1]);
+
+CREATE POLICY "Users can delete own logos" ON storage.objects
+  FOR DELETE USING (bucket_id = 'logos' AND auth.uid()::text = (storage.foldername(name))[1]);
+
+-- Success message
+SELECT 'InnoCanvas database setup completed successfully!' as status; 

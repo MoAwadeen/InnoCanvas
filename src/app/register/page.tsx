@@ -26,7 +26,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Logo } from "@/components/logo";
-import { supabase } from "@/lib/supabase";
+import { supabase, handleSupabaseError } from "@/lib/supabase";
 
 
 const formSchema = z.object({
@@ -80,6 +80,10 @@ export default function RegisterPage() {
         options: {
           data: {
             full_name: values.fullName,
+            age: values.age,
+            gender: values.gender,
+            country: values.country,
+            use_case: values.useCase,
           },
           redirectTo: `${window.location.origin}/auth/callback`,
         }
@@ -88,28 +92,24 @@ export default function RegisterPage() {
       if (signUpError) throw signUpError;
       if (!signUpData.user) throw new Error("User not created.");
 
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: signUpData.user.id,
-          full_name: values.fullName,
-          age: values.age,
-          gender: values.gender,
-          country: values.country,
-          use_case: values.useCase,
-        });
-      
-      if (profileError) throw profileError;
+      // Note: Profile will be created automatically by the database trigger
+      // when the user confirms their email and signs in for the first time
 
       toast({
-        title: 'Account Created!',
-        description: "Please check your email to verify your account.",
+        title: 'Account Created Successfully!',
+        description: "Please check your email to verify your account. You'll be able to sign in after email verification.",
       });
 
+      // Redirect to success page
+      setTimeout(() => {
+        router.push('/register/success');
+      }, 2000);
+
     } catch (error: any) {
+      const errorMessage = handleSupabaseError(error, 'Registration failed');
       toast({
         title: 'Registration Failed',
-        description: error.message,
+        description: errorMessage,
         variant: 'destructive',
       });
     }
@@ -127,9 +127,10 @@ export default function RegisterPage() {
       if (error) throw error;
       
     } catch (error: any) {
+       const errorMessage = handleSupabaseError(error, 'Google registration failed');
        toast({
         title: 'Registration Failed',
-        description: error.message,
+        description: errorMessage,
         variant: 'destructive',
       });
     }

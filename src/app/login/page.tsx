@@ -36,6 +36,19 @@ export default function LoginPage() {
     }
   }, [user, authLoading, router]);
 
+  // Check for email verification message
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const message = urlParams.get('message');
+    
+    if (message === 'check-email') {
+      toast({
+        title: 'Check Your Email',
+        description: 'Please check your email to verify your account before signing in.',
+      });
+    }
+  }, [toast]);
+
   const handleSuccessfulLogin = async (loggedInUser: User) => {
     toast({
         title: 'Login Successful!',
