@@ -15,7 +15,7 @@ import {z} from 'genkit';
 
 const GetAIImprovementSuggestionsInputSchema = z.object({
   bmcData: z.record(z.string(), z.string())
-    .min(1, 'BMC data cannot be empty')
+    .refine(data => Object.keys(data).length > 0, 'BMC data cannot be empty')
     .describe('The data representing the Business Model Canvas, where keys are BMC sections and values are their content.'),
   businessDescription: z.string()
     .min(1, 'Business description is required')
