@@ -92,18 +92,51 @@ export default function RegisterPage() {
       if (signUpError) throw signUpError;
       if (!signUpData.user) throw new Error("User not created.");
 
-      // Note: Profile will be created automatically by the database trigger
-      // when the user confirms their email and signs in for the first time
+      // Try to create profile manually as fallback (in case trigger fails)
+      try {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: signUpData.user.id,
+            full_name: values.fullName,
+            age: values.age,
+            gender: values.gender,
+            country: values.country,
+            use_case: values.useCase,
+          });
+        
+        if (profileError) {
+          console.warn('Profile creation failed, but user was created:', profileError);
+          // Don't throw error here - user was created successfully
+        }
+      } catch (profileError) {
+        console.warn('Manual profile creation failed:', profileError);
+        // Don't throw error here - user was created successfully
+      }
 
-      toast({
-        title: 'Account Created Successfully!',
-        description: "Please check your email to verify your account. You'll be able to sign in after email verification.",
-      });
+      // Check if email confirmation is required
+      if (signUpData.user && !signUpData.user.email_confirmed_at) {
+        toast({
+          title: 'Account Created Successfully!',
+          description: "Please check your email to verify your account. You'll be able to sign in after email verification.",
+        });
 
-      // Redirect to success page
-      setTimeout(() => {
-        router.push('/register/success');
-      }, 2000);
+        // Redirect to success page
+        setTimeout(() => {
+          router.push('/register/success');
+        }, 2000);
+      } else {
+        // Email already confirmed or confirmation not required
+        toast({
+          title: 'Account Created Successfully!',
+          description: "Your account has been created and you can now sign in.",
+        });
+
+        // Redirect to login
+        setTimeout(() => {
+          router.push('/login');
+        }, 2000);
+      }
 
     } catch (error: any) {
       const errorMessage = handleSupabaseError(error, 'Registration failed');

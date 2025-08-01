@@ -66,8 +66,8 @@ export default function RegisterSuccessPage() {
           
           <div className="text-center text-xs text-muted-foreground">
             <p>Didn't receive the email? Check your spam folder or</p>
-            <Link href="/register" className="text-primary hover:underline">
-              try registering again
+            <Link href="/verify-email" className="text-primary hover:underline">
+              resend verification email
             </Link>
           </div>
         </CardContent>
