@@ -34,6 +34,7 @@
     --ring: 212 100% 60%;
     
     --vivid-pink: 327 100% 60%;
+    --bright-cyan: 180 100% 60%;
     
     --radius: 0.8rem;
   }
@@ -74,6 +75,16 @@
   .btn-gradient:hover {
     background-position: right center;
     box-shadow: 0 0 15px 0px hsl(var(--primary) / 0.5);
+  }
+
+  /* Animation Pulse Glow */
+  .animation-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  /* Headline Glow */
+  .headline-glow {
+    text-shadow: 0 0 20px hsl(var(--primary) / 0.5);
   }
 
   /* Shine Effect */

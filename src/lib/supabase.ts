@@ -7,30 +7,51 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 // Check if we have valid environment variables
 const hasValidConfig = supabaseUrl && supabaseAnonKey && 
   supabaseUrl !== 'your_supabase_url_here' && 
-  supabaseAnonKey !== 'your_supabase_anon_key_here';
+  supabaseAnonKey !== 'your_supabase_anon_key_here' &&
+  supabaseUrl !== 'https://placeholder.supabase.co' &&
+  supabaseAnonKey !== 'placeholder_key_for_development';
 
 // Create a mock client for development when env vars are not set
 const createMockClient = () => {
+  console.warn('Supabase not configured - using mock client for development');
   return {
     auth: {
-      signUp: async () => ({ error: { message: 'Supabase not configured' } }),
-      signInWithPassword: async () => ({ error: { message: 'Supabase not configured' } }),
-      signInWithOAuth: async () => ({ error: { message: 'Supabase not configured' } }),
-      signOut: async () => ({ error: { message: 'Supabase not configured' } }),
-      updateUser: async () => ({ error: { message: 'Supabase not configured' } }),
+      signUp: async () => ({ data: { user: null }, error: null }),
+      signInWithPassword: async () => ({ data: { user: null }, error: null }),
+      signInWithOAuth: async () => ({ data: { user: null }, error: null }),
+      signOut: async () => ({ error: null }),
+      updateUser: async () => ({ data: { user: null }, error: null }),
       getSession: async () => ({ data: { session: null }, error: null }),
-      onAuthStateChange: () => ({ data: { subscription: null } }),
+      onAuthStateChange: (callback: any) => {
+        // Mock subscription
+        const subscription = {
+          data: { subscription: null },
+          unsubscribe: () => {}
+        };
+        return subscription;
+      },
     },
-    from: () => ({
-      select: () => ({ eq: () => ({ single: async () => ({ data: null, error: { message: 'Supabase not configured' } }) }) }),
-      insert: () => ({ select: () => ({ single: async () => ({ data: null, error: { message: 'Supabase not configured' } }) }) }),
-      update: () => ({ eq: () => ({ error: { message: 'Supabase not configured' } }) }),
-      upsert: () => ({ error: { message: 'Supabase not configured' } }),
+    from: (table: string) => ({
+      select: (columns?: string) => ({
+        eq: (column: string, value: any) => ({
+          single: async () => ({ data: null, error: null }),
+          maybeSingle: async () => ({ data: null, error: null }),
+        }),
+        insert: (data: any) => ({
+          select: (columns?: string) => ({
+            single: async () => ({ data: null, error: null }),
+          }),
+        }),
+        update: (data: any) => ({
+          eq: (column: string, value: any) => ({ error: null }),
+        }),
+        upsert: (data: any) => ({ error: null }),
+      }),
     }),
     storage: {
-      from: () => ({
-        upload: async () => ({ error: { message: 'Supabase not configured' } }),
-        getPublicUrl: () => ({ data: { publicUrl: null } }),
+      from: (bucket: string) => ({
+        upload: async (path: string, file: any, options?: any) => ({ error: null }),
+        getPublicUrl: (path: string) => ({ data: { publicUrl: null } }),
       }),
     },
   };
