@@ -237,9 +237,21 @@ function BmcGeneratorPageClient() {
     setIsLoading(true);
     setSuggestions(null); // Clear old suggestions
     setError(null); // Clear any previous errors
+    
     try {
+      // Show AI processing feedback
+      toast({
+        title: '🤖 AI Processing...',
+        description: 'Gemini AI is analyzing your business model and generating insights.',
+      });
+
       const result = await generateBMC(formData as GenerateBMCInput);
       setBmcData(result);
+      
+      toast({
+        title: '🎉 BMC Generated Successfully!',
+        description: 'Your Business Model Canvas has been created with AI-powered insights.',
+      });
     } catch (error: any) {
       console.error('Error generating BMC:', error);
       const errorMessage = error.message || 'There was an issue with the AI. Please try again.';

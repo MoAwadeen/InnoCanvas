@@ -37,17 +37,49 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchUserProfile = useCallback(async () => {
     if (user) {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
+        try {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single();
 
-        if (error && error.code !== 'PGRST116') { // PGRST116: "object not found"
-          console.error("Error fetching user data:", error);
+          if (error && error.code !== 'PGRST116') { // PGRST116: "object not found"
+            console.error("Error fetching user data:", error);
+            setUserData(null);
+          } else if (data) {
+            setUserData(data);
+          } else {
+            // Profile doesn't exist, create it
+            const { data: newProfile, error: createError } = await supabase
+              .from('profiles')
+              .insert({
+                id: user.id,
+                full_name: user.user_metadata.full_name || 
+                           user.user_metadata.name || 
+                           user.email?.split('@')[0] || 
+                           'Unknown',
+                avatar_url: user.user_metadata.avatar_url || 
+                           user.user_metadata.picture || 
+                           null,
+                age: null,
+                gender: 'prefer-not-to-say',
+                country: 'Unknown',
+                use_case: 'other',
+              })
+              .select()
+              .single();
+
+            if (createError) {
+              console.error("Error creating profile:", createError);
+              setUserData(null);
+            } else {
+              setUserData(newProfile);
+            }
+          }
+        } catch (error) {
+          console.error("Error in fetchUserProfile:", error);
           setUserData(null);
-        } else {
-          setUserData(data);
         }
     }
   }, [user]);

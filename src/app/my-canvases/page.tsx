@@ -29,6 +29,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState, useCallback } from 'react';
 import { Logo } from '@/components/logo';
 import { supabase, handleSupabaseError } from '@/lib/supabase';
+import { Greeting } from '@/components/greeting';
 
 interface Canvas {
   id: string;
@@ -176,6 +177,9 @@ export default function MyCanvasesPage() {
       </header>
 
       <main>
+        <div className="mb-8">
+          <Greeting />
+        </div>
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
