@@ -59,7 +59,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Separator } from '@/components/ui/separator';
-import { getPublicUrl, supabase } from '@/lib/supabase';
+import { getPublicUrl, supabase, handleSupabaseError } from '@/lib/supabase';
 
 
 type BMCBlock = {
@@ -236,16 +236,19 @@ function BmcGeneratorPageClient() {
 
     setIsLoading(true);
     setSuggestions(null); // Clear old suggestions
+    setError(null); // Clear any previous errors
     try {
       const result = await generateBMC(formData as GenerateBMCInput);
       setBmcData(result);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating BMC:', error);
+      const errorMessage = error.message || 'There was an issue with the AI. Please try again.';
       toast({
         title: 'Error Generating Canvas',
-        description: 'There was an issue with the AI. Please try again.',
+        description: errorMessage,
         variant: 'destructive',
-      })
+      });
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -301,7 +304,8 @@ function BmcGeneratorPageClient() {
         setIsEditing(false);
     } catch (error: any) {
         console.error("Error saving canvas:", error);
-        toast({ title: 'Error', description: error.message, variant: 'destructive' });
+        const errorMessage = handleSupabaseError(error, 'Failed to save canvas');
+        toast({ title: 'Error', description: errorMessage, variant: 'destructive' });
     } finally {
         setIsLoading(false);
     }
@@ -373,9 +377,10 @@ function BmcGeneratorPageClient() {
         businessDescription: formData.businessDescription || '',
       });
       setSuggestions(result);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error getting suggestions:", error);
-      toast({ title: "AI Error", description: "Could not get suggestions.", variant: "destructive" });
+      const errorMessage = error.message || "Could not get suggestions.";
+      toast({ title: "AI Error", description: errorMessage, variant: "destructive" });
     } finally {
       setIsGettingSuggestions(false);
     }
@@ -404,7 +409,8 @@ function BmcGeneratorPageClient() {
         setLogoUrl(getPublicUrl('logos', filePath));
         toast({ title: 'Logo uploaded!', description: 'Remember to save your canvas.' });
       } catch (error: any) {
-        toast({ title: "Upload failed", description: error.message, variant: "destructive"});
+        const errorMessage = handleSupabaseError(error, 'Failed to upload logo');
+        toast({ title: "Upload failed", description: errorMessage, variant: "destructive"});
       } finally {
         setIsUploadingLogo(false);
       }

@@ -18,7 +18,7 @@ import { Loader } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/logo";
-import { supabase } from '@/lib/supabase';
+import { supabase, handleSupabaseError } from '@/lib/supabase';
 import { User } from '@supabase/supabase-js';
 
 export default function LoginPage() {
@@ -62,9 +62,10 @@ export default function LoginPage() {
       }
 
     } catch (error: any) {
+      const errorMessage = handleSupabaseError(error, 'Login failed');
       toast({
         title: 'Login Failed',
-        description: error.message,
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {
@@ -87,9 +88,10 @@ export default function LoginPage() {
       }
 
     } catch (error: any) {
+       const errorMessage = handleSupabaseError(error, 'Google login failed');
        toast({
         title: 'Login Failed',
-        description: error.message,
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {

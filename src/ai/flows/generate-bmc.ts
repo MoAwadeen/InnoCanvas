@@ -2,7 +2,7 @@
 
 'use server';
 
-import {ai} from '@/ai/genkit';
+import {ai, handleAIError} from '@/ai/genkit';
 import {z} from 'genkit';
 
 /**
@@ -16,21 +16,28 @@ import {z} from 'genkit';
 const GenerateBMCInputSchema = z.object({
   businessDescription: z
     .string()
+    .min(10, 'Business description must be at least 10 characters long')
+    .max(1000, 'Business description must be less than 1000 characters')
     .describe('A short description of the business.'),
   valuePropositions: z
     .string()
+    .min(1, 'Value propositions are required')
     .describe('Clarifying question: What core problem does your business solve?'),
   customerSegments: z
     .string()
+    .min(1, 'Customer segments are required')
     .describe('Clarifying question: Who benefits most from your solution?'),
   channels: z
     .string()
+    .min(1, 'Channels are required')
     .describe('Clarifying question: How do you reach and interact with your customers?'),
   revenueStreams: z
     .string()
+    .min(1, 'Revenue streams are required')
     .describe('Clarifying question: What is your main revenue model?'),
   keyResources: z
     .string()
+    .min(1, 'Key resources are required')
     .describe('Clarifying question: What is your most critical resource or asset?'),
   customerRelationships: z
     .string()
@@ -65,7 +72,16 @@ const GenerateBMCOutputSchema = z.object({
 export type GenerateBMCOutput = z.infer<typeof GenerateBMCOutputSchema>;
 
 export async function generateBMC(input: GenerateBMCInput): Promise<GenerateBMCOutput> {
-  return generateBmcFlow(input);
+  try {
+    // Validate input
+    const validatedInput = GenerateBMCInputSchema.parse(input);
+    return await generateBmcFlow(validatedInput);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      throw new Error(`Validation error: ${error.errors.map(e => e.message).join(', ')}`);
+    }
+    throw new Error(handleAIError(error, 'Failed to generate Business Model Canvas'));
+  }
 }
 
 const prompt = ai.definePrompt({
@@ -106,7 +122,14 @@ const generateBmcFlow = ai.defineFlow(
     outputSchema: GenerateBMCOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    try {
+      const {output} = await prompt(input);
+      if (!output) {
+        throw new Error('AI failed to generate output');
+      }
+      return output;
+    } catch (error) {
+      throw new Error(handleAIError(error, 'Failed to generate BMC content'));
+    }
   }
 );

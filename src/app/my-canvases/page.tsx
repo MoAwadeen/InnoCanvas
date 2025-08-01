@@ -28,7 +28,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState, useCallback } from 'react';
 import { Logo } from '@/components/logo';
-import { supabase } from '@/lib/supabase';
+import { supabase, handleSupabaseError } from '@/lib/supabase';
 
 interface Canvas {
   id: string;
@@ -73,9 +73,10 @@ export default function MyCanvasesPage() {
         setCanvases(userCanvases);
     } catch (error: any) {
         console.error("Error fetching canvases: ", error);
+        const errorMessage = handleSupabaseError(error, 'Could not fetch your canvases');
         toast({
             title: 'Error',
-            description: 'Could not fetch your canvases.',
+            description: errorMessage,
             variant: 'destructive'
         });
     } finally {
@@ -118,9 +119,10 @@ export default function MyCanvasesPage() {
       });
       router.push('/login');
     } catch (error: any) {
+      const errorMessage = handleSupabaseError(error, 'Logout failed');
       toast({
         title: 'Logout Failed',
-        description: error.message,
+        description: errorMessage,
         variant: 'destructive',
       });
     }
@@ -137,9 +139,10 @@ export default function MyCanvasesPage() {
         description: 'Your canvas has been successfully deleted.',
       });
     } catch (error: any) {
+       const errorMessage = handleSupabaseError(error, 'Failed to delete canvas');
        toast({
         title: 'Error',
-        description: error.message,
+        description: errorMessage,
         variant: 'destructive'
       });
     }
