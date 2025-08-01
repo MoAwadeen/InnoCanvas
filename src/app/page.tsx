@@ -1,4 +1,5 @@
 
+import React from 'react';
 import Faq from "@/components/landing/faq";
 import Features from "@/components/landing/features";
 import Footer from "@/components/landing/footer";

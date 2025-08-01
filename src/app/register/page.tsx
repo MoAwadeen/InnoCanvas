@@ -2,6 +2,7 @@
 'use client';
 
 import Link from "next/link";
+import { unstable_noStore as noStore } from 'next/cache';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ReactCountryFlag from "react-country-flag";
@@ -45,6 +46,9 @@ const formSchema = z.object({
 
 
 export default function RegisterPage() {
+  // Force dynamic rendering to avoid SSR issues
+  noStore();
+  
   const router = useRouter();
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
@@ -85,7 +89,7 @@ export default function RegisterPage() {
             country: values.country,
             use_case: values.useCase,
           },
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined,
         }
       });
       
@@ -153,7 +157,7 @@ export default function RegisterPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined,
         },
       });
 

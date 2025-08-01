@@ -1,14 +1,15 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
-if (!supabaseUrl || !supabaseAnonKey) {
+// Only throw error in client-side or when actually using the client
+if (typeof window !== 'undefined' && (!supabaseUrl || !supabaseAnonKey)) {
   throw new Error('Missing Supabase environment variables. Please check your .env.local file.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient(supabaseUrl || 'https://placeholder.supabase.co', supabaseAnonKey || 'placeholder', {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
@@ -17,9 +18,16 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 });
 
 export const getPublicUrl = (bucket: string, path: string) => {
-    if (!path) return null;
-    const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-    return data.publicUrl;
+    if (!path || !path.trim()) return null;
+    if (!bucket || !bucket.trim()) return null;
+    
+    try {
+        const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+        return data?.publicUrl || null;
+    } catch (error) {
+        console.error('Error getting public URL:', error);
+        return null;
+    }
 };
 
 // Helper function to handle Supabase errors

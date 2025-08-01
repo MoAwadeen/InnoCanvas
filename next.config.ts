@@ -3,9 +3,6 @@ import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
   /* config options here */
-  experimental: {
-    appDir: true, // Explicitly enable app directory
-  },
   typescript: {
     ignoreBuildErrors: true,
   },

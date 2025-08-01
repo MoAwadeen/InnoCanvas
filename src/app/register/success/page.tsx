@@ -1,6 +1,8 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from "next/link";
+import { unstable_noStore as noStore } from 'next/cache';
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,6 +15,13 @@ import { CheckCircle, Mail, ArrowLeft } from "lucide-react";
 import { Logo } from "@/components/logo";
 
 export default function RegisterSuccessPage() {
+  // Force dynamic rendering to avoid SSR issues
+  noStore();
+  
+  useEffect(() => {
+    // This ensures the component only renders on the client
+  }, []);
+
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center justify-center p-4">
       <div className="absolute top-8 left-8">

@@ -2,6 +2,7 @@
 'use client';
 
 import Link from "next/link"
+import { unstable_noStore as noStore } from 'next/cache';
 import ReactCountryFlag from "react-country-flag"
 import { Button } from "@/components/ui/button"
 import {
@@ -35,6 +36,9 @@ type ProfileFormData = {
 };
 
 export default function ProfilePage() {
+    // Force dynamic rendering to avoid SSR issues
+    noStore();
+    
     const { user, userData, loading: authLoading, fetchUserProfile } = useAuth();
     const [profileData, setProfileData] = useState<ProfileFormData>({
         fullName: '',
@@ -57,7 +61,7 @@ export default function ProfilePage() {
                 gender: userData.gender || '',
                 country: userData.country || '',
                 useCase: userData.use_case || '',
-                avatarUrl: userData.avatar_url ? getPublicUrl('avatars', userData.avatar_url) : '',
+                avatarUrl: userData.avatar_url && userData.avatar_url.trim() ? getPublicUrl('avatars', userData.avatar_url) || '' : '',
             });
         } else if (user) {
              setProfileData(prev => ({ ...prev, fullName: user.user_metadata.full_name || user.email || '' }));
