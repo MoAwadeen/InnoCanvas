@@ -20,6 +20,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/logo";
 import { supabase, handleSupabaseError } from '@/lib/supabase';
 import { User } from '@supabase/supabase-js';
+import { GoogleIcon } from "@/components/ui/google-icon";
 
 export const dynamic = "force-dynamic";
 
@@ -176,8 +177,15 @@ export default function LoginPage() {
                 <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
             </div>
           </div>
-           <Button variant="secondary" className="w-full" onClick={handleGoogleLogin} disabled={isLoading}>
-              {isLoading ? <Loader className="animate-spin" /> : 'Login with Google'}
+           <Button variant="secondary" className="w-full flex items-center justify-center gap-2" onClick={handleGoogleLogin} disabled={isLoading}>
+              {isLoading ? (
+                <Loader className="animate-spin" />
+              ) : (
+                <>
+                  <GoogleIcon className="w-5 h-5" />
+                  <span>Continue with Google</span>
+                </>
+              )}
             </Button>
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}
