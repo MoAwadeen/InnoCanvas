@@ -165,16 +165,11 @@ export default function RegisterPage() {
         throw new Error('Supabase is not properly configured. Please check your environment variables.');
       }
 
-      const redirectUrl = typeof window !== 'undefined' 
-        ? `${window.location.origin}/auth/callback` 
-        : 'http://localhost:3000/auth/callback';
-
-      console.log('Redirect URL:', redirectUrl);
+      console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
 
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: redirectUrl,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
