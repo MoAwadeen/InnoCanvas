@@ -94,20 +94,44 @@ export default function LoginPage() {
   const handleGoogleLogin = async () => {
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      console.log('Starting Google OAuth login...');
+      
+      // Check if Supabase is properly configured
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || 
+          !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+          process.env.NEXT_PUBLIC_SUPABASE_URL === 'your_supabase_url_here' ||
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === 'your_supabase_anon_key_here') {
+        throw new Error('Supabase is not properly configured. Please check your environment variables.');
+      }
+
+      const redirectUrl = typeof window !== 'undefined' 
+        ? `${window.location.origin}/auth/callback` 
+        : 'http://localhost:3000/auth/callback';
+
+      console.log('Redirect URL:', redirectUrl);
+
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-            redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined
+          redirectTo: redirectUrl,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
         }
       });
 
       if (error) {
+        console.error('Google OAuth error:', error);
         throw error;
       }
 
+      console.log('Google OAuth initiated successfully:', data);
+
     } catch (error: any) {
-       const errorMessage = handleSupabaseError(error, 'Google login failed');
-       toast({
+      console.error('Google login error:', error);
+      const errorMessage = handleSupabaseError(error, 'Google login failed');
+      toast({
         title: 'Login Failed',
         description: errorMessage,
         variant: 'destructive',
