@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { AuthProvider } from '@/hooks/useAuth';
+import { Analytics } from "@vercel/analytics/next";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +29,7 @@ export default function RootLayout({
             {children}
           </AuthProvider>
           <Toaster />
+          <Analytics />
       </body>
     </html>
   );
