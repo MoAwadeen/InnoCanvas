@@ -51,8 +51,7 @@ NEXT_PUBLIC_DEBUG=false
 2. Click **Create Credentials** → **OAuth 2.0 Client IDs**
 3. Choose **Web application** as the application type
 4. Add the following authorized redirect URIs:
-   - `http://localhost:3000/auth/callback` (for development)
-   - `https://your-domain.com/auth/callback` (for production)
+   - `https://ewetzmzfbwnqsdoikykz.supabase.co/auth/v1/callback` (Supabase callback)
 5. Copy the **Client ID** and **Client Secret**
 
 ### 2.3 Configure Supabase Auth Settings
@@ -68,20 +67,21 @@ NEXT_PUBLIC_DEBUG=false
 ### 2.4 Add Authorized Domains
 
 In your Google Cloud Console OAuth settings, add these authorized domains:
-- `localhost` (for development)
-- Your production domain (when deployed)
+- Your Vercel domain (e.g., `your-app.vercel.app`)
 
 ## Step 3: Test the Setup
 
-### 3.1 Start Your Development Server
+### 3.1 Deploy to Vercel
 
 ```bash
-npm run dev
+git add .
+git commit -m "Setup Google OAuth"
+git push
 ```
 
 ### 3.2 Test Google Login
 
-1. Go to `http://localhost:3000/login`
+1. Go to your Vercel deployment URL (e.g., `https://your-app.vercel.app/login`)
 2. Click the "Continue with Google" button
 3. You should be redirected to Google's OAuth consent screen
 4. After authorization, you should be redirected back to your app
@@ -98,13 +98,12 @@ The updated code includes console logging to help debug issues. Check your brows
 ### Common Issues
 
 1. **"Supabase is not properly configured"**
-   - Make sure your `.env.local` file has the correct Supabase URL and anon key
-   - Restart your development server after updating environment variables
+   - Make sure your Vercel environment variables have the correct Supabase URL and anon key
+   - Redeploy your app after updating environment variables
 
 2. **"Invalid redirect URI"**
    - Check that your redirect URI in Google Cloud Console matches exactly
-   - For development: `http://localhost:3000/auth/callback`
-   - For production: `https://your-domain.com/auth/callback`
+   - Use: `https://ewetzmzfbwnqsdoikykz.supabase.co/auth/v1/callback`
 
 3. **"OAuth consent screen not configured"**
    - Go to Google Cloud Console → **APIs & Services** → **OAuth consent screen**
@@ -124,19 +123,19 @@ The updated code includes console logging to help debug issues. Check your brows
    console.log('Supabase Key:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
    ```
 
-## Production Deployment
+## Vercel Deployment
 
-When deploying to production:
+For Vercel deployment:
 
-1. Update your Google OAuth redirect URIs to include your production domain
-2. Update your Supabase Auth settings with the production redirect URI
-3. Set the correct environment variables in your hosting platform
-4. Update the `NEXTAUTH_URL` to your production domain
+1. Keep the same Supabase callback URL: `https://ewetzmzfbwnqsdoikykz.supabase.co/auth/v1/callback`
+2. Add your Vercel domain to Google OAuth authorized JavaScript origins
+3. Set environment variables in Vercel dashboard
+4. Test the OAuth flow on your Vercel deployment
 
 ## Security Notes
 
-- Never commit your `.env.local` file to version control
-- Use environment variables in production hosting platforms
+- Never commit your environment variables to version control
+- Use Vercel environment variables for sensitive data
 - Regularly rotate your OAuth client secrets
 - Monitor your OAuth usage in Google Cloud Console
 

@@ -47,7 +47,7 @@ The OAuth flow is returning tokens in the URL hash fragment instead of properly 
 
 1. Open your browser's developer tools (F12)
 2. Right-click the refresh button and select "Empty Cache and Hard Reload"
-3. Or manually clear all cookies and cache for localhost:3000
+3. Or manually clear all cookies and cache for your domain
 
 ### Step 4: Test the Updated Flow
 
@@ -58,10 +58,10 @@ The updated code now handles both scenarios:
 
 ### Step 5: Environment Variables Check
 
-Ensure your `.env.local` file has the correct Supabase configuration:
+Ensure your Vercel environment variables are set correctly:
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+NEXT_PUBLIC_SUPABASE_URL=https://ewetzmzfbwnqsdoikykz.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_actual_supabase_anon_key_here
 ```
 
@@ -84,13 +84,15 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_actual_supabase_anon_key_here
 
 ## Testing the Fix
 
-1. **Start your development server**:
+1. **Deploy to Vercel**:
    ```bash
-   npm run dev
+   git add .
+   git commit -m "Fix OAuth configuration"
+   git push
    ```
 
 2. **Test Google OAuth**:
-   - Go to `http://localhost:3000/login`
+   - Go to your Vercel deployment URL (e.g., `https://your-app.vercel.app/login`)
    - Click "Continue with Google"
    - Complete the OAuth flow
    - You should now be redirected to `/my-canvases` instead of getting a hash fragment
@@ -122,23 +124,29 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_actual_supabase_anon_key_here
 2. Verify the table schema matches the expected structure
 3. Check Supabase logs for any database errors
 
-## Production Deployment
+## Vercel Deployment
 
-When deploying to production:
+For Vercel deployment:
 
 1. **Keep the same Supabase callback URL** in Google OAuth:
    ```
    https://ewetzmzfbwnqsdoikykz.supabase.co/auth/v1/callback
    ```
 
-2. **Add your production domain** to Google OAuth **Authorized JavaScript origins**:
+2. **Add your Vercel domain** to Google OAuth **Authorized JavaScript origins**:
    ```
-   https://your-domain.com
+   https://your-app.vercel.app
    ```
 
-3. **Set environment variables** in your hosting platform
+3. **Set environment variables in Vercel**:
+   - Go to your Vercel dashboard
+   - Select your project
+   - Go to Settings → Environment Variables
+   - Add:
+     - `NEXT_PUBLIC_SUPABASE_URL`: `https://ewetzmzfbwnqsdoikykz.supabase.co`
+     - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase anon key
 
-4. **Test the OAuth flow** in production environment
+4. **Test the OAuth flow** on your Vercel deployment
 
 ## Debug Information
 
