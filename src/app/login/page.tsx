@@ -39,16 +39,42 @@ export default function LoginPage() {
     }
   }, [user, authLoading, router]);
 
-  // Check for email verification message
+  // Check for email verification message and auth errors
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       const message = urlParams.get('message');
+      const error = urlParams.get('error');
       
       if (message === 'check-email') {
         toast({
           title: 'Check Your Email',
           description: 'Please check your email to verify your account before signing in.',
+        });
+      }
+      
+      if (error) {
+        let errorMessage = 'Authentication failed. Please try again.';
+        
+        switch (error) {
+          case 'auth_failed':
+            errorMessage = 'Authentication failed. Please check your credentials and try again.';
+            break;
+          case 'hash_callback_failed':
+            errorMessage = 'Google authentication failed. Please try again.';
+            break;
+          case 'no_code':
+            errorMessage = 'Invalid authentication request. Please try again.';
+            break;
+          case 'unexpected_error':
+            errorMessage = 'An unexpected error occurred. Please try again.';
+            break;
+        }
+        
+        toast({
+          title: 'Authentication Error',
+          description: errorMessage,
+          variant: 'destructive',
         });
       }
     }
