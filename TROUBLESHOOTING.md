@@ -23,7 +23,7 @@ This is a common issue that occurs when the user is created in Supabase Auth but
    # Check your .env.local file has:
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   GOOGLE_AI_API_KEY=your_gemini_api_key
+   OPENAI_API_KEY=your_openai_api_key
    ```
 
 4. **Check Supabase Settings**
@@ -63,9 +63,9 @@ npm run dev
 - Check if you've hit any rate limits
 
 ### AI Generation Fails
-- Verify your Google AI API key is valid
+- Verify your OpenAI API key is valid
 - Check if you've exceeded API quotas
-- Ensure the API key has access to Gemini models
+- Ensure the API key has access to GPT models
 
 ### Storage Issues
 - Create a 'logos' bucket in Supabase Storage

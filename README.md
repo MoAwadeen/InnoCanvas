@@ -1,10 +1,10 @@
 # InnoCanvas - AI-Powered Business Model Canvas Generator
 
-A modern web application that generates comprehensive Business Model Canvases using AI integration with Google's Gemini model. Built with Next.js, Supabase, and TypeScript.
+A modern web application that generates comprehensive Business Model Canvases using AI integration with OpenAI. Built with Next.js, Supabase, and TypeScript.
 
 ## 🚀 Features
 
-- **AI-Powered BMC Generation**: Uses Google Gemini AI to create detailed Business Model Canvases
+- **AI-Powered BMC Generation**: Uses OpenAI to create detailed Business Model Canvases
 - **Interactive Canvas Editor**: Edit and refine your BMC sections in real-time
 - **Custom Branding**: Upload logos and customize colors
 - **Export Functionality**: Download your canvas as PDF
@@ -19,7 +19,7 @@ A modern web application that generates comprehensive Business Model Canvases us
 - **Styling**: Tailwind CSS, Framer Motion
 - **UI Components**: Radix UI, shadcn/ui
 - **Backend**: Supabase (Database, Auth, Storage)
-- **AI Integration**: Google Gemini AI via Genkit
+- **AI Integration**: OpenAI
 - **Authentication**: Supabase Auth with Google OAuth
 - **File Export**: jsPDF, html2canvas
 
@@ -29,7 +29,7 @@ Before you begin, ensure you have the following:
 
 - Node.js 18+ installed
 - A Supabase account and project
-- A Google AI (Gemini) API key
+- An OpenAI API key
 - Git installed
 
 ## 🔧 Setup Instructions
@@ -62,116 +62,24 @@ Fill in your environment variables:
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url_here
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
 
-# Google AI (Gemini) Configuration
-GOOGLE_AI_API_KEY=your_gemini_api_key_here
+# OpenAI Configuration
+OPENAI_API_KEY=your_openai_api_key_here
 
 # Next.js Configuration
 NEXTAUTH_SECRET=your_nextauth_secret_here
 NEXTAUTH_URL=http://localhost:9002
 ```
 
-### 4. Supabase Setup
+### 4. Set Up Supabase
 
-#### Create a New Supabase Project
+1. Create a new project at [supabase.com](https://supabase.com)
+2. Go to SQL Editor
+3. Copy and paste the contents of `database-schema.sql`
+4. Go to Storage and create a bucket called `logos` (set to public)
 
-1. Go to [supabase.com](https://supabase.com) and create a new project
-2. Note down your project URL and anon key
+### 5. OpenAI Setup
 
-#### Database Schema
-
-Run the following SQL in your Supabase SQL editor:
-
-```sql
--- Create profiles table
-CREATE TABLE profiles (
-  id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
-  full_name TEXT,
-  age INTEGER,
-  gender TEXT,
-  country TEXT,
-  use_case TEXT,
-  avatar_url TEXT,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Create canvases table
-CREATE TABLE canvases (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-  business_description TEXT NOT NULL,
-  canvas_data JSONB NOT NULL,
-  form_data JSONB NOT NULL,
-  logo_url TEXT,
-  remove_watermark BOOLEAN DEFAULT FALSE,
-  colors JSONB DEFAULT '{"primary": "#30A2FF", "card": "#1c2333", "background": "#0a0f1c", "foreground": "#ffffff"}',
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Create indexes for better performance
-CREATE INDEX idx_canvases_user_id ON canvases(user_id);
-CREATE INDEX idx_canvases_created_at ON canvases(created_at);
-
--- Enable Row Level Security
-ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE canvases ENABLE ROW LEVEL SECURITY;
-
--- Create RLS policies
-CREATE POLICY "Users can view own profile" ON profiles
-  FOR SELECT USING (auth.uid() = id);
-
-CREATE POLICY "Users can update own profile" ON profiles
-  FOR UPDATE USING (auth.uid() = id);
-
-CREATE POLICY "Users can insert own profile" ON profiles
-  FOR INSERT WITH CHECK (auth.uid() = id);
-
-CREATE POLICY "Users can view own canvases" ON canvases
-  FOR SELECT USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can insert own canvases" ON canvases
-  FOR INSERT WITH CHECK (auth.uid() = user_id);
-
-CREATE POLICY "Users can update own canvases" ON canvases
-  FOR UPDATE USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can delete own canvases" ON canvases
-  FOR DELETE USING (auth.uid() = user_id);
-
--- Create function to handle user creation
-CREATE OR REPLACE FUNCTION handle_new_user()
-RETURNS TRIGGER AS $$
-BEGIN
-  INSERT INTO profiles (id, full_name, avatar_url)
-  VALUES (NEW.id, NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'avatar_url');
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Create trigger for new user creation
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION handle_new_user();
-```
-
-#### Storage Setup
-
-1. Go to Storage in your Supabase dashboard
-2. Create a new bucket called `logos`
-3. Set the bucket to public
-4. Create the following storage policy:
-
-```sql
-CREATE POLICY "Users can upload logos" ON storage.objects
-  FOR INSERT WITH CHECK (bucket_id = 'logos' AND auth.uid()::text = (storage.foldername(name))[1]);
-
-CREATE POLICY "Users can view logos" ON storage.objects
-  FOR SELECT USING (bucket_id = 'logos');
-```
-
-### 5. Google AI Setup
-
-1. Go to [Google AI Studio](https://aistudio.google.com/)
+1. Go to [OpenAI Platform](https://platform.openai.com/)
 2. Create a new API key
 3. Add the API key to your `.env.local` file
 
@@ -224,7 +132,7 @@ The application will be available at `http://localhost:9002`
    - Check if your Supabase project is active
 
 3. **AI Generation Fails**
-   - Verify your Google AI API key is correct
+   - Verify your OpenAI API key is correct
    - Check your API quota and billing status
 
 4. **File Upload Issues**
@@ -235,9 +143,9 @@ The application will be available at `http://localhost:9002`
 ### Error Messages
 
 - **"Missing Supabase environment variables"**: Add your Supabase credentials to `.env.local`
-- **"Missing GOOGLE_AI_API_KEY"**: Add your Gemini API key to `.env.local`
+- **"Missing OPENAI_API_KEY"**: Add your OpenAI API key to `.env.local`
 - **"Table does not exist"**: Run the database schema SQL in Supabase
-- **"Invalid API key"**: Check your Google AI API key
+- **"Invalid API key"**: Check your OpenAI API key
 
 ## 📁 Project Structure
 
@@ -245,52 +153,62 @@ The application will be available at `http://localhost:9002`
 src/
 ├── ai/                    # AI integration files
 │   ├── flows/            # AI flow definitions
-│   ├── genkit.ts         # Genkit configuration
-│   └── dev.ts            # Development AI server
-├── app/                   # Next.js app directory
-│   ├── auth/             # Authentication pages
-│   ├── generate/         # BMC generation page
-│   ├── my-canvases/      # Canvas management
-│   ├── login/            # Login page
-│   ├── register/         # Registration page
-│   └── profile/          # User profile
-├── components/           # React components
-│   ├── ui/              # shadcn/ui components
-│   ├── landing/         # Landing page components
-│   └── logo.tsx         # Logo component
-├── hooks/               # Custom React hooks
-├── lib/                 # Utility libraries
-└── styles/              # Global styles
+│   └── services/         # AI service implementations
+├── app/                  # Next.js app directory
+│   ├── api/             # API routes
+│   ├── auth/            # Authentication pages
+│   ├── generate/        # BMC generation page
+│   └── my-canvases/     # Canvas management
+├── components/          # Reusable components
+├── hooks/              # Custom React hooks
+├── lib/                # Utility libraries
+└── types/              # TypeScript type definitions
+```
+
+## 🎨 Customization
+
+### Colors and Styling
+
+The application uses a modern design system with:
+- Primary color: Deep sky blue (#30A2FF)
+- Background: Dark theme with glassmorphism effects
+- Typography: Inter font family
+- Animations: Framer Motion for smooth transitions
+
+### AI Models
+
+The application uses OpenAI's GPT-4o-mini model by default. You can modify the model in `src/lib/openai.ts`:
+
+```typescript
+export async function generateText(prompt: string, model: string = "gpt-4o-mini") {
+  // Change the default model here
+}
 ```
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🆘 Support
 
-If you encounter any issues or have questions:
+If you encounter any issues:
 
-1. Check the troubleshooting section above
-2. Review the Supabase and Google AI documentation
-3. Create an issue in the repository
+1. Check the [Troubleshooting Guide](TROUBLESHOOTING.md)
+2. Verify all environment variables are set correctly
+3. Ensure your OpenAI API key is valid and has sufficient credits
+4. Check the browser console for error messages
 
-## 🔄 Updates
+## 🎉 Acknowledgments
 
-Stay updated with the latest features and improvements by:
-
-1. Following the repository
-2. Checking the releases page
-3. Reading the changelog
-
----
-
-Built with ❤️ using Next.js, Supabase, and Google AI
+- Built with [Next.js](https://nextjs.org/)
+- Styled with [Tailwind CSS](https://tailwindcss.com/)
+- AI powered by [OpenAI](https://openai.com/)
+- Database by [Supabase](https://supabase.com/)

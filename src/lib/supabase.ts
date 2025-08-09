@@ -37,15 +37,21 @@ const createMockClient = () => {
           single: async () => ({ data: null, error: null }),
           maybeSingle: async () => ({ data: null, error: null }),
         }),
-        insert: (data: any) => ({
-          select: (columns?: string) => ({
-            single: async () => ({ data: null, error: null }),
-          }),
+        order: (column: string, options?: any) => ({
+          then: async (callback: any) => ({ data: null, error: null })
         }),
-        update: (data: any) => ({
-          eq: (column: string, value: any) => ({ error: null }),
+      }),
+      insert: (data: any) => ({
+        select: (columns?: string) => ({
+          single: async () => ({ data: null, error: null }),
         }),
-        upsert: (data: any) => ({ error: null }),
+      }),
+      update: (data: any) => ({
+        eq: (column: string, value: any) => ({ error: null }),
+      }),
+      upsert: (data: any) => ({ error: null }),
+      delete: () => ({
+        eq: (column: string, value: any) => ({ error: null }),
       }),
     }),
     storage: {
@@ -54,6 +60,12 @@ const createMockClient = () => {
         getPublicUrl: (path: string) => ({ data: { publicUrl: null } }),
       }),
     },
+    channel: (name: string) => ({
+      on: (event: string, callback: any) => ({
+        subscribe: () => ({ data: { subscription: null }, unsubscribe: () => {} })
+      })
+    }),
+    removeChannel: (channel: any) => {},
   };
 };
 

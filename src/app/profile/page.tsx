@@ -35,6 +35,18 @@ type ProfileFormData = {
     country: string;
     useCase: string;
     avatarUrl: string;
+    email: string;
+    phone: string;
+    company: string;
+    jobTitle: string;
+    industry: string;
+    experienceLevel: string;
+    preferences: {
+        theme: string;
+        notifications: boolean;
+        newsletter: boolean;
+        language: string;
+    };
 };
 
 export default function ProfilePage() {
@@ -49,6 +61,18 @@ export default function ProfilePage() {
       country: '',
       useCase: '',
       avatarUrl: '',
+      email: '',
+      phone: '',
+      company: '',
+      jobTitle: '',
+      industry: '',
+      experienceLevel: '',
+      preferences: {
+          theme: '',
+          notifications: false,
+          newsletter: false,
+          language: '',
+      },
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -64,14 +88,30 @@ export default function ProfilePage() {
               country: userData.country || '',
               useCase: userData.use_case || '',
               avatarUrl: userData.avatar_url && userData.avatar_url.trim() ? getPublicUrl('avatars', userData.avatar_url) || '' : '',
+              email: userData.email || '',
+              phone: userData.phone || '',
+              company: userData.company || '',
+              jobTitle: userData.job_title || '',
+              industry: userData.industry || '',
+              experienceLevel: userData.experience_level || '',
+              preferences: {
+                  theme: userData.preferences?.theme || '',
+                  notifications: userData.preferences?.notifications || false,
+                  newsletter: userData.preferences?.newsletter || false,
+                  language: userData.preferences?.language || '',
+              },
           });
       } else if (user) {
            setProfileData(prev => ({ ...prev, fullName: user.user_metadata.full_name || user.email || '' }));
       }
   }, [userData, user]);
   
-  const handleInputChange = (field: keyof typeof profileData, value: string) => {
-      setProfileData(prev => ({...prev, [field]: value}))
+  const handleInputChange = (field: keyof typeof profileData, value: string | typeof profileData.preferences) => {
+    if (field === 'preferences' && typeof value === 'object') {
+      setProfileData(prev => ({...prev, preferences: value as typeof profileData.preferences}));
+    } else {
+      setProfileData(prev => ({...prev, [field]: value as string}));
+    }
   }
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -129,6 +169,18 @@ export default function ProfilePage() {
               gender: profileData.gender,
               country: profileData.country,
               use_case: profileData.useCase,
+              email: profileData.email,
+              phone: profileData.phone,
+              company: profileData.company,
+              job_title: profileData.jobTitle,
+              industry: profileData.industry,
+              experience_level: profileData.experienceLevel,
+              preferences: {
+                  theme: profileData.preferences.theme,
+                  notifications: profileData.preferences.notifications,
+                  newsletter: profileData.preferences.newsletter,
+                  language: profileData.preferences.language,
+              },
               updated_at: new Date().toISOString(),
           };
 
@@ -199,124 +251,236 @@ export default function ProfilePage() {
   const displayInitial = displayName.charAt(0).toUpperCase();
 
   return (
-    <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center p-4 md:p-8">
-        <header className="w-full max-w-5xl flex justify-between items-center mb-8">
-            <Logo href="/my-canvases" />
-            <div className="flex items-center gap-4">
-                <Link href="/my-canvases">
-                    <Button variant="secondary">My Canvases</Button>
-                </Link>
-                 <Button variant="secondary" onClick={handleLogout}><LogOut className="mr-2"/>Logout</Button>
-            </div>
-      </header>
-      <main className="w-full max-w-5xl flex-grow">
-        <h1 className="text-4xl md:text-5xl font-bold mb-8">Your Profile</h1>
-        <Card className="mx-auto max-w-3xl w-full border-border bg-card">
-            <CardHeader>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <Logo />
+          <Button variant="outline" onClick={handleLogout}>
+            <LogOut className="mr-2 h-4 w-4" />
+            Logout
+          </Button>
+        </div>
+
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-foreground">Profile Settings</h1>
+            <p className="text-muted-foreground">Manage your account and preferences</p>
+          </div>
+
+          <form onSubmit={handleSaveChanges} className="space-y-8">
+            {/* Avatar Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Profile Picture</CardTitle>
+                <CardDescription>Upload a profile picture to personalize your account</CardDescription>
+              </CardHeader>
+              <CardContent>
                 <div className="flex items-center gap-6">
-                    <div className="relative">
-                        <Avatar className="w-24 h-24 border-2 border-primary">
-                            <AvatarImage src={profileData.avatarUrl} alt={displayName} />
-                            <AvatarFallback>{displayInitial}</AvatarFallback>
-                        </Avatar>
-                        <input type="file" id="avatar-upload" className="hidden" accept="image/png, image/jpeg" onChange={handleAvatarUpload} disabled={isUploading} />
-                        <Button size="icon" className="absolute bottom-0 right-0 rounded-full h-8 w-8" asChild>
-                           <label htmlFor="avatar-upload" className="cursor-pointer">
-                             {isUploading ? <Loader className="animate-spin" /> : <Upload />}
-                           </label>
-                        </Button>
-                    </div>
-                    <div>
-                        <CardTitle className="text-2xl text-card-foreground">{displayName}</CardTitle>
-                        <CardDescription>{user.email}</CardDescription>
-                    </div>
-                </div>
-            </CardHeader>
-            <CardContent>
-            <form onSubmit={handleSaveChanges}>
-                <div className="grid gap-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="grid gap-2">
-                            <Label htmlFor="full-name" className="text-card-foreground">Full Name</Label>
-                            <Input id="full-name" value={profileData.fullName} onChange={(e) => handleInputChange('fullName', e.target.value)} required />
-                        </div>
-                        <div className="grid gap-2">
-                        <Label htmlFor="email" className="text-card-foreground">Email</Label>
-                        <Input
-                            id="email"
-                            type="email"
-                            value={user.email || ''}
-                            disabled
-                            className="text-muted-foreground"
-                        />
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="grid gap-2">
-                            <Label htmlFor="age" className="text-card-foreground">Age</Label>
-                            <Input id="age" type="number" placeholder="25" value={profileData.age} onChange={(e) => handleInputChange('age', e.target.value)} />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="gender" className="text-card-foreground">Gender</Label>
-                            <Select value={profileData.gender} onValueChange={(value) => handleInputChange('gender', value)}>
-                                <SelectTrigger id="gender">
-                                    <SelectValue placeholder="Select gender" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="male">Male</SelectItem>
-                                    <SelectItem value="female">Female</SelectItem>
-                                    <SelectItem value="non-binary">Non-binary</SelectItem>
-                                    <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-                    <div className="grid gap-2">
-                        <Label htmlFor="country" className="text-card-foreground">Country</Label>
-                        <Select value={profileData.country} onValueChange={(value) => handleInputChange('country', value)}>
-                            <SelectTrigger id="country">
-                                <SelectValue placeholder="Select your country" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <ScrollArea className="h-72">
-                                {countries.map((country) => (
-                                    <SelectItem key={country.code} value={country.name}>
-                                        <div className="flex items-center gap-2">
-                                            <ReactCountryFlag countryCode={country.code} svg />
-                                            <span>{country.name}</span>
-                                        </div>
-                                    </SelectItem>
-                                ))}
-                                </ScrollArea>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="grid gap-2">
-                        <Label htmlFor="use-case" className="text-card-foreground">Primary Use Case</Label>
-                        <Select value={profileData.useCase} onValueChange={(value) => handleInputChange('useCase', value)}>
-                            <SelectTrigger id="use-case">
-                                <SelectValue placeholder="How will you use InnoCanvas?" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="student">Student</SelectItem>
-                                <SelectItem value="entrepreneur">Entrepreneur</SelectItem>
-                                <SelectItem value="accelerator">Accelerator</SelectItem>
-                                <SelectItem value="consultant">Consultant</SelectItem>
-                                <SelectItem value="other">Other</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    
-                    <Button variant="gradient" type="submit" className="w-full mt-2" disabled={isLoading}>
-                      {isLoading ? <Loader className="animate-spin"/> : 'Save Changes'}
+                  <Avatar className="h-20 w-20">
+                    <AvatarImage src={profileData.avatarUrl} alt="Profile" />
+                    <AvatarFallback>{profileData.fullName.charAt(0).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <input
+                      type="file"
+                      id="avatar-upload"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleAvatarUpload}
+                      disabled={isUploading}
+                    />
+                    <Button asChild variant="outline" disabled={isUploading}>
+                      <label htmlFor="avatar-upload" className="cursor-pointer">
+                        {isUploading ? <Loader className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+                        {isUploading ? 'Uploading...' : 'Upload Photo'}
+                      </label>
                     </Button>
+                    <p className="text-sm text-muted-foreground mt-2">JPG, PNG or GIF. Max 2MB.</p>
+                  </div>
                 </div>
-            </form>
-            </CardContent>
-        </Card>
-      </main>
+              </CardContent>
+            </Card>
+
+            {/* Basic Information */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Basic Information</CardTitle>
+                <CardDescription>Your personal and contact information</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="fullName">Full Name *</Label>
+                    <Input
+                      id="fullName"
+                      value={profileData.fullName}
+                      onChange={(e) => handleInputChange('fullName', e.target.value)}
+                      placeholder="Enter your full name"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="email">Email *</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={profileData.email}
+                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      placeholder="Enter your email"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      value={profileData.phone}
+                      onChange={(e) => handleInputChange('phone', e.target.value)}
+                      placeholder="Enter your phone number"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="age">Age</Label>
+                    <Input
+                      id="age"
+                      type="number"
+                      value={profileData.age}
+                      onChange={(e) => handleInputChange('age', e.target.value)}
+                      placeholder="Enter your age"
+                      min="1"
+                      max="120"
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Professional Information */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Professional Information</CardTitle>
+                <CardDescription>Your work and professional details</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="company">Company</Label>
+                    <Input
+                      id="company"
+                      value={profileData.company}
+                      onChange={(e) => handleInputChange('company', e.target.value)}
+                      placeholder="Enter your company name"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="jobTitle">Job Title</Label>
+                    <Input
+                      id="jobTitle"
+                      value={profileData.jobTitle}
+                      onChange={(e) => handleInputChange('jobTitle', e.target.value)}
+                      placeholder="Enter your job title"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="industry">Industry</Label>
+                    <Select value={profileData.industry} onValueChange={(value) => handleInputChange('industry', value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select your industry" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="technology">Technology</SelectItem>
+                        <SelectItem value="healthcare">Healthcare</SelectItem>
+                        <SelectItem value="finance">Finance</SelectItem>
+                        <SelectItem value="education">Education</SelectItem>
+                        <SelectItem value="retail">Retail</SelectItem>
+                        <SelectItem value="manufacturing">Manufacturing</SelectItem>
+                        <SelectItem value="consulting">Consulting</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="experienceLevel">Experience Level</Label>
+                    <Select value={profileData.experienceLevel} onValueChange={(value) => handleInputChange('experienceLevel', value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select your experience level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="beginner">Beginner (0-2 years)</SelectItem>
+                        <SelectItem value="intermediate">Intermediate (3-5 years)</SelectItem>
+                        <SelectItem value="advanced">Advanced (6-10 years)</SelectItem>
+                        <SelectItem value="expert">Expert (10+ years)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Preferences */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Preferences</CardTitle>
+                <CardDescription>Customize your experience</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="theme">Theme</Label>
+                    <Select 
+                      value={profileData.preferences.theme} 
+                      onValueChange={(value) => setProfileData(prev => ({
+                        ...prev, 
+                        preferences: { ...prev.preferences, theme: value }
+                      }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select theme" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="dark">Dark</SelectItem>
+                        <SelectItem value="light">Light</SelectItem>
+                        <SelectItem value="system">System</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="language">Language</Label>
+                    <Select 
+                      value={profileData.preferences.language} 
+                      onValueChange={(value) => setProfileData(prev => ({
+                        ...prev, 
+                        preferences: { ...prev.preferences, language: value }
+                      }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select language" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="en">English</SelectItem>
+                        <SelectItem value="es">Spanish</SelectItem>
+                        <SelectItem value="fr">French</SelectItem>
+                        <SelectItem value="de">German</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Save Button */}
+            <div className="flex justify-end">
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? <Loader className="mr-2 h-4 w-4 animate-spin" /> : null}
+                Save Changes
+              </Button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
-  )
+  );
 }
 
     

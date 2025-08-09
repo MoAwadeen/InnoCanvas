@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Separator } from '@/components/ui/separator';
 import { getPublicUrl, supabase, handleSupabaseError } from '@/lib/supabase';
+import { AIService } from '@/ai/services/ai-service';
 
 type BMCBlock = {
   title: string;
@@ -47,27 +48,80 @@ const refinementQuestions = [
   {
     key: 'valuePropositions' as const,
     label: 'What core problem does your business solve?',
-    options: ['Saving customers time or effort', 'Reducing cost or risk', 'Improving convenience or accessibility', 'Creating a new or better experience', 'Other'],
+    description: 'Identify the primary pain point or need your business addresses',
+    type: 'radio' as const,
+    options: [
+      { value: 'Saving customers time or effort', icon: '⏱️', description: 'Streamlining processes or reducing manual work' },
+      { value: 'Reducing cost or risk', icon: '💰', description: 'Lowering expenses or minimizing potential losses' },
+      { value: 'Improving convenience or accessibility', icon: '🎯', description: 'Making things easier to access or use' },
+      { value: 'Creating a new or better experience', icon: '✨', description: 'Offering something novel or significantly improved' },
+      { value: 'Other', icon: '🔍', description: 'A different type of problem or need' }
+    ],
   },
   {
     key: 'customerSegments' as const,
     label: 'Who benefits most from your solution?',
-    options: ['Individuals (mass market)', 'Businesses or organizations', 'Niche communities or segments', 'Professionals or specialists', 'Internal teams (B2E or SaaS-like model)'],
+    description: 'Define your primary target audience and customer groups',
+    type: 'radio' as const,
+    options: [
+      { value: 'Individuals (mass market)', icon: '👥', description: 'General consumers or individual users' },
+      { value: 'Businesses or organizations', icon: '🏢', description: 'Companies, nonprofits, or institutions' },
+      { value: 'Niche communities or segments', icon: '🎯', description: 'Specific groups with unique needs' },
+      { value: 'Professionals or specialists', icon: '👨‍💼', description: 'Experts or skilled practitioners' },
+      { value: 'Internal teams (B2E or SaaS-like model)', icon: '👨‍💻', description: 'Employees or internal users' }
+    ],
   },
   {
     key: 'channels' as const,
     label: 'How do you reach and interact with your customers?',
-    options: ['Website or app (direct digital access)', 'Social media and online content', 'Partner platforms or resellers', 'In-person sales or service', 'Mixed or hybrid approach'],
+    description: 'Choose your primary distribution and communication channels',
+    type: 'radio' as const,
+    options: [
+      { value: 'Website or app (direct digital access)', icon: '🌐', description: 'Online platforms or mobile applications' },
+      { value: 'Social media and online content', icon: '📱', description: 'Social platforms and digital marketing' },
+      { value: 'Partner platforms or resellers', icon: '🤝', description: 'Third-party distribution channels' },
+      { value: 'In-person sales or service', icon: '🏪', description: 'Physical locations or face-to-face interactions' },
+      { value: 'Mixed or hybrid approach', icon: '🔄', description: 'Combination of multiple channels' }
+    ],
   },
   {
     key: 'revenueStreams' as const,
     label: 'What is your main revenue model?',
-    options: ['One-time product sales', 'Subscription or recurring payments', 'Commission or transaction-based', 'Advertising or sponsorships', 'Freemium → upgrade path'],
+    description: 'Select the primary way you generate income',
+    type: 'radio' as const,
+    options: [
+      { value: 'One-time product sales', icon: '🛍️', description: 'Single purchases or transactions' },
+      { value: 'Subscription or recurring payments', icon: '🔄', description: 'Ongoing fees or membership models' },
+      { value: 'Commission or transaction-based', icon: '💸', description: 'Percentage-based or per-transaction fees' },
+      { value: 'Advertising or sponsorships', icon: '📢', description: 'Ad revenue or sponsored content' },
+      { value: 'Freemium → upgrade path', icon: '🎁', description: 'Free base with premium upgrades' }
+    ],
   },
   {
     key: 'keyResources' as const,
     label: 'What is your most critical resource or asset?',
-    options: ['Technical platform or software', 'Brand and community', 'Strategic partnerships', 'Expert knowledge or IP', 'Skilled human team'],
+    description: 'Identify the most important resource for your business success',
+    type: 'radio' as const,
+    options: [
+      { value: 'Technical platform or software', icon: '💻', description: 'Digital infrastructure or technology stack' },
+      { value: 'Brand and community', icon: '🏷️', description: 'Brand recognition and loyal community' },
+      { value: 'Strategic partnerships', icon: '🤝', description: 'Key business relationships and alliances' },
+      { value: 'Expert knowledge or IP', icon: '🧠', description: 'Intellectual property or specialized expertise' },
+      { value: 'Skilled human team', icon: '👥', description: 'Talented employees or team members' }
+    ],
+  },
+  {
+    key: 'businessModel' as const,
+    label: 'What type of business model best describes your approach?',
+    description: 'Choose the business model that most closely matches your strategy',
+    type: 'radio' as const,
+    options: [
+      { value: 'SaaS/Software as a Service', icon: '☁️', description: 'Cloud-based software subscriptions' },
+      { value: 'Marketplace/Platform', icon: '🏪', description: 'Connecting buyers and sellers' },
+      { value: 'E-commerce/Retail', icon: '🛒', description: 'Online or physical product sales' },
+      { value: 'Consulting/Services', icon: '💼', description: 'Professional services or expertise' },
+      { value: 'Content/Media', icon: '📺', description: 'Content creation and distribution' }
+    ],
   },
 ];
 
@@ -83,57 +137,53 @@ const bmcLayout: BMCBlock[] = [
   { title: "Revenue Streams", keyProp: "revenueStreams", icon: <DollarSign /> },
 ];
 
-// Mock AI function for now - can be replaced with real AI later
-const generateMockBMC = async (formData: any) => {
-  // Simulate AI processing
-  await new Promise(resolve => setTimeout(resolve, 2000));
-  
-  return {
-    customerSegments: "• Small business owners\n• Entrepreneurs\n• Startups",
-    valuePropositions: "Streamlined business model development with AI-powered insights",
-    channels: "• Online platform\n• Mobile app\n• Partner networks",
-    customerRelationships: "• Automated onboarding\n• Personalized support\n• Community engagement",
-    revenueStreams: "• Subscription plans\n• Premium features\n• Consulting services",
-    keyActivities: "• Platform development\n• AI model training\n• Customer support",
-    keyResources: "• Development team\n• AI infrastructure\n• User data",
-    keyPartnerships: "• Technology providers\n• Business consultants\n• Educational institutions",
-    costStructure: "• Technology infrastructure\n• Team salaries\n• Marketing and sales",
-  };
-};
-
 function BmcGeneratorPageClient() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, userData, loading: authLoading, checkPlanLimit, getPlanLimits } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const canvasId = searchParams.get('canvasId');
-
   const { toast } = useToast();
+  const styledCanvasRef = useRef<HTMLDivElement>(null);
+
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   const [isGettingSuggestions, setIsGettingSuggestions] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [canvasGenerated, setCanvasGenerated] = useState(false);
+  const [removeWatermark, setRemoveWatermark] = useState(false);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [suggestions, setSuggestions] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState<any>({
+  const [formData, setFormData] = useState({
     businessDescription: '',
-    customerSegments: '',
+    businessName: '',
     valuePropositions: '',
+    customerSegments: '',
     channels: '',
     revenueStreams: '',
     keyResources: '',
-    customerRelationships: 'Automated',
-    keyActivities: 'Software Development',
-    keyPartnerships: 'Tech Providers',
-    costStructure: 'Technology Infrastructure',
+    businessModel: '',
   });
-  
-  const [bmcData, setBmcData] = useState<any>(null);
-  const [suggestions, setSuggestions] = useState<any>(null);
-  const [logoUrl, setLogoUrl] = useState<string | null>(null);
-  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
-  const [removeWatermark, setRemoveWatermark] = useState(false);
-  const [colors, setColors] = useState(initialColors);
-  const styledCanvasRef = useRef<HTMLDivElement>(null);
+
+  const [bmcData, setBmcData] = useState({
+    customerSegments: 'Target customers',
+    valuePropositions: 'Customer value',
+    channels: 'Distribution channels',
+    customerRelationships: 'Customer engagement',
+    revenueStreams: 'Revenue sources',
+    keyActivities: 'Core activities',
+    keyResources: 'Essential resources',
+    keyPartnerships: 'Strategic partnerships and alliances',
+    costStructure: 'Business costs'
+  });
+
+  const [colors, setColors] = useState({
+    primary: '#30A2FF',
+    card: '#1c2333',
+    background: '#0a0f1c',
+    foreground: '#ffffff'
+  });
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -202,46 +252,105 @@ function BmcGeneratorPageClient() {
   };
 
   const handleGenerateCanvas = async (regenerate = false) => {
-    const requiredKeys = ['businessDescription', 'customerSegments', 'valuePropositions', 'channels', 'revenueStreams', 'keyResources'];
-    if (!regenerate && requiredKeys.some(key => !formData[key])) {
-      toast({
-        title: 'Missing Information',
-        description: 'Please fill out all refinement questions before generating.',
-        variant: 'destructive'
+    if (!user) {
+      toast({ title: 'Error', description: 'Please log in to generate a canvas.', variant: 'destructive' });
+      return;
+    }
+
+    if (!formData.businessDescription) {
+      toast({ title: 'Error', description: 'Please provide a business description.', variant: 'destructive' });
+      return;
+    }
+
+    // Check plan limits for canvas creation
+    const canCreateCanvas = await checkPlanLimit('create_canvas');
+    if (!canCreateCanvas) {
+      const planLimits = await getPlanLimits();
+      const currentPlan = userData?.plan || 'free';
+      const maxCanvases = planLimits?.max_canvases || 1;
+      
+      toast({ 
+        title: 'Plan Limit Reached', 
+        description: `You've reached the limit of ${maxCanvases} canvas${maxCanvases > 1 ? 'es' : ''} for your ${currentPlan} plan. Please upgrade to create more canvases.`, 
+        variant: 'destructive' 
       });
       return;
     }
-    
-    if (!regenerate) {
-      setStep(3);
-    }
 
     setIsLoading(true);
-    setSuggestions(null);
-    setError(null);
-    
     try {
-      toast({
-        title: '🤖 AI Processing...',
-        description: 'AI is analyzing your business model and generating insights.',
+      const mcqAnswers = {
+        valuePropositions: formData.valuePropositions,
+        customerSegments: formData.customerSegments,
+        channels: formData.channels,
+        revenueStreams: formData.revenueStreams,
+        keyResources: formData.keyResources,
+        businessModel: formData.businessModel,
+      };
+
+      const response = await fetch('/api/ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'generateBusinessModelCanvas',
+          businessIdea: formData.businessDescription,
+          mcqAnswers
+        }),
       });
 
-      const result = await generateMockBMC(formData);
-      setBmcData(result);
+      if (!response.ok) {
+        throw new Error('Failed to generate business model canvas');
+      }
+
+      const data = await response.json();
+      
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      let bmcData;
+      try {
+        // Clean the response string if it contains markdown code blocks
+        let cleanedResponse = data.bmcData;
+        if (typeof cleanedResponse === 'string') {
+          cleanedResponse = cleanedResponse.replace(/```json\s*|\s*```/g, '').trim();
+          bmcData = JSON.parse(cleanedResponse);
+        } else {
+          bmcData = cleanedResponse;
+        }
+      } catch (parseError) {
+        console.error('Failed to parse AI response as JSON:', parseError);
+        bmcData = {};
+      }
+
+      // Convert snake_case keys to camelCase if needed
+      const completeBmcData = {
+        customerSegments: bmcData?.customerSegments || bmcData?.customer_segments || 'Target customers',
+        valuePropositions: bmcData?.valuePropositions || bmcData?.value_propositions || 'Customer value',
+        channels: bmcData?.channels || 'Distribution channels',
+        customerRelationships: bmcData?.customerRelationships || bmcData?.customer_relationships || 'Customer engagement',
+        revenueStreams: bmcData?.revenueStreams || bmcData?.revenue_streams || 'Revenue sources',
+        keyActivities: bmcData?.keyActivities || bmcData?.key_activities || 'Core activities',
+        keyResources: bmcData?.keyResources || bmcData?.key_resources || 'Essential resources',
+        keyPartnerships: bmcData?.keyPartnerships || bmcData?.key_partnerships || 'Strategic partnerships and alliances',
+        costStructure: bmcData?.costStructure || bmcData?.cost_structure || 'Business costs'
+      };
+
+      setBmcData(completeBmcData);
+      setStep(3);
+      setCanvasGenerated(true);
       
       toast({
-        title: '🎉 BMC Generated Successfully!',
-        description: 'Your Business Model Canvas has been created with AI-powered insights.',
+        title: 'Canvas Generated!',
+        description: 'Your Business Model Canvas has been created successfully.',
       });
     } catch (error: any) {
-      console.error('Error generating BMC:', error);
-      const errorMessage = error.message || 'There was an issue with the AI. Please try again.';
+      console.error('Error generating canvas:', error);
       toast({
-        title: 'Error Generating Canvas',
-        description: errorMessage,
+        title: 'Generation Failed',
+        description: error.message || 'Failed to generate business model canvas. Please try again.',
         variant: 'destructive',
       });
-      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -257,6 +366,7 @@ function BmcGeneratorPageClient() {
     try {
       const logoPath = logoUrl ? logoUrl.split('/').pop() : null;
 
+      // Enhanced canvas data with more comprehensive information
       const canvasDataToSave = {
         canvas_data: bmcData,
         form_data: formData,
@@ -264,7 +374,12 @@ function BmcGeneratorPageClient() {
         remove_watermark: removeWatermark,
         colors: colors,
         user_id: user.id,
-        business_description: formData.businessDescription, 
+        business_description: formData.businessDescription,
+        title: formData.businessName || `BMC - ${formData.businessDescription.substring(0, 50)}...`,
+        tags: formData.businessModel ? [formData.businessModel.toLowerCase()] : [],
+        is_public: false,
+        view_count: 0,
+        export_count: 0,
       };
 
       if (canvasId) {
@@ -277,7 +392,7 @@ function BmcGeneratorPageClient() {
         
         toast({
           title: 'Canvas Updated!',
-          description: 'Your changes have been saved.',
+          description: 'Your changes have been saved successfully.',
         });
       } else {
         const { data, error } = await supabase
@@ -287,6 +402,34 @@ function BmcGeneratorPageClient() {
           .single();
         
         if (error) throw error;
+        
+        // Update user statistics
+        try {
+          const { data: currentProfile, error: fetchError } = await supabase
+            .from('profiles')
+            .select('statistics')
+            .eq('id', user.id)
+            .single();
+          
+          if (!fetchError && currentProfile) {
+            const currentStats = currentProfile.statistics || {};
+            const updatedStats = {
+              ...currentStats,
+              canvases_created: (currentStats.canvases_created || 0) + 1
+            };
+            
+            const { error: statsError } = await supabase
+              .from('profiles')
+              .update({ statistics: updatedStats })
+              .eq('id', user.id);
+            
+            if (statsError) {
+              console.warn('Failed to update user statistics:', statsError);
+            }
+          }
+        } catch (statsError) {
+          console.warn('Error updating user statistics:', statsError);
+        }
         
         router.replace(`/generate?canvasId=${data.id}`, { scroll: false }); 
         toast({
@@ -360,25 +503,68 @@ function BmcGeneratorPageClient() {
   };
 
   const handleGetSuggestions = async () => {
-    if (!bmcData) return;
+    if (!bmcData) {
+      toast({
+        title: 'No Canvas Data',
+        description: 'Please generate a canvas first before getting suggestions.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
     setIsGettingSuggestions(true);
     try {
-      // Mock suggestions for now
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setSuggestions({
-        suggestions: [
-          "Consider adding more specific customer segments to better target your market.",
-          "Your value proposition could be more differentiated from competitors.",
-          "Explore additional revenue streams to diversify your income sources.",
-          "Consider strategic partnerships to expand your reach and capabilities."
-        ]
+      const suggestionPrompt = `Analyze this Business Model Canvas and provide actionable suggestions for improvement:
+
+${JSON.stringify(bmcData, null, 2)}
+
+Please provide:
+1. 3 specific improvements for each section
+2. Potential risks or challenges
+3. Strategic recommendations
+4. Market positioning advice
+
+Format as JSON with keys: improvements, risks, recommendations, positioning`;
+
+      const suggestions = await AIService.generateInsights(JSON.stringify(bmcData));
+      setSuggestions(suggestions);
+      
+      toast({
+        title: 'Suggestions Generated',
+        description: 'AI has analyzed your canvas and provided recommendations.',
       });
-    } catch (error: any) {
-      console.error("Error getting suggestions:", error);
-      const errorMessage = error.message || "Could not get suggestions.";
-      toast({ title: "AI Error", description: errorMessage, variant: "destructive" });
+    } catch (error) {
+      console.error('Error getting suggestions:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to generate suggestions. Please try again.',
+        variant: 'destructive'
+      });
     } finally {
       setIsGettingSuggestions(false);
+    }
+  };
+
+  const handleGetRefinementSuggestions = async (questionKey: string, currentValue: string) => {
+    if (!currentValue || !formData.businessDescription) return;
+
+    try {
+      const suggestionPrompt = `Based on this business description: "${formData.businessDescription}"
+
+And the current answer to "${refinementQuestions.find(q => q.key === questionKey)?.label}": "${currentValue}"
+
+Provide 3 specific, actionable suggestions to improve or refine this answer. Focus on:
+- More specific details
+- Better alignment with the business model
+- Potential opportunities or considerations
+
+Format as a simple list with bullet points.`;
+
+      const suggestions = await AIService.generateInsights(suggestionPrompt);
+      return suggestions;
+    } catch (error) {
+      console.error('Error getting refinement suggestions:', error);
+      return null;
     }
   };
 
@@ -390,7 +576,7 @@ function BmcGeneratorPageClient() {
         return;
       }
 
-      setIsUploadingLogo(true);
+      setIsLoading(true); // Added setIsLoading(true) here
       try {
         const fileExt = file.name.split('.').pop();
         const fileName = `${user.id}-${Date.now()}.${fileExt}`;
@@ -408,7 +594,7 @@ function BmcGeneratorPageClient() {
         const errorMessage = handleSupabaseError(error, 'Failed to upload logo');
         toast({ title: "Upload failed", description: errorMessage, variant: "destructive"});
       } finally {
-        setIsUploadingLogo(false);
+        setIsLoading(false); // Added setIsLoading(false) here
       }
     }
   };
@@ -434,24 +620,95 @@ function BmcGeneratorPageClient() {
             className="w-full max-w-4xl"
           >
             <div className="bg-card rounded-2xl p-8 shadow-lg text-center border-border border">
-              <h1 className="text-4xl font-bold mb-4 text-card-foreground">Tell Us About Your Idea</h1>
-              <p className="text-muted-foreground mb-8">
-                Start with your business name and a brief description. The more detail, the better!
-              </p>
-              <Textarea
-                placeholder="Ex: A mobile app that helps tourists explore historical places using AR…"
-                className="min-h-[150px] text-lg bg-background text-foreground"
-                value={formData.businessDescription}
-                onChange={(e) => handleInputChange('businessDescription', e.target.value)}
-              />
+              <div className="mb-8">
+                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-primary to-primary/60 rounded-full flex items-center justify-center">
+                  <Lightbulb className="w-8 h-8 text-white" />
+                </div>
+                <h1 className="text-4xl font-bold mb-4 text-card-foreground">Tell Us About Your Idea</h1>
+                <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                  Start with your business name and a detailed description. The more specific you are, the better the AI can understand and generate your Business Model Canvas!
+                </p>
+              </div>
+
+              <div className="space-y-6">
+                {/* Business Name Input */}
+                <div className="text-left">
+                  <Label className="text-sm font-semibold text-foreground mb-2 block">
+                    Business Name (Optional)
+                  </Label>
+                  <input
+                    type="text"
+                    placeholder="e.g., TechFlow, GreenEats, SmartHome Pro..."
+                    className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
+                    value={formData.businessName || ''}
+                    onChange={(e) => handleInputChange('businessName', e.target.value)}
+                  />
+                </div>
+
+                {/* Business Description Input */}
+                <div className="text-left">
+                  <Label className="text-sm font-semibold text-foreground mb-2 block">
+                    Business Description *
+                  </Label>
+                  <Textarea
+                    placeholder="Describe your business idea in detail. For example:
+
+• A mobile app that helps tourists explore historical places using AR technology
+• An online platform connecting local farmers with urban consumers for fresh produce delivery
+• A SaaS tool that automates social media content creation for small businesses
+• A subscription service providing personalized meal plans and grocery delivery
+
+Include: What problem you're solving, who your target customers are, and how your solution works."
+                    className="min-h-[200px] text-lg bg-background text-foreground resize-none"
+                    value={formData.businessDescription}
+                    onChange={(e) => handleInputChange('businessDescription', e.target.value)}
+                  />
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="text-xs text-muted-foreground">
+                      {formData.businessDescription.length} characters
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {formData.businessDescription.length > 50 ? '✅ Good detail' : '💡 Add more details for better results'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Tips Section */}
+                {formData.businessDescription.length < 100 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-primary/10 border border-primary/20 rounded-lg p-4 text-left"
+                  >
+                    <h3 className="font-semibold text-primary mb-2 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4" />
+                      Pro Tips for Better Results
+                    </h3>
+                    <ul className="text-sm text-muted-foreground space-y-1">
+                      <li>• Be specific about the problem you're solving</li>
+                      <li>• Mention your target audience or customers</li>
+                      <li>• Describe how your solution works</li>
+                      <li>• Include any unique features or advantages</li>
+                      <li>• Mention the industry or market you're targeting</li>
+                    </ul>
+                  </motion.div>
+                )}
+              </div>
+
               <Button
                 size="lg"
                 variant="gradient"
-                className="mt-8"
+                className="mt-8 w-full sm:w-auto"
                 onClick={() => setStep(2)}
-                disabled={!formData.businessDescription}
+                disabled={!formData.businessDescription || formData.businessDescription.length < 20}
               >
-                Next <ChevronRight className="ml-2"/>
+                {formData.businessDescription.length < 20 ? (
+                  'Please add more details to continue'
+                ) : (
+                  <>
+                    Continue to Refinement <ChevronRight className="ml-2"/>
+                  </>
+                )}
               </Button>
             </div>
           </motion.div>
@@ -466,42 +723,164 @@ function BmcGeneratorPageClient() {
             className="w-full max-w-4xl"
           >
             <div className="bg-card rounded-2xl p-8 shadow-lg border-border border">
-              <h1 className="text-3xl font-bold mb-2 text-center text-card-foreground">Refine Your Business Vision</h1>
-              <p className="text-muted-foreground mb-8 text-center">
-                Answer these questions to help the AI understand your business better.
-              </p>
-              <div className="space-y-6">
-                {refinementQuestions.map((q) => (
-                  <div key={q.key}>
-                    <Label className="font-semibold text-lg mb-2 block text-card-foreground">{q.label}</Label>
+              {/* Progress Header */}
+              <div className="text-center mb-8">
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-semibold">1</div>
+                    <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-semibold">2</div>
+                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-semibold">3</div>
+                  </div>
+                </div>
+                <h1 className="text-3xl font-bold mb-2 text-card-foreground">Refine Your Business Vision</h1>
+                <p className="text-muted-foreground">
+                  Answer these questions to help the AI understand your business better and generate a more accurate canvas.
+                </p>
+              </div>
+
+              {/* Progress Bar */}
+              <div className="mb-8">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-medium text-muted-foreground">Progress</span>
+                  <span className="text-sm font-medium text-primary">
+                    {refinementQuestions.filter(q => formData[q.key]).length} / {refinementQuestions.length}
+                  </span>
+                </div>
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div 
+                    className="bg-primary h-2 rounded-full transition-all duration-300"
+                    style={{ 
+                      width: `${(refinementQuestions.filter(q => formData[q.key]).length / refinementQuestions.length) * 100}%` 
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Questions */}
+              <div className="space-y-8">
+                {refinementQuestions.map((q, index) => (
+                  <motion.div 
+                    key={q.key}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className={`p-6 rounded-xl border-2 transition-all duration-200 ${
+                      formData[q.key] 
+                        ? 'border-primary bg-primary/5' 
+                        : 'border-border bg-background/50'
+                    }`}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-semibold">
+                        {index + 1}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <Label className="font-semibold text-lg block text-card-foreground">
+                            {q.label}
+                          </Label>
+                          {formData[q.key] && (
+                            <Badge variant="secondary" className="bg-green-500/20 text-green-600 border-green-500/30">
+                              ✓ Answered
+                            </Badge>
+                          )}
+                        </div>
+                        {q.description && (
+                          <p className="text-muted-foreground mb-4 text-sm">
+                            {q.description}
+                          </p>
+                        )}
+                        
+                        {q.type === 'radio' ? (
                     <RadioGroup
                       onValueChange={(value) => handleInputChange(q.key, value)}
                       value={formData[q.key]}
-                      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
-                    >
-                      {q.options.map((opt) => (
-                        <div key={opt} className="flex items-center">
-                          <RadioGroupItem value={opt} id={`${q.key}-${opt}`} className="peer sr-only"/>
-                          <Label htmlFor={`${q.key}-${opt}`} className="flex flex-col items-center justify-between rounded-md border-2 border-border bg-background p-4 hover:bg-accent/10 text-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary w-full cursor-pointer">
-                            {opt}
+                            className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                          >
+                            {q.options?.map((opt) => (
+                              <div key={opt.value} className="flex items-center">
+                                <RadioGroupItem value={opt.value} id={`${q.key}-${opt.value}`} className="peer sr-only"/>
+                                <Label 
+                                  htmlFor={`${q.key}-${opt.value}`} 
+                                  className="flex flex-col items-start justify-between rounded-lg border-2 border-border bg-background p-4 hover:bg-accent/10 text-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 [&:has([data-state=checked])]:border-primary w-full cursor-pointer transition-all duration-200"
+                                >
+                                  <div className="flex items-center gap-3 mb-2">
+                                    <span className="text-2xl">{opt.icon}</span>
+                                    <span className="font-medium">{opt.value}</span>
+                                  </div>
+                                  <p className="text-xs text-muted-foreground ml-11">{opt.description}</p>
                           </Label>
                         </div>
                       ))}
                     </RadioGroup>
-                  </div>
+                        ) : q.type === 'text' ? (
+                          <div className="space-y-2">
+                            <Textarea
+                              placeholder={(q as any).placeholder || ''}
+                              className="min-h-[100px] text-lg bg-background text-foreground"
+                              value={formData[q.key] || ''}
+                              onChange={(e) => handleInputChange(q.key, e.target.value)}
+                            />
+                            {formData[q.key] && formData[q.key].length > 10 && (
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <Sparkles className="w-3 h-3" />
+                                <span>AI can provide suggestions to improve this answer</span>
+                              </div>
+                            )}
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
+                  </motion.div>
                 ))}
               </div>
-              <div className="flex items-center justify-between mt-8">
-                <Button variant="outline" onClick={() => setStep(1)}><ArrowLeft className="mr-2" /> Back</Button>
+
+              {/* Navigation */}
+              <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
+                <Button variant="outline" onClick={() => setStep(1)}>
+                  <ArrowLeft className="mr-2" /> Back
+                </Button>
+                
+                <div className="flex items-center gap-4">
+                  <div className="text-sm text-muted-foreground">
+                    {refinementQuestions.filter(q => formData[q.key]).length} of {refinementQuestions.length} questions answered
+                  </div>
+                  
+                  {/* Summary Button */}
+                  {refinementQuestions.filter(q => formData[q.key]).length === refinementQuestions.length && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        // Show summary modal or expand summary section
+                        toast({
+                          title: 'Ready to Generate!',
+                          description: `All ${refinementQuestions.length} questions have been answered. Your canvas will be generated with enhanced AI insights.`,
+                        });
+                      }}
+                    >
+                      <LayoutList className="mr-2" />
+                      Review Answers
+                    </Button>
+                  )}
+                  
                 <Button
                   size="lg"
                   variant="gradient"
                   onClick={() => handleGenerateCanvas(false)}
-                  disabled={isLoading}
-                >
-                  {isLoading ? <><Loader className="mr-2 animate-spin" /> Generating...
-                  </> : 'Generate Canvas'}
+                    disabled={isLoading || refinementQuestions.filter(q => formData[q.key]).length < refinementQuestions.length}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader className="mr-2 animate-spin" /> Generating...
+                      </>
+                    ) : (
+                      <>
+                        Generate Canvas <ChevronRight className="ml-2"/>
+                      </>
+                    )}
                 </Button>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -542,10 +921,10 @@ function BmcGeneratorPageClient() {
                     
                     <div className='flex items-center gap-3'>
                       <Label className="font-semibold text-base text-foreground">Logo</Label>
-                      <input type="file" id="logo-upload" className="hidden" accept="image/png, image/jpeg, image/svg+xml" onChange={handleLogoUpload} disabled={isUploadingLogo}/>
+                      <input type="file" id="logo-upload" className="hidden" accept="image/png, image/jpeg, image/svg+xml" onChange={handleLogoUpload} disabled={isLoading}/>
                       <Button asChild variant="outline" size="sm">
                         <label htmlFor="logo-upload" className="cursor-pointer">
-                          {isUploadingLogo ? <Loader className="mr-2 animate-spin" /> : <Upload className="mr-2"/>}
+                          {isLoading ? <Loader className="mr-2 animate-spin" /> : <Upload className="mr-2"/>}
                           Upload
                         </label>
                       </Button>
@@ -594,12 +973,82 @@ function BmcGeneratorPageClient() {
                   {/* Canvas */}
                   <div className="w-full">
                     <div ref={styledCanvasRef} className="aspect-[16/9] p-8 flex flex-col relative" style={{ background: colors.background }}>
+                      {/* Enhanced Security Watermark */}
                       {!removeWatermark && (
-                        <div className="absolute bottom-4 right-4 z-20">
-                          <p className="text-xs" style={{color: 'rgba(255, 255, 255, 0.2)'}}>
-                            Powered by InnoCanvas
-                          </p>
-                        </div>
+                        <>
+                          {/* Large diagonal watermark covering the entire canvas */}
+                          <div className="absolute inset-0 z-30 pointer-events-none">
+                            <div 
+                              className="absolute inset-0 opacity-5"
+                              style={{
+                                background: `repeating-linear-gradient(
+                                  45deg,
+                                  transparent,
+                                  transparent 100px,
+                                  ${colors.primary}20 100px,
+                                  ${colors.primary}20 200px
+                                )`,
+                              }}
+                            />
+                            {/* Large centered watermark */}
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <div 
+                                className="text-center opacity-10"
+                                style={{ color: colors.primary }}
+                              >
+                                <div className="text-6xl font-bold mb-2">InnoCanvas</div>
+                                <div className="text-xl">Business Model Canvas</div>
+                                <div className="text-sm mt-2">
+                                  Generated on {new Date().toLocaleDateString()}
+                                </div>
+                              </div>
+                            </div>
+                            {/* Corner watermark */}
+                            <div className="absolute bottom-4 right-4 z-40">
+                              <div 
+                                className="text-center opacity-20"
+                                style={{ color: colors.primary }}
+                              >
+                                <div className="text-lg font-bold">InnoCanvas</div>
+                                <div className="text-xs">Powered by AI</div>
+                              </div>
+                            </div>
+                            {/* Top-left watermark */}
+                            <div className="absolute top-4 left-4 z-40">
+                              <div 
+                                className="text-center opacity-15"
+                                style={{ color: colors.primary }}
+                              >
+                                <div className="text-sm font-semibold">InnoCanvas</div>
+                                <div className="text-xs">Secure</div>
+                              </div>
+                            </div>
+                            {/* Bottom-left watermark */}
+                            <div className="absolute bottom-4 left-4 z-40">
+                              <div 
+                                className="text-center opacity-15"
+                                style={{ color: colors.primary }}
+                              >
+                                <div className="text-xs">
+                                  {user?.email ? `User: ${user.email.split('@')[0]}` : 'User'}
+                                </div>
+                                <div className="text-xs">
+                                  {new Date().toLocaleDateString()}
+                                </div>
+                              </div>
+                            </div>
+                            {/* Top-right watermark */}
+                            <div className="absolute top-4 right-4 z-40">
+                              <div 
+                                className="text-center opacity-15"
+                                style={{ color: colors.primary }}
+                              >
+                                <div className="text-xs font-semibold">BMC</div>
+                                <div className="text-xs">Protected</div>
+                              </div>
+                            </div>
+                          </div>
+                        </>
                       )}
 
                       <div className="flex justify-between items-start mb-4 relative z-10">

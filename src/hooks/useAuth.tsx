@@ -4,6 +4,7 @@
 import { useState, useEffect, createContext, useContext, ReactNode, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { User } from '@supabase/supabase-js';
+import { PlanService, PlanLimits } from '@/lib/plan-service';
 
 export interface UserProfile {
   id: string;
@@ -13,6 +14,29 @@ export interface UserProfile {
   country: string;
   use_case: string;
   avatar_url: string | null;
+  email: string;
+  phone: string | null;
+  company: string | null;
+  job_title: string | null;
+  industry: string | null;
+  experience_level: string | null;
+  plan: 'free' | 'pro' | 'premium';
+  plan_expiry: string | null;
+  subscription_id: string | null;
+  payment_provider: string;
+  preferences: {
+    theme: string;
+    notifications: boolean;
+    newsletter: boolean;
+    language: string;
+  } | null;
+  statistics: {
+    canvases_created: number;
+    last_login: string;
+    total_exports: number;
+    favorite_colors: string[];
+  } | null;
+  created_at: string;
   updated_at: string;
 }
 
@@ -21,6 +45,8 @@ interface AuthContextType {
   userData: UserProfile | null;
   loading: boolean;
   fetchUserProfile: () => Promise<void>;
+  checkPlanLimit: (action: string) => Promise<boolean>;
+  getPlanLimits: () => Promise<PlanLimits | null>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -28,6 +54,8 @@ const AuthContext = createContext<AuthContextType>({
   userData: null,
   loading: true,
   fetchUserProfile: async () => {},
+  checkPlanLimit: async () => false,
+  getPlanLimits: async () => null,
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -62,10 +90,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 avatar_url: user.user_metadata.avatar_url || 
                            user.user_metadata.picture || 
                            null,
+                email: user.email || '',
                 age: null,
                 gender: 'prefer-not-to-say',
                 country: 'Unknown',
                 use_case: 'other',
+                plan: 'free',
+                preferences: { theme: 'dark', notifications: true, newsletter: true, language: 'en' },
+                statistics: { canvases_created: 0, last_login: null, total_exports: 0, favorite_colors: [] }
               })
               .select()
               .single();
@@ -84,6 +116,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user]);
 
+  const checkPlanLimit = useCallback(async (action: string): Promise<boolean> => {
+    if (!user) return false;
+    return await PlanService.checkPlanLimit(user.id, action);
+  }, [user]);
+
+  const getPlanLimits = useCallback(async (): Promise<PlanLimits | null> => {
+    if (!userData?.plan) return null;
+    return await PlanService.getPlanLimits(userData.plan);
+  }, [userData?.plan]);
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -113,7 +154,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
 
     return () => {
-      authListener.subscription.unsubscribe();
+      if (authListener?.subscription) {
+        authListener.subscription.unsubscribe();
+      }
     };
   }, []);
 
@@ -127,7 +170,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user, fetchUserProfile]);
 
-  const value = { user, userData, loading, fetchUserProfile };
+  const value = { user, userData, loading, fetchUserProfile, checkPlanLimit, getPlanLimits };
 
   return (
     <AuthContext.Provider value={value}>
