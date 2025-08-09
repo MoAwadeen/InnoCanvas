@@ -121,7 +121,6 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       console.log('Starting Google OAuth login...');
-      console.log('Current origin:', window.location.origin);
       
       // Check if Supabase is properly configured
       if (!process.env.NEXT_PUBLIC_SUPABASE_URL || 
@@ -131,7 +130,7 @@ export default function LoginPage() {
         throw new Error('Supabase is not properly configured. Please check your environment variables.');
       }
 
-      // Use the correct redirect URL - this should be where the user ends up after OAuth
+      // Use the correct redirect URL for OAuth
       const redirectUrl = `${window.location.origin}/auth/callback`;
       console.log('Using redirect URL:', redirectUrl);
 
@@ -174,7 +173,6 @@ export default function LoginPage() {
     );
   }
 
-
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center justify-center p-4">
       <div className="absolute top-8 left-8">
@@ -199,46 +197,66 @@ export default function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  disabled={isLoading}
                 />
               </div>
               <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                </div>
-                <Input 
-                  id="password" 
-                  type="password" 
-                  required 
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  disabled={isLoading}
                 />
               </div>
-              <Button variant="gradient" type="submit" className="w-full btn-glow" disabled={isLoading}>
-                {isLoading ? <Loader className="animate-spin" /> : 'Login'}
+              <Button 
+                type="submit" 
+                className="w-full btn-glow" 
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader className="mr-2 h-4 w-4 animate-spin" />
+                    Logging in...
+                  </>
+                ) : (
+                  'Login'
+                )}
               </Button>
             </div>
           </form>
-          <div className="relative my-4">
+          
+          <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
+              <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with
+              </span>
             </div>
           </div>
-           <Button variant="secondary" className="w-full flex items-center justify-center gap-2" onClick={handleGoogleLogin} disabled={isLoading}>
-              {isLoading ? (
-                <Loader className="animate-spin" />
-              ) : (
-                <>
-                  <GoogleIcon className="w-5 h-5" />
-                  <span>Continue with Google</span>
-                </>
-              )}
-            </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={handleGoogleLogin}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <Loader className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <GoogleIcon className="mr-2 h-4 w-4" />
+            )}
+            {isLoading ? 'Connecting...' : 'Continue with Google'}
+          </Button>
+
           <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
-            <Link href="/register" className="underline hover:text-vivid-pink">
+            <span className="text-muted-foreground">Don't have an account? </span>
+            <Link href="/register" className="text-primary hover:underline">
               Sign up
             </Link>
           </div>

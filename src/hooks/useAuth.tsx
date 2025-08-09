@@ -128,28 +128,89 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const fetchSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-       if (error) {
-        console.error("Error fetching session:", error)
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error("Error fetching session:", error);
+          setLoading(false);
+          return;
+        }
+        setUser(session?.user ?? null);
+      } catch (error) {
+        console.error("Error in fetchSession:", error);
         setLoading(false);
-        return;
       }
-      setUser(session?.user ?? null);
-      // Loading will be set to false after user data is fetched or confirmed absent
     };
     
     fetchSession();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.email);
       const currentUser = session?.user || null;
       setUser(currentUser);
-      if (event === 'USER_UPDATED') {
-          if(currentUser) {
-              setUserData(prev => prev ? {...prev, full_name: currentUser.user_metadata.full_name} : null);
+      
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        if (currentUser) {
+          // Fetch user profile when user signs in
+          setLoading(true);
+          try {
+            const { data: profile, error } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', currentUser.id)
+              .single();
+
+            if (error && error.code !== 'PGRST116') {
+              console.error("Error fetching profile on sign in:", error);
+              setUserData(null);
+            } else if (profile) {
+              setUserData(profile);
+            } else {
+              // Create profile if it doesn't exist
+              const { data: newProfile, error: createError } = await supabase
+                .from('profiles')
+                .insert({
+                  id: currentUser.id,
+                  full_name: currentUser.user_metadata.full_name || 
+                             currentUser.user_metadata.name || 
+                             currentUser.email?.split('@')[0] || 
+                             'Unknown',
+                  avatar_url: currentUser.user_metadata.avatar_url || 
+                             currentUser.user_metadata.picture || 
+                             null,
+                  email: currentUser.email || '',
+                  age: null,
+                  gender: 'prefer-not-to-say',
+                  country: 'Unknown',
+                  use_case: 'other',
+                  plan: 'free',
+                  preferences: { theme: 'dark', notifications: true, newsletter: true, language: 'en' },
+                  statistics: { canvases_created: 0, last_login: null, total_exports: 0, favorite_colors: [] }
+                })
+                .select()
+                .single();
+
+              if (createError) {
+                console.error("Error creating profile on sign in:", createError);
+                setUserData(null);
+              } else {
+                setUserData(newProfile);
+              }
+            }
+          } catch (error) {
+            console.error("Error in auth state change profile fetch:", error);
+            setUserData(null);
+          } finally {
+            setLoading(false);
           }
-      }
-      if (event === 'SIGNED_OUT') {
+        }
+      } else if (event === 'USER_UPDATED') {
+        if (currentUser) {
+          setUserData(prev => prev ? {...prev, full_name: currentUser.user_metadata.full_name} : null);
+        }
+      } else if (event === 'SIGNED_OUT') {
         setUserData(null);
+        setLoading(false);
       }
     });
 
@@ -161,14 +222,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    if (user) {
-        setLoading(true);
-        fetchUserProfile().finally(() => setLoading(false));
-    } else {
+    if (user && !userData) {
+      setLoading(true);
+      fetchUserProfile().finally(() => setLoading(false));
+    } else if (!user) {
       setUserData(null);
       setLoading(false);
     }
-  }, [user, fetchUserProfile]);
+  }, [user, userData, fetchUserProfile]);
 
   const value = { user, userData, loading, fetchUserProfile, checkPlanLimit, getPlanLimits };
 

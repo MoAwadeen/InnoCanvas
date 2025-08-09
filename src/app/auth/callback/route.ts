@@ -71,6 +71,10 @@ export async function GET(request: Request) {
             country: user.user_metadata.country || 'Unknown',
             use_case: user.user_metadata.use_case || 'other',
             avatar_url: avatarUrl,
+            email: user.email || '',
+            plan: 'free',
+            preferences: { theme: 'dark', notifications: true, newsletter: true, language: 'en' },
+            statistics: { canvases_created: 0, last_login: null, total_exports: 0, favorite_colors: [] }
           })
           
           if (insertError) {

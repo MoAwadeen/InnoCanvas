@@ -99,7 +99,7 @@ export default function RegisterPage() {
 
       // Try to create profile manually as fallback (in case trigger fails)
       try {
-        const { error: profileError } = await supabase
+        await supabase
           .from('profiles')
           .insert({
             id: signUpData.user.id,
@@ -108,14 +108,13 @@ export default function RegisterPage() {
             gender: values.gender,
             country: values.country,
             use_case: values.useCase,
+            email: values.email,
+            plan: 'free',
+            preferences: { theme: 'dark', notifications: true, newsletter: true, language: 'en' },
+            statistics: { canvases_created: 0, last_login: null, total_exports: 0, favorite_colors: [] }
           });
-        
-        if (profileError) {
-          console.warn('Profile creation failed, but user was created:', profileError);
-          // Don't throw error here - user was created successfully
-        }
       } catch (profileError) {
-        console.warn('Manual profile creation failed:', profileError);
+        console.warn('Manual profile creation failed, but user was created:', profileError);
         // Don't throw error here - user was created successfully
       }
 
@@ -165,7 +164,7 @@ export default function RegisterPage() {
         throw new Error('Supabase is not properly configured. Please check your environment variables.');
       }
 
-      // Use the correct redirect URL - this should be where the user ends up after OAuth
+      // Use the correct redirect URL for OAuth
       const redirectUrl = `${window.location.origin}/auth/callback`;
       console.log('Using redirect URL:', redirectUrl);
 

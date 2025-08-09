@@ -22,6 +22,7 @@ const createMockClient = () => {
       signOut: async () => ({ error: null }),
       updateUser: async () => ({ data: { user: null }, error: null }),
       getSession: async () => ({ data: { session: null }, error: null }),
+      setSession: async () => ({ data: { session: null }, error: null }),
       onAuthStateChange: (callback: any) => {
         // Mock subscription
         const subscription = {
@@ -75,7 +76,8 @@ export const supabase = hasValidConfig
       auth: {
         autoRefreshToken: true,
         persistSession: true,
-        detectSessionInUrl: true
+        detectSessionInUrl: true,
+        flowType: 'pkce'
       }
     })
   : createMockClient();
@@ -114,6 +116,14 @@ export const handleSupabaseError = (error: any, defaultMessage: string = 'An err
         return 'This record already exists';
       case '42P01':
         return 'Table does not exist';
+      case 'INVALID_CREDENTIALS':
+        return 'Invalid email or password';
+      case 'USER_NOT_FOUND':
+        return 'User not found';
+      case 'INVALID_EMAIL':
+        return 'Invalid email address';
+      case 'WEAK_PASSWORD':
+        return 'Password is too weak';
       default:
         return defaultMessage;
     }
