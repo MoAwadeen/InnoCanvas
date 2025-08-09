@@ -9,11 +9,10 @@ export async function GET(request: Request) {
 
   // Handle hash fragment redirects (common with OAuth providers)
   const url = new URL(request.url)
-  const hash = url.hash
+  const hash = url.hash || ''
   
-  if (hash && hash.includes('access_token')) {
-    // This is a hash fragment redirect from OAuth
-    // We need to redirect to a client-side handler
+  // If there's a hash with access_token, redirect to client-side handler
+  if (hash.includes('access_token')) {
     return NextResponse.redirect(`${origin}/auth/hash-callback${hash}`)
   }
 

@@ -165,8 +165,8 @@ export default function RegisterPage() {
         throw new Error('Supabase is not properly configured. Please check your environment variables.');
       }
 
-      // Use the correct Supabase OAuth callback URL
-      const redirectUrl = 'https://ewetzmzfbwnqsdoikykz.supabase.co/auth/v1/callback';
+      // Use the correct redirect URL - this should be where the user ends up after OAuth
+      const redirectUrl = `${window.location.origin}/auth/callback`;
       console.log('Using redirect URL:', redirectUrl);
 
       const { data, error } = await supabase.auth.signInWithOAuth({
