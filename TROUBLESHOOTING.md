@@ -1,5 +1,52 @@
 # Troubleshooting Guide
 
+## OAuth Redirect Issues
+
+### Problem: "Google sign-in redirecting to localhost:3000 instead of localhost:9002"
+
+This issue occurs when the OAuth redirect URLs are not properly configured for your development environment.
+
+#### Solution Steps:
+
+1. **Update Environment Variables**
+   - Ensure your `.env.local` file has the correct URL:
+   ```bash
+   NEXTAUTH_URL=http://localhost:9002
+   ```
+
+2. **Update Supabase OAuth Settings**
+   - Go to your Supabase Dashboard → Authentication → URL Configuration
+   - Update the Site URL to: `http://localhost:9002`
+   - The callback URL should be: `https://ewetzmzfbwnqsdoikykz.supabase.co/auth/v1/callback`
+   - This URL is automatically provided by Supabase and should be used as-is
+
+3. **Update Google OAuth Settings**
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Navigate to APIs & Services → Credentials
+   - Find your OAuth 2.0 Client ID
+   - Add the following authorized redirect URIs:
+     - `https://ewetzmzfbwnqsdoikykz.supabase.co/auth/v1/callback` (your Supabase callback URL)
+     - `http://localhost:9002/auth/callback` (for local development)
+
+4. **Clear Browser Cache**
+   - Clear your browser cache and cookies
+   - Try the OAuth flow again
+
+5. **Check Code Changes**
+   - Ensure the OAuth redirect URL is using the correct Supabase callback URL:
+   ```typescript
+   const redirectUrl = 'https://ewetzmzfbwnqsdoikykz.supabase.co/auth/v1/callback';
+   ```
+
+#### Alternative Solution (if the above doesn't work):
+
+If you're still having issues, you can temporarily hardcode the redirect URL in your development environment:
+
+```typescript
+// In src/app/login/page.tsx and src/app/register/page.tsx
+const redirectUrl = 'https://ewetzmzfbwnqsdoikykz.supabase.co/auth/v1/callback';
+```
+
 ## Registration Issues
 
 ### Problem: "Registration failed in web but user appears in Supabase dashboard"
@@ -29,7 +76,7 @@ This is a common issue that occurs when the user is created in Supabase Auth but
 4. **Check Supabase Settings**
    - Go to Authentication → Settings
    - Ensure "Enable email confirmations" is ON
-   - Set "Redirect URLs" to include: `http://localhost:3000/auth/callback`
+   - Set "Redirect URLs" to include: `http://localhost:9002/auth/callback`
 
 5. **For Existing Users Without Profiles**
    - Run this SQL in Supabase SQL Editor:

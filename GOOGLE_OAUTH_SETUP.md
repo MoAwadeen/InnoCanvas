@@ -24,11 +24,9 @@
    - Name: "InnoCanvas Web Client"
    - Authorized JavaScript origins:
      - `http://localhost:9002`
-     - `http://localhost:3000`
      - `https://your-domain.com` (for production)
    - Authorized redirect URIs:
-     - `http://localhost:9002/auth/callback`
-     - `http://localhost:3000/auth/callback`
+     - `https://ewetzmzfbwnqsdoikykz.supabase.co/auth/v1/callback` (your Supabase callback URL)
      - `https://your-domain.com/auth/callback` (for production)
    - Click "Create"
 
@@ -51,10 +49,9 @@
    - Save the configuration
 
 3. **Set Redirect URLs**
-   - In Supabase Auth settings, add these redirect URLs:
-     - `http://localhost:9002/auth/callback`
-     - `http://localhost:3000/auth/callback`
-     - `https://your-domain.com/auth/callback` (for production)
+   - In Supabase Auth settings, the callback URL should be:
+     - `https://ewetzmzfbwnqsdoikykz.supabase.co/auth/v1/callback` (your Supabase callback URL)
+   - This URL is automatically provided by Supabase and should be used as-is
 
 ## Step 3: Environment Variables
 

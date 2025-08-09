@@ -122,7 +122,6 @@ export default function LoginPage() {
     try {
       console.log('Starting Google OAuth login...');
       console.log('Current origin:', window.location.origin);
-      console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
       
       // Check if Supabase is properly configured
       if (!process.env.NEXT_PUBLIC_SUPABASE_URL || 
@@ -132,7 +131,7 @@ export default function LoginPage() {
         throw new Error('Supabase is not properly configured. Please check your environment variables.');
       }
 
-      // Force the correct redirect URL
+      // Use the correct Supabase OAuth callback URL
       const redirectUrl = 'https://ewetzmzfbwnqsdoikykz.supabase.co/auth/v1/callback';
       console.log('Using redirect URL:', redirectUrl);
 
@@ -154,13 +153,6 @@ export default function LoginPage() {
 
       console.log('Google OAuth initiated successfully:', data);
       
-      // Check if the URL contains localhost
-      if (data && 'url' in data && typeof data.url === 'string' && data.url.includes('localhost')) {
-        console.error('WARNING: OAuth URL still contains localhost!');
-        console.error('Full OAuth URL:', data.url);
-        throw new Error('OAuth configuration still has localhost redirect. Please check Google OAuth and Supabase settings.');
-      }
-
     } catch (error: any) {
       console.error('Google login error:', error);
       const errorMessage = handleSupabaseError(error, 'Google login failed');
