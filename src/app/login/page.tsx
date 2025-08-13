@@ -85,7 +85,7 @@ export default function LoginPage() {
         title: 'Login Successful!',
         description: `Welcome ${loggedInUser.email || 'back'}!`,
     });
-    router.push('/my-canvases');
+    router.push('/');
   }
 
   const handleLogin = async (e: React.FormEvent) => {
