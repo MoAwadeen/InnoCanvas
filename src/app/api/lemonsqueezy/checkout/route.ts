@@ -46,17 +46,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Create checkout session
-    const checkout = await LemonSqueezyService.createCheckout({
-      storeId,
-      variantId,
-      prefill: {
-        name: userName || session.user.user_metadata?.full_name,
-        email: userEmail || session.user.email,
-      },
+    const checkout = await LemonSqueezyService.createCheckoutSession({
+      storeId: parseInt(storeId),
+      variantId: parseInt(variantId),
       productOptions: {
-        redirect: `${process.env.NEXTAUTH_URL}/payment/success`,
-        receipt_button_text: 'Access Your Account',
-        receipt_link_url: `${process.env.NEXTAUTH_URL}/my-canvases`,
+        redirectUrl: `${process.env.NEXTAUTH_URL}/payment/success`,
+        receiptButtonText: 'Access Your Account',
+        receiptLinkUrl: `${process.env.NEXTAUTH_URL}/my-canvases`,
       },
       checkoutOptions: {
         embed: false,
@@ -64,24 +60,24 @@ export async function POST(request: NextRequest) {
         logo: true,
         desc: true,
         discount: true,
-        name: true,
-        email: true,
-        address: false,
-        phone: false,
-        quantity: false,
-        pay_what_you_want: false,
-        custom_price: false,
-        product_options: false,
-        enabled: true,
+      },
+      checkoutData: {
+        email: userEmail || session.user.email,
+        name: userName || session.user.user_metadata?.full_name,
+        custom: {
+          redirect_url: `${process.env.NEXTAUTH_URL}/payment/success`,
+          receipt_button_text: 'Access Your Account',
+          receipt_link_url: `${process.env.NEXTAUTH_URL}/my-canvases`,
+        },
       },
     });
 
     return NextResponse.json({
       success: true,
       checkout: {
-        url: checkout.url,
-        id: checkout.id,
-        expires_at: checkout.expires_at,
+        url: (checkout as any).data?.attributes?.url || (checkout as any).url,
+        id: (checkout as any).data?.id || (checkout as any).id,
+        expires_at: (checkout as any).data?.attributes?.expires_at || (checkout as any).expires_at,
       },
     });
   } catch (error) {
