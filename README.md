@@ -1,63 +1,88 @@
 # InnoCanvas - AI-Powered Business Model Canvas Generator
 
-A modern web application that generates comprehensive Business Model Canvases using AI integration with OpenAI. Built with Next.js, Supabase, and TypeScript.
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-green?style=for-the-badge&logo=supabase)](https://supabase.com/)
+[![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o--mini-purple?style=for-the-badge&logo=openai)](https://openai.com/)
+[![LemonSqueezy](https://img.shields.io/badge/LemonSqueezy-Payment-orange?style=for-the-badge)](https://lemonsqueezy.com/)
 
-## 🚀 Features
+**InnoCanvas** is a modern, AI-powered Business Model Canvas (BMC) generator that helps entrepreneurs, students, and business professionals create comprehensive business models using artificial intelligence.
 
-- **AI-Powered BMC Generation**: Uses OpenAI to create detailed Business Model Canvases
-- **Interactive Canvas Editor**: Edit and refine your BMC sections in real-time
-- **Custom Branding**: Upload logos and customize colors
-- **Export Functionality**: Download your canvas as PDF
-- **AI Improvement Suggestions**: Get AI-powered feedback to improve your BMC
-- **User Authentication**: Secure login with email/password and Google OAuth
-- **Canvas Management**: Save, load, and manage multiple canvases
-- **Responsive Design**: Works seamlessly on desktop and mobile devices
+🌐 **Live Demo**: [innocanvas.site](https://innocanvas.site)
 
-## 🛠️ Tech Stack
+## ✨ Features
 
-- **Frontend**: Next.js 15, React 18, TypeScript
-- **Styling**: Tailwind CSS, Framer Motion
-- **UI Components**: Radix UI, shadcn/ui
-- **Backend**: Supabase (Database, Auth, Storage)
-- **AI Integration**: OpenAI
-- **Authentication**: Supabase Auth with Google OAuth
-- **File Export**: jsPDF, html2canvas
+### 🤖 AI-Powered Generation
+- **OpenAI GPT-4o-mini** integration for intelligent BMC generation
+- Multi-step refinement process with guided questions
+- Context-aware conversations throughout generation
+- Professional, business-ready output
 
-## 📋 Prerequisites
+### 👤 User Management
+- **Supabase Auth** with Google OAuth integration
+- Complete user profile system
+- Role-based access control (user/admin)
+- Email verification and secure authentication
 
-Before you begin, ensure you have the following:
+### 💳 Subscription System
+- **LemonSqueezy** payment processing
+- Three-tier system: Free, Pro, Premium
+- Feature gating based on subscription plan
+- Subscription management interface
 
-- Node.js 18+ installed
-- A Supabase account and project
-- An OpenAI API key
-- Git installed
+### 👨‍💼 Admin Dashboard
+- Comprehensive admin panel with full management capabilities
+- User management (view, search, filter, promote/demote)
+- Subscription monitoring and revenue tracking
+- Canvas moderation and system settings
+- Activity logging for audit purposes
 
-## 🔧 Setup Instructions
+### 🎨 Visual Customization
+- Logo upload functionality
+- Color customization (primary, card, background)
+- Professional branding options
+- High-quality PDF export with custom branding
 
-### 1. Clone the Repository
+### 📊 Canvas Management
+- Save and load canvases
+- Public/private sharing options
+- Tagging and organization
+- Export capabilities
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+
+- npm or yarn
+- Supabase account
+- OpenAI API key
+- LemonSqueezy account (for payment features)
+
+### Installation
 
 ```bash
-git clone <your-repo-url>
+# Clone the repository
+git clone <repository-url>
 cd InnoCanvas
-```
 
-### 2. Install Dependencies
-
-```bash
+# Install dependencies
 npm install
+
+# Set up environment variables
+cp env.example .env.local
+# Edit .env.local with your configuration
+
+# Run the development server
+npm run dev
 ```
 
-### 3. Environment Configuration
+The application will be available at `http://localhost:9002`
 
-Create a `.env.local` file in the root directory:
+### Environment Variables
+
+Create a `.env.local` file with the following variables:
 
 ```bash
-cp env.example .env.local
-```
-
-Fill in your environment variables:
-
-```env
 # Supabase Configuration
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url_here
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
@@ -65,133 +90,147 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
 # OpenAI Configuration
 OPENAI_API_KEY=your_openai_api_key_here
 
+# LemonSqueezy Configuration
+LEMON_SQUEEZY_API_KEY=your_lemonsqueezy_api_key_here
+LEMON_SQUEEZY_WEBHOOK_SECRET=your_lemonsqueezy_webhook_secret_here
+NEXT_PUBLIC_LEMON_SQUEEZY_STORE_ID=your_store_id_here
+NEXT_PUBLIC_LEMON_SQUEEZY_PRO_VARIANT_ID=your_pro_variant_id_here
+NEXT_PUBLIC_LEMON_SQUEEZY_PREMIUM_VARIANT_ID=your_premium_variant_id_here
+
 # Next.js Configuration
 NEXTAUTH_SECRET=your_nextauth_secret_here
 NEXTAUTH_URL=http://localhost:9002
 ```
 
-### 4. Set Up Supabase
+### Database Setup
 
-1. Create a new project at [supabase.com](https://supabase.com)
-2. Go to SQL Editor
-3. Copy and paste the contents of `database-schema.sql`
-4. Go to Storage and create a bucket called `logos` (set to public)
+1. Create a Supabase project
+2. Run the database setup script:
+   ```sql
+   -- Copy and paste the content of complete-database-enhancement-safe.sql
+   -- into your Supabase SQL Editor and run it
+   ```
+3. Configure authentication settings in Supabase
+4. Set up storage buckets for file uploads
 
-### 5. OpenAI Setup
+## 🏗️ Tech Stack
 
-1. Go to [OpenAI Platform](https://platform.openai.com/)
-2. Create a new API key
-3. Add the API key to your `.env.local` file
+### Frontend
+- **Next.js 15** (App Router)
+- **TypeScript**
+- **React 18**
+- **Tailwind CSS**
+- **shadcn/ui** + **Radix UI**
+- **Framer Motion**
+- **React Hook Form** + **Zod**
 
-### 6. Run the Development Server
+### Backend
+- **Supabase** (PostgreSQL)
+- **Supabase Auth**
+- **Supabase Storage**
+- **Next.js API Routes**
+- **OpenAI GPT-4o-mini**
+- **LemonSqueezy**
 
-```bash
-npm run dev
-```
-
-The application will be available at `http://localhost:9002`
-
-## 🎯 Usage
-
-### Creating Your First BMC
-
-1. **Register/Login**: Create an account or sign in
-2. **Describe Your Business**: Enter your business idea and description
-3. **Refine Your Vision**: Answer specific questions about your business model
-4. **Generate Canvas**: Let AI create your Business Model Canvas
-5. **Customize**: Edit sections, upload logo, and customize colors
-6. **Save & Export**: Save your work and export as PDF
-
-### Key Features
-
-- **AI Generation**: The AI analyzes your business description and creates a comprehensive BMC
-- **Real-time Editing**: Click "Edit" to modify any section of your canvas
-- **Logo Upload**: Upload your company logo (max 2MB)
-- **Color Customization**: Customize the primary, card, background, and foreground colors
-- **AI Suggestions**: Get improvement suggestions from AI
-- **Export**: Download your canvas as a high-quality PDF
-
-## 🔒 Security Features
-
-- Row Level Security (RLS) on all database tables
-- Secure authentication with Supabase Auth
-- Environment variable protection
-- Input validation and sanitization
-- Error handling with user-friendly messages
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **Environment Variables Not Loading**
-   - Ensure `.env.local` is in the root directory
-   - Restart the development server after adding environment variables
-
-2. **Supabase Connection Issues**
-   - Verify your Supabase URL and anon key
-   - Check if your Supabase project is active
-
-3. **AI Generation Fails**
-   - Verify your OpenAI API key is correct
-   - Check your API quota and billing status
-
-4. **File Upload Issues**
-   - Ensure the `logos` bucket exists in Supabase Storage
-   - Check file size (max 2MB)
-   - Verify storage policies are set correctly
-
-### Error Messages
-
-- **"Missing Supabase environment variables"**: Add your Supabase credentials to `.env.local`
-- **"Missing OPENAI_API_KEY"**: Add your OpenAI API key to `.env.local`
-- **"Table does not exist"**: Run the database schema SQL in Supabase
-- **"Invalid API key"**: Check your OpenAI API key
+### Development
+- **Turbopack** (build tool)
+- **ESLint**
+- **TypeScript**
+- **npm**
 
 ## 📁 Project Structure
 
 ```
-src/
-├── ai/                    # AI integration files
-│   ├── flows/            # AI flow definitions
-│   └── services/         # AI service implementations
-├── app/                  # Next.js app directory
-│   ├── api/             # API routes
-│   ├── auth/            # Authentication pages
-│   ├── generate/        # BMC generation page
-│   └── my-canvases/     # Canvas management
-├── components/          # Reusable components
-├── hooks/              # Custom React hooks
-├── lib/                # Utility libraries
-└── types/              # TypeScript type definitions
+InnoCanvas/
+├── src/
+│   ├── app/                    # Next.js App Router
+│   │   ├── admin/              # Admin dashboard
+│   │   ├── api/                # API routes
+│   │   ├── auth/               # Authentication
+│   │   ├── generate/           # BMC generation
+│   │   ├── login/register/     # Auth pages
+│   │   ├── profile/            # User profile
+│   │   ├── my-canvases/        # Canvas management
+│   │   ├── payment/            # Payment handling
+│   │   └── privacy/terms/      # Legal pages
+│   ├── components/             # Reusable components
+│   ├── hooks/                  # Custom React hooks
+│   ├── lib/                    # Utility libraries
+│   └── ai/                     # AI service integration
+├── public/                     # Static assets
+├── complete-database-enhancement-safe.sql
+├── LEMON_SQUEEZY_SETUP.md
+├── ADMIN_SETUP_GUIDE.md
+└── LAUNCH_CHECKLIST.md
 ```
 
-## 🎨 Customization
+## 🔌 API Endpoints
 
-### Colors and Styling
+### AI Routes
+- `POST /api/ai/generate` - Generate BMC
+- `POST /api/ai/refine` - Refine BMC
+- `POST /api/ai/improve` - Improve BMC
 
-The application uses a modern design system with:
-- Primary color: Deep sky blue (#30A2FF)
-- Background: Dark theme with glassmorphism effects
-- Typography: Inter font family
-- Animations: Framer Motion for smooth transitions
+### LemonSqueezy Routes
+- `POST /api/lemonsqueezy/checkout` - Create checkout
+- `POST /api/lemonsqueezy/webhook` - Handle webhooks
+- `GET /api/lemonsqueezy/subscription/[id]` - Get subscription
+- `POST /api/lemonsqueezy/subscription/[id]/cancel` - Cancel subscription
+- `POST /api/lemonsqueezy/subscription/[id]/resume` - Resume subscription
 
-### AI Models
+## 🗄️ Database Schema
 
-The application uses OpenAI's GPT-4o-mini model by default. You can modify the model in `src/lib/openai.ts`:
+### Core Tables
+- **`profiles`** - User profiles with subscription data
+- **`canvases`** - User-created BMC canvases
+- **`plan_limits`** - Feature definitions for each plan
+- **`subscriptions`** - Payment subscription data
+- **`system_settings`** - Platform configuration
+- **`admin_activity_log`** - Admin action audit trail
 
-```typescript
-export async function generateText(prompt: string, model: string = "gpt-4o-mini") {
-  // Change the default model here
-}
-```
+## 🚀 Deployment
+
+### Vercel Deployment
+1. Connect your repository to Vercel
+2. Configure environment variables in Vercel dashboard
+3. Deploy automatically on push to main branch
+
+### Domain Configuration
+- **Domain**: innocanvas.site (registered for 1 year)
+- **SSL**: Automatic SSL certificate
+- **DNS**: Configure with Vercel
+
+## 📚 Documentation
+
+- **[Complete Project Documentation](PROJECT_DOCUMENTATION.md)** - Comprehensive project overview
+- **[LemonSqueezy Setup Guide](LEMON_SQUEEZY_SETUP.md)** - Payment system configuration
+- **[Admin Dashboard Guide](ADMIN_SETUP_GUIDE.md)** - Admin panel setup
+- **[Launch Checklist](LAUNCH_CHECKLIST.md)** - Pre-launch preparation
+- **[AI Agent Prompt](AI_AGENT_PROMPT.md)** - For AI assistants working on the project
+
+## 🎯 Current Status
+
+### ✅ **Production Ready**
+- Complete BMC generator with AI integration
+- Full authentication system
+- Payment processing with LemonSqueezy
+- Comprehensive admin dashboard
+- Modern, responsive UI/UX
+- Database with all necessary tables and functions
+- SEO optimization and legal pages
+
+### 🔄 **Pending Setup**
+- LemonSqueezy account activation
+- Production environment variables configuration
+- Google Analytics 4 integration
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## 📄 License
 
@@ -199,16 +238,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🆘 Support
 
-If you encounter any issues:
+For support and questions:
+- Check the [documentation](PROJECT_DOCUMENTATION.md) first
+- Create an issue for bugs
+- Submit feature requests
 
-1. Check the [Troubleshooting Guide](TROUBLESHOOTING.md)
-2. Verify all environment variables are set correctly
-3. Ensure your OpenAI API key is valid and has sufficient credits
-4. Check the browser console for error messages
+---
 
-## 🎉 Acknowledgments
+**InnoCanvas** - Turn your ideas into business models with AI-powered precision.
 
-- Built with [Next.js](https://nextjs.org/)
-- Styled with [Tailwind CSS](https://tailwindcss.com/)
-- AI powered by [OpenAI](https://openai.com/)
-- Database by [Supabase](https://supabase.com/)
+*Built with ❤️ using Next.js, Supabase, OpenAI, and LemonSqueezy*

@@ -25,6 +25,7 @@ import { useToast } from "@/hooks/use-toast"
 import { useState, useEffect } from "react"
 import { Logo } from "@/components/logo"
 import { getPublicUrl, supabase } from "@/lib/supabase"
+import { SubscriptionManager } from "@/components/subscription-manager"
 
 export const dynamic = "force-dynamic";
 
@@ -477,6 +478,11 @@ export default function ProfilePage() {
               </Button>
             </div>
           </form>
+
+          {/* Subscription Management */}
+          <div className="mt-8">
+            <SubscriptionManager />
+          </div>
         </div>
       </div>
     </div>

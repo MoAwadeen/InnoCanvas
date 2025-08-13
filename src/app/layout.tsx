@@ -8,7 +8,58 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: 'InnoCanvas: AI Business Model Canvas Generator',
-  description: 'Turn your idea into a business model instantly with InnoCanvas. Generate AI-powered Business Model Canvases with beautiful visual templates.',
+  description: 'Turn your idea into a business model instantly with InnoCanvas. Generate AI-powered Business Model Canvases with beautiful visual templates. Perfect for entrepreneurs, startups, and business professionals.',
+  keywords: 'business model canvas, AI generator, startup tools, business planning, entrepreneurship, BMC, business strategy, AI business tools',
+  authors: [{ name: 'InnoCanvas Team' }],
+  creator: 'InnoCanvas',
+  publisher: 'InnoCanvas',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL('https://innocanvas.site'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'InnoCanvas: AI Business Model Canvas Generator',
+    description: 'Turn your idea into a business model instantly with InnoCanvas. Generate AI-powered Business Model Canvases with beautiful visual templates.',
+    url: 'https://innocanvas.site',
+    siteName: 'InnoCanvas',
+    images: [
+      {
+        url: '/images/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'InnoCanvas - AI Business Model Canvas Generator',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'InnoCanvas: AI Business Model Canvas Generator',
+    description: 'Turn your idea into a business model instantly with InnoCanvas. Generate AI-powered Business Model Canvases with beautiful visual templates.',
+    images: ['/images/og-image.png'],
+    creator: '@innocanvas',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'your-google-verification-code',
+    // Add other verification codes as needed
+  },
 };
 
 export default function RootLayout({

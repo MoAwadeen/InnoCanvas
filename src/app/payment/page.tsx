@@ -11,11 +11,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { CheckCircle, CreditCard } from "lucide-react"
+import { CheckCircle, CreditCard, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 export const dynamic = "force-dynamic";
 
@@ -24,26 +24,90 @@ const plans = [
       name: "Pro",
       price: 8,
       features: [
-        "Unlimited canvases",
+        "Up to 10 canvases",
         "Advanced export (PDF, PNG)",
         "All visual templates",
+        "Color customization",
         "Priority support",
       ],
+      variantId: process.env.NEXT_PUBLIC_LEMON_SQUEEZY_PRO_VARIANT_ID,
     },
     {
       name: "Premium",
       price: 15,
       features: [
+        "Unlimited canvases",
         "All Pro features",
         "Custom branding tools",
+        "Remove watermarks",
         "Team access & collaboration",
         "Premium templates",
+        "API access",
       ],
+      variantId: process.env.NEXT_PUBLIC_LEMON_SQUEEZY_PREMIUM_VARIANT_ID,
     },
   ];
 
 export default function PaymentPage() {
     const [selectedPlan, setSelectedPlan] = useState(plans[0]);
+    const [loading, setLoading] = useState(false);
+    const { user, userData } = useAuth();
+    const { toast } = useToast();
+
+    const handlePayment = async () => {
+      if (!user) {
+        toast({
+          title: "Authentication Required",
+          description: "Please log in to continue with payment.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!selectedPlan.variantId) {
+        toast({
+          title: "Configuration Error",
+          description: "Payment configuration is not set up. Please contact support.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const response = await fetch('/api/lemonsqueezy/checkout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            variantId: parseInt(selectedPlan.variantId),
+            storeId: parseInt(process.env.NEXT_PUBLIC_LEMON_SQUEEZY_STORE_ID || '0'),
+            userEmail: userData?.email || user.email,
+            userName: userData?.full_name || user.user_metadata?.full_name,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to create checkout session');
+        }
+
+        // Redirect to LemonSqueezy checkout
+        window.location.href = data.checkout.url;
+      } catch (error) {
+        console.error('Payment error:', error);
+        toast({
+          title: "Payment Error",
+          description: error instanceof Error ? error.message : "Failed to process payment. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
 
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center p-4 md:p-8">
@@ -90,43 +154,55 @@ export default function PaymentPage() {
             </div>
             <Card className="w-full border-border">
                 <CardHeader>
-                    <CardTitle className="text-2xl">Payment Details</CardTitle>
+                    <CardTitle className="text-2xl">Complete Your Purchase</CardTitle>
                     <CardDescription>
-                        Complete your purchase for the <span className="font-bold text-accent">{selectedPlan.name}</span> plan.
+                        You're about to upgrade to the <span className="font-bold text-accent">{selectedPlan.name}</span> plan.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                <div className="grid gap-6">
-                    <div className="grid gap-2">
-                        <Label htmlFor="card-name">Name on Card</Label>
-                        <Input id="card-name" placeholder="Mohamed Awadeen" required />
+                <div className="space-y-6">
+                    <div className="bg-muted/50 rounded-lg p-4">
+                        <h3 className="font-semibold mb-2">What you'll get:</h3>
+                        <ul className="space-y-1 text-sm">
+                            {selectedPlan.features.map(feature => (
+                                <li key={feature} className="flex items-center gap-2">
+                                    <CheckCircle className="w-3 h-3 text-green-500" />
+                                    {feature}
+                                </li>
+                            ))}
+                        </ul>
                     </div>
-                    <div className="grid gap-2">
-                        <Label htmlFor="card-number">Card Number</Label>
-                        <div className="relative">
-                            <Input id="card-number" placeholder="**** **** **** 1234" required className="pr-10" />
-                            <CreditCard className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="grid gap-2">
-                             <Label htmlFor="expiry-date">Expiry Date</Label>
-                             <Input id="expiry-date" placeholder="MM/YY" required />
-                        </div>
-                        <div className="grid gap-2">
-                             <Label htmlFor="cvc">CVC</Label>
-                             <Input id="cvc" placeholder="123" required />
-                        </div>
-                    </div>
-                    <div className="border-t pt-4 mt-2">
-                        <div className="flex justify-between items-center text-lg font-bold">
+
+                    <div className="border-t pt-4">
+                        <div className="flex justify-between items-center text-lg font-bold mb-4">
                             <span className="text-card-foreground">Total Due Today:</span>
                             <span className="text-card-foreground">${selectedPlan.price}.00</span>
                         </div>
+                        
+                        <div className="space-y-3">
+                            <Button 
+                                onClick={handlePayment}
+                                disabled={loading}
+                                className="w-full text-lg py-6 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90"
+                            >
+                                {loading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                        Processing...
+                                    </>
+                                ) : (
+                                    <>
+                                        <CreditCard className="mr-2 h-5 w-5" />
+                                        Continue to Payment
+                                    </>
+                                )}
+                            </Button>
+                            
+                            <p className="text-xs text-muted-foreground text-center">
+                                Secure payment powered by LemonSqueezy. You can cancel anytime.
+                            </p>
+                        </div>
                     </div>
-                    <Button variant="gradient" type="submit" className="w-full text-lg py-6">
-                        Confirm Payment
-                    </Button>
                 </div>
                 </CardContent>
             </Card>

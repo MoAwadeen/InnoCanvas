@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://innocanvas.site/sitemap.xml
+
+# Disallow admin and private areas
+Disallow: /api/
+Disallow: /auth/
+Disallow: /profile/
+Disallow: /my-canvases/
+Disallow: /payment/
+
+# Allow important pages
+Allow: /
+Allow: /login
+Allow: /register
+Allow: /generate
+Allow: /pricing
+Allow: /about
+Allow: /contact
+Allow: /privacy
+Allow: /terms

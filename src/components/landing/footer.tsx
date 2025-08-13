@@ -28,8 +28,8 @@ export default function Footer() {
           
           <div className="flex flex-col gap-2 items-start text-left">
             <h4 className="font-semibold">Legal</h4>
-            <Link href="#testimonials" className="text-muted-foreground hover:text-primary">Testimonials</Link>
-            <Link href="#" className="text-muted-foreground hover:text-primary">404</Link>
+            <Link href="/privacy" className="text-muted-foreground hover:text-primary">Privacy Policy</Link>
+            <Link href="/terms" className="text-muted-foreground hover:text-primary">Terms of Service</Link>
           </div>
         </div>
         
