@@ -200,17 +200,25 @@ export default function LoginPage() {
                   disabled={isLoading}
                 />
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={isLoading}
-                />
-              </div>
+                             <div className="grid gap-2">
+                 <Label htmlFor="password">Password</Label>
+                 <Input
+                   id="password"
+                   type="password"
+                   required
+                   value={password}
+                   onChange={(e) => setPassword(e.target.value)}
+                   disabled={isLoading}
+                 />
+                 <div className="text-right">
+                   <Link 
+                     href="/reset-password" 
+                     className="text-sm text-purple-300 hover:text-purple-200 transition-colors duration-200"
+                   >
+                     Forgot password?
+                   </Link>
+                 </div>
+               </div>
               <Button 
                 type="submit" 
                 className="w-full btn-glow" 
