@@ -26,13 +26,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { 
-  Settings, 
-  ArrowLeft, 
-  Save, 
-  RefreshCw, 
-  Shield, 
-  Database, 
+import {
+  Settings,
+  ArrowLeft,
+  Save,
+  RefreshCw,
+  Shield,
+  Database,
   CreditCard,
   Users,
   FileText,
@@ -128,13 +128,13 @@ export default function AdminSettingsPage() {
     try {
       // Check database connection
       const { error: dbError } = await supabase.from('profiles').select('count', { count: 'exact', head: true });
-      
+
       // Check AI service (mock)
       const aiStatus = 'online'; // In real app, test OpenAI API
-      
+
       // Check payment gateway (mock)
       const paymentStatus = 'online'; // In real app, test LemonSqueezy API
-      
+
       // Check storage (mock)
       const storageStatus = 'online'; // In real app, test Supabase Storage
 
@@ -153,11 +153,11 @@ export default function AdminSettingsPage() {
   const saveSettings = async () => {
     try {
       setLoading(true);
-      
+
       // In a real application, you would save settings to your database
       // For now, we'll just simulate the save operation
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       toast({
         title: "Success",
         description: "System settings saved successfully.",
@@ -486,7 +486,7 @@ export default function AdminSettingsPage() {
                     <div className="flex items-center gap-3">
                       <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
                       <div>
-                        <p className="font-medium">LemonSqueezy</p>
+                        <p className="font-medium">Paymob</p>
                         <p className="text-sm text-muted-foreground">Payments</p>
                       </div>
                     </div>
@@ -549,7 +549,7 @@ export default function AdminSettingsPage() {
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm">
                       <AlertTriangle className="h-4 w-4 text-yellow-500" />
-                      <span>LemonSqueezy integration not configured</span>
+                      <span>Paymob integration not configured</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <CheckCircle className="h-4 w-4 text-green-500" />
