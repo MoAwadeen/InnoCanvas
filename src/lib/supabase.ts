@@ -1,5 +1,5 @@
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient as createBrowserClient } from '@/lib/supabase/client';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -65,49 +65,62 @@ const createMockClient = () => {
       on: (event: string, callback: any) => ({
         subscribe: () => ({ data: { subscription: null }, unsubscribe: () => { } })
       })
-    if(!hasValidConfig) {
-        console.warn('Supabase not configured - cannot get public URL');
-        return null;
-      }
-    
-    try {
-        const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-        return data?.publicUrl || null;
-      } catch(error) {
-        console.error('Error getting public URL:', error);
-        return null;
-      }
-    };
+    }),
+    removeChannel: (channel: any) => { },
+  };
+};
 
-    // Helper function to handle Supabase errors
-    export const handleSupabaseError = (error: any, defaultMessage: string = 'An error occurred') => {
-      console.error('Supabase error:', error);
+// Create the actual Supabase client or mock client
+export const supabase = hasValidConfig
+  ? createBrowserClient()
+  : createMockClient();
 
-      if (error?.message) {
-        return error.message;
-      }
+export const getPublicUrl = (bucket: string, path: string) => {
+  if (!path || !path.trim()) return null;
+  if (!bucket || !bucket.trim()) return null;
 
-      if (error?.code) {
-        switch (error.code) {
-          case 'PGRST116':
-            return 'Record not found';
-          case '23505':
-            return 'This record already exists';
-          case '42P01':
-            return 'Table does not exist';
-          case 'INVALID_CREDENTIALS':
-            return 'Invalid email or password';
-          case 'USER_NOT_FOUND':
-            return 'User not found';
-          case 'INVALID_EMAIL':
-            return 'Invalid email address';
-          case 'WEAK_PASSWORD':
-            return 'Password is too weak';
-          default:
-            return defaultMessage;
-        }
-      }
+  if (!hasValidConfig) {
+    console.warn('Supabase not configured - cannot get public URL');
+    return null;
+  }
 
-      return defaultMessage;
-    };
+  try {
+    const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+    return data?.publicUrl || null;
+  } catch (error) {
+    console.error('Error getting public URL:', error);
+    return null;
+  }
+};
 
+// Helper function to handle Supabase errors
+export const handleSupabaseError = (error: any, defaultMessage: string = 'An error occurred') => {
+  console.error('Supabase error:', error);
+
+  if (error?.message) {
+    return error.message;
+  }
+
+  if (error?.code) {
+    switch (error.code) {
+      case 'PGRST116':
+        return 'Record not found';
+      case '23505':
+        return 'This record already exists';
+      case '42P01':
+        return 'Table does not exist';
+      case 'INVALID_CREDENTIALS':
+        return 'Invalid email or password';
+      case 'USER_NOT_FOUND':
+        return 'User not found';
+      case 'INVALID_EMAIL':
+        return 'Invalid email address';
+      case 'WEAK_PASSWORD':
+        return 'Password is too weak';
+      default:
+        return defaultMessage;
+    }
+  }
+
+  return defaultMessage;
+};
