@@ -104,7 +104,7 @@ export default function Header() {
   ];
 
   return (
-    <motion.header 
+    <motion.header
       className={cn(
         "sticky top-0 z-50 w-full transition-all duration-300",
         scrolled ? "bg-background/80 backdrop-blur-lg border-b border-border/50" : "bg-transparent"
@@ -120,77 +120,77 @@ export default function Header() {
         >
           <Logo href="/" />
         </motion.div>
-        
+
         <nav className="hidden md:flex">
-            <ul className="flex items-center gap-8 text-sm">
-              {navLinks.map((link, index) => (
-                <motion.li 
-                  key={link.name}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 + index * 0.1, duration: 0.5 }}
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  onHoverStart={() => setHoveredLink(link.name)}
-                  onHoverEnd={() => setHoveredLink(null)}
+          <ul className="flex items-center gap-8 text-sm">
+            {navLinks.map((link, index) => (
+              <motion.li
+                key={link.name}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 + index * 0.1, duration: 0.5 }}
+                whileHover={{ scale: 1.05, y: -2 }}
+                onHoverStart={() => setHoveredLink(link.name)}
+                onHoverEnd={() => setHoveredLink(null)}
+              >
+                <Link
+                  href={link.href}
+                  className="text-muted-foreground transition-colors hover:text-foreground font-medium relative"
                 >
-                  <Link
-                    href={link.href}
-                    className="text-muted-foreground transition-colors hover:text-foreground font-medium relative"
-                  >
-                    {link.name}
-                    <motion.div
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-[#d1241b] to-[#f19070]"
-                      initial={{ scaleX: 0 }}
-                      animate={{ scaleX: hoveredLink === link.name ? 1 : 0 }}
-                      transition={{ duration: 0.3 }}
-                    />
-                  </Link>
-                </motion.li>
-              ))}
-            </ul>
+                  {link.name}
+                  <motion.div
+                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-[#d1241b] to-[#f19070]"
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: hoveredLink === link.name ? 1 : 0 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </Link>
+              </motion.li>
+            ))}
+          </ul>
         </nav>
 
         <div className="hidden md:flex items-center gap-2">
-            {!loading && (
-              user ? (
-                 <motion.div
-                   initial={{ opacity: 0, x: 20 }}
-                   animate={{ opacity: 1, x: 0 }}
-                   transition={{ delay: 0.5, duration: 0.5 }}
-                   whileHover={{ scale: 1.05 }}
-                 >
-                   <Link href="/my-canvases">
-                      <Button variant="secondary">Dashboard</Button>
+          {!loading && (
+            user ? (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+                whileHover={{ scale: 1.05 }}
+              >
+                <Link href="/my-canvases">
+                  <Button variant="secondary">Dashboard</Button>
+                </Link>
+              </motion.div>
+            ) : (
+              <>
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.4, duration: 0.5 }}
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <Link href="/login">
+                    <Button variant="gradient-stroke">Log In</Button>
                   </Link>
-                 </motion.div>
-              ) : (
-                <>
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.4, duration: 0.5 }}
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <Link href="/login">
-                        <Button variant="gradient-stroke">Log In</Button>
-                    </Link>
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.6, duration: 0.5 }}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Link href="/register">
-                        <Button className="btn-gradient">
-                            Get Started
-                        </Button>
-                    </Link>
-                  </motion.div>
-                </>
-              )
-            )}
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.6, duration: 0.5 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Link href="/register">
+                    <Button className="btn-gradient">
+                      Get Started
+                    </Button>
+                  </Link>
+                </motion.div>
+              </>
+            )
+          )}
         </div>
 
         {/* Mobile Menu */}
@@ -210,7 +210,7 @@ export default function Header() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="top" className="bg-background/95 backdrop-blur-lg">
-                <motion.div 
+                <motion.div
                   className="grid gap-6 py-6"
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -271,7 +271,7 @@ export default function Header() {
                           >
                             <Link href="/register" className="w-full">
                               <Button className="w-full btn-gradient">
-                                  Get Started
+                                Get Started
                               </Button>
                             </Link>
                           </motion.div>

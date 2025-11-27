@@ -5,8 +5,8 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 // Check if we have valid environment variables
-const hasValidConfig = supabaseUrl && supabaseAnonKey && 
-  supabaseUrl !== 'your_supabase_url_here' && 
+const hasValidConfig = supabaseUrl && supabaseAnonKey &&
+  supabaseUrl !== 'your_supabase_url_here' &&
   supabaseAnonKey !== 'your_supabase_anon_key_here' &&
   supabaseUrl !== 'https://placeholder.supabase.co' &&
   supabaseAnonKey !== 'placeholder_key_for_development';
@@ -27,7 +27,7 @@ const createMockClient = () => {
         // Mock subscription
         const subscription = {
           data: { subscription: null },
-          unsubscribe: () => {}
+          unsubscribe: () => { }
         };
         return subscription;
       },
@@ -63,73 +63,51 @@ const createMockClient = () => {
     },
     channel: (name: string) => ({
       on: (event: string, callback: any) => ({
-        subscribe: () => ({ data: { subscription: null }, unsubscribe: () => {} })
+        subscribe: () => ({ data: { subscription: null }, unsubscribe: () => { } })
       })
-    }),
-    removeChannel: (channel: any) => {},
-  };
-};
-
-// Create the actual Supabase client or mock client
-export const supabase = hasValidConfig 
-  ? createClient(supabaseUrl, supabaseAnonKey, {
-      auth: {
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: true,
-        flowType: 'pkce'
+    if(!hasValidConfig) {
+        console.warn('Supabase not configured - cannot get public URL');
+        return null;
       }
-    })
-  : createMockClient();
-
-export const getPublicUrl = (bucket: string, path: string) => {
-    if (!path || !path.trim()) return null;
-    if (!bucket || !bucket.trim()) return null;
-    
-    if (!hasValidConfig) {
-      console.warn('Supabase not configured - cannot get public URL');
-      return null;
-    }
     
     try {
         const { data } = supabase.storage.from(bucket).getPublicUrl(path);
         return data?.publicUrl || null;
-    } catch (error) {
+      } catch(error) {
         console.error('Error getting public URL:', error);
         return null;
-    }
-};
+      }
+    };
 
-// Helper function to handle Supabase errors
-export const handleSupabaseError = (error: any, defaultMessage: string = 'An error occurred') => {
-  console.error('Supabase error:', error);
-  
-  if (error?.message) {
-    return error.message;
-  }
-  
-  if (error?.code) {
-    switch (error.code) {
-      case 'PGRST116':
-        return 'Record not found';
-      case '23505':
-        return 'This record already exists';
-      case '42P01':
-        return 'Table does not exist';
-      case 'INVALID_CREDENTIALS':
-        return 'Invalid email or password';
-      case 'USER_NOT_FOUND':
-        return 'User not found';
-      case 'INVALID_EMAIL':
-        return 'Invalid email address';
-      case 'WEAK_PASSWORD':
-        return 'Password is too weak';
-      default:
-        return defaultMessage;
-    }
-  }
-  
-  return defaultMessage;
-};
+    // Helper function to handle Supabase errors
+    export const handleSupabaseError = (error: any, defaultMessage: string = 'An error occurred') => {
+      console.error('Supabase error:', error);
 
-    
+      if (error?.message) {
+        return error.message;
+      }
+
+      if (error?.code) {
+        switch (error.code) {
+          case 'PGRST116':
+            return 'Record not found';
+          case '23505':
+            return 'This record already exists';
+          case '42P01':
+            return 'Table does not exist';
+          case 'INVALID_CREDENTIALS':
+            return 'Invalid email or password';
+          case 'USER_NOT_FOUND':
+            return 'User not found';
+          case 'INVALID_EMAIL':
+            return 'Invalid email address';
+          case 'WEAK_PASSWORD':
+            return 'Password is too weak';
+          default:
+            return defaultMessage;
+        }
+      }
+
+      return defaultMessage;
+    };
+

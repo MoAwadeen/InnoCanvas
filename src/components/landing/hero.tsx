@@ -55,13 +55,13 @@ export default function Hero() {
   return (
     <section className="relative w-full max-w-[1920px] mx-auto pt-[74px] bg-[#f7f7f5]">
       <div className="relative w-full max-w-[1200px] mx-auto px-4">
-        <motion.div 
+        <motion.div
           className="flex flex-col items-center text-center mb-[102px]"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <motion.div 
+          <motion.div
             className="max-w-[740px] mb-6"
             whileHover={{ scale: 1.02 }}
             transition={{ duration: 0.3 }}
@@ -75,7 +75,7 @@ export default function Hero() {
             </h1>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             className="max-w-[514px] mb-10"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -95,7 +95,7 @@ export default function Hero() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Button 
+                <Button
                   variant="gradient"
                   className="h-[52px] px-8 rounded-xl font-medium text-sm text-white btn-gradient"
                   animated={true}
@@ -123,9 +123,9 @@ export default function Hero() {
 
         <div className="relative w-full">
           <div>
-            <Card 
+            <Card
               className="w-full h-[400px] md:h-[686px] rounded-[32px] overflow-hidden shadow-[0px_8px_32px_#00000014] backdrop-blur-[27px] backdrop-brightness-[100%] relative"
-              style={{ 
+              style={{
                 backgroundImage: `url(${cardBackground})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center'
@@ -157,7 +157,7 @@ const useBackgroundStore = () => {
 // Utility function for random colors
 const getRandomColor = () => {
   const colors = [
-    "#ff6b6b", "#4ecdc4", "#45b7d1", "#96ceb4", 
+    "#ff6b6b", "#4ecdc4", "#45b7d1", "#96ceb4",
     "#feca57", "#ff9ff3", "#54a0ff", "#5f27cd",
     "#0099FF", "#FF6B6B", "#4ECDC4", "#45B7D1"
   ];

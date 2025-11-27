@@ -1,4 +1,4 @@
-import type {Config} from 'tailwindcss';
+import type { Config } from 'tailwindcss';
 
 export default {
   darkMode: ['class'],
@@ -81,17 +81,17 @@ export default {
         },
         'gradient-blob': {
           '0%': { transform: 'translate(0px, 0px) scale(1)' },
-          '33%': { transform: 'translate(30px, -50px) scale(1.1)'},
+          '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
           '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
           '100%': { transform: 'translate(0px, 0px) scale(1)' },
         },
         'pulse-glow': {
           '0%, 100%': {
-             transform: 'scale(1)',
-             'box-shadow': '0 0 10px 0px hsl(var(--primary) / 0.4)',
+            transform: 'scale(1)',
+            'box-shadow': '0 0 10px 0px hsl(var(--primary) / 0.4)',
           },
           '50%': {
-             transform: 'scale(1.02)',
+            transform: 'scale(1.02)',
             'box-shadow': '0 0 20px 5px hsl(var(--primary) / 0.6)',
           },
         }
