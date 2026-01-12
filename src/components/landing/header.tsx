@@ -159,7 +159,7 @@ export default function Header() {
                 transition={{ delay: 0.5, duration: 0.5 }}
                 whileHover={{ scale: 1.05 }}
               >
-                <Link href="/my-canvases">
+                <Link href="/dashboard">
                   <Button variant="secondary">Dashboard</Button>
                 </Link>
               </motion.div>
@@ -244,7 +244,7 @@ export default function Header() {
                           transition={{ delay: 0.3, duration: 0.5 }}
                           whileHover={{ scale: 1.02 }}
                         >
-                          <Link href="/my-canvases" className="w-full col-span-2">
+                          <Link href="/dashboard" className="w-full col-span-2">
                             <Button variant="secondary" className="w-full">Dashboard</Button>
                           </Link>
                         </motion.div>

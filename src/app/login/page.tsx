@@ -35,7 +35,7 @@ export default function LoginPage() {
   useEffect(() => {
     // Redirect if user is already logged in and data is loaded
     if (!authLoading && user) {
-        router.push('/my-canvases');
+      router.push('/dashboard');
     }
   }, [user, authLoading, router]);
 
@@ -45,17 +45,17 @@ export default function LoginPage() {
       const urlParams = new URLSearchParams(window.location.search);
       const message = urlParams.get('message');
       const error = urlParams.get('error');
-      
+
       if (message === 'check-email') {
         toast({
           title: 'Check Your Email',
           description: 'Please check your email to verify your account before signing in.',
         });
       }
-      
+
       if (error) {
         let errorMessage = 'Authentication failed. Please try again.';
-        
+
         switch (error) {
           case 'auth_failed':
             errorMessage = 'Authentication failed. Please check your credentials and try again.';
@@ -70,7 +70,7 @@ export default function LoginPage() {
             errorMessage = 'An unexpected error occurred. Please try again.';
             break;
         }
-        
+
         toast({
           title: 'Authentication Error',
           description: errorMessage,
@@ -82,16 +82,27 @@ export default function LoginPage() {
 
   const handleSuccessfulLogin = async (loggedInUser: User) => {
     toast({
-        title: 'Login Successful!',
-        description: `Welcome ${loggedInUser.email || 'back'}!`,
+      title: 'Login Successful!',
+      description: `Welcome ${loggedInUser.email || 'back'}!`,
     });
-    router.push('/');
+    router.push('/dashboard');
   }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
+      if (process.env.NODE_ENV === 'development') {
+        // Skip real Supabase login in development and use mock login
+        console.log('Development mode: Bypassing auth with mock user');
+        toast({
+          title: 'Login Successful (Dev Mode)',
+          description: `Welcome Dev User! You are logged in with a mock account.`,
+        });
+        router.push('/dashboard');
+        return;
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email,
         password: password,
@@ -121,12 +132,12 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       console.log('Starting Google OAuth login...');
-      
+
       // Check if Supabase is properly configured
-      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || 
-          !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-          process.env.NEXT_PUBLIC_SUPABASE_URL === 'your_supabase_url_here' ||
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === 'your_supabase_anon_key_here') {
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL ||
+        !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+        process.env.NEXT_PUBLIC_SUPABASE_URL === 'your_supabase_url_here' ||
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === 'your_supabase_anon_key_here') {
         throw new Error('Supabase is not properly configured. Please check your environment variables.');
       }
 
@@ -151,7 +162,7 @@ export default function LoginPage() {
       }
 
       console.log('Google OAuth initiated successfully:', data);
-      
+
     } catch (error: any) {
       console.error('Google login error:', error);
       const errorMessage = handleSupabaseError(error, 'Google login failed');
@@ -178,7 +189,7 @@ export default function LoginPage() {
       <div className="absolute top-8 left-8">
         <Logo href="/" />
       </div>
-      <Card className="mx-auto max-w-md w-full card-glass bg-bright-cyan/20 backdrop-blur-lg">
+      <Card className="mx-auto max-w-md w-full card-glass">
         <CardHeader>
           <CardTitle className="text-2xl headline-glow">Login</CardTitle>
           <CardDescription>
@@ -200,28 +211,28 @@ export default function LoginPage() {
                   disabled={isLoading}
                 />
               </div>
-                             <div className="grid gap-2">
-                 <Label htmlFor="password">Password</Label>
-                 <Input
-                   id="password"
-                   type="password"
-                   required
-                   value={password}
-                   onChange={(e) => setPassword(e.target.value)}
-                   disabled={isLoading}
-                 />
-                 <div className="text-right">
-                   <Link 
-                     href="/reset-password" 
-                     className="text-sm text-purple-300 hover:text-purple-200 transition-colors duration-200"
-                   >
-                     Forgot password?
-                   </Link>
-                 </div>
-               </div>
-              <Button 
-                type="submit" 
-                className="w-full btn-glow" 
+              <div className="grid gap-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={isLoading}
+                />
+                <div className="text-right">
+                  <Link
+                    href="/reset-password"
+                    className="text-sm text-primary hover:underline"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+              </div>
+              <Button
+                type="submit"
+                className="w-full btn-gradient"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -235,7 +246,7 @@ export default function LoginPage() {
               </Button>
             </div>
           </form>
-          
+
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t" />

@@ -5,15 +5,38 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 // Check if we have valid environment variables
-const hasValidConfig = supabaseUrl && supabaseAnonKey &&
+const hasValidConfig = !!(
+  supabaseUrl &&
+  supabaseAnonKey &&
+  supabaseUrl.includes('.supabase.co') &&
   supabaseUrl !== 'your_supabase_url_here' &&
   supabaseAnonKey !== 'your_supabase_anon_key_here' &&
   supabaseUrl !== 'https://placeholder.supabase.co' &&
-  supabaseAnonKey !== 'placeholder_key_for_development';
+  supabaseAnonKey !== 'placeholder_key_for_development'
+);
 
 // Create a mock client for development when env vars are not set
 const createMockClient = () => {
   console.warn('Supabase not configured - using mock client for development');
+
+  const createMockQueryBuilder = (resultData: any = []) => {
+    const builder: any = {
+      select: () => builder,
+      eq: () => builder,
+      order: () => builder,
+      single: async () => ({ data: Array.isArray(resultData) ? resultData[0] || null : resultData, error: null }),
+      maybeSingle: async () => ({ data: Array.isArray(resultData) ? resultData[0] || null : resultData, error: null }),
+      then: (callback: any) => {
+        const result = { data: resultData, error: null };
+        if (typeof callback === 'function') {
+          return Promise.resolve(callback(result));
+        }
+        return Promise.resolve(result);
+      }
+    };
+    return builder;
+  };
+
   return {
     auth: {
       signUp: async () => ({ data: { user: null }, error: null }),
@@ -24,7 +47,6 @@ const createMockClient = () => {
       getSession: async () => ({ data: { session: null }, error: null }),
       setSession: async () => ({ data: { session: null }, error: null }),
       onAuthStateChange: (callback: any) => {
-        // Mock subscription
         const subscription = {
           data: { subscription: null },
           unsubscribe: () => { }
@@ -33,27 +55,11 @@ const createMockClient = () => {
       },
     },
     from: (table: string) => ({
-      select: (columns?: string) => ({
-        eq: (column: string, value: any) => ({
-          single: async () => ({ data: null, error: null }),
-          maybeSingle: async () => ({ data: null, error: null }),
-        }),
-        order: (column: string, options?: any) => ({
-          then: async (callback: any) => ({ data: null, error: null })
-        }),
-      }),
-      insert: (data: any) => ({
-        select: (columns?: string) => ({
-          single: async () => ({ data: null, error: null }),
-        }),
-      }),
-      update: (data: any) => ({
-        eq: (column: string, value: any) => ({ error: null }),
-      }),
-      upsert: (data: any) => ({ error: null }),
-      delete: () => ({
-        eq: (column: string, value: any) => ({ error: null }),
-      }),
+      select: () => createMockQueryBuilder(table === 'profiles' ? null : []),
+      insert: () => createMockQueryBuilder(null),
+      update: () => createMockQueryBuilder(null),
+      upsert: () => createMockQueryBuilder(null),
+      delete: () => createMockQueryBuilder(null),
     }),
     storage: {
       from: (bucket: string) => ({
@@ -67,13 +73,21 @@ const createMockClient = () => {
       })
     }),
     removeChannel: (channel: any) => { },
-  };
+  } as any;
 };
 
 // Create the actual Supabase client or mock client
-export const supabase = hasValidConfig
-  ? createBrowserClient()
-  : createMockClient();
+export const supabase = (() => {
+  if (hasValidConfig) {
+    try {
+      return createBrowserClient();
+    } catch (error) {
+      console.error('Failed to initialize Supabase client:', error);
+      return createMockClient();
+    }
+  }
+  return createMockClient();
+})();
 
 export const getPublicUrl = (bucket: string, path: string) => {
   if (!path || !path.trim()) return null;

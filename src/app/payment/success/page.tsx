@@ -22,7 +22,7 @@ export default function PaymentSuccessPage() {
   }, []);
 
   const handleContinue = () => {
-    router.push('/my-canvases');
+    router.push('/dashboard');
   };
 
   if (loading) {
@@ -41,7 +41,7 @@ export default function PaymentSuccessPage() {
       <header className="w-full max-w-2xl flex justify-center items-center mb-8">
         <Logo />
       </header>
-      
+
       <main className="w-full max-w-2xl flex-grow">
         <Card className="w-full border-border text-center">
           <CardHeader className="pb-4">
@@ -58,7 +58,7 @@ export default function PaymentSuccessPage() {
               Welcome to InnoCanvas Premium! 🎉
             </CardDescription>
           </CardHeader>
-          
+
           <CardContent className="space-y-6">
             <div className="bg-gradient-to-r from-primary/10 to-purple-500/10 rounded-lg p-6">
               <h3 className="text-xl font-semibold mb-3">What's Next?</h3>
@@ -84,13 +84,13 @@ export default function PaymentSuccessPage() {
 
             <div className="bg-muted/50 rounded-lg p-4">
               <p className="text-sm text-muted-foreground">
-                You'll receive a confirmation email shortly. If you have any questions, 
+                You'll receive a confirmation email shortly. If you have any questions,
                 don't hesitate to reach out to our support team.
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button 
+              <Button
                 onClick={handleContinue}
                 className="flex-1 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90"
               >

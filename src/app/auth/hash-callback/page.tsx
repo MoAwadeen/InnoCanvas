@@ -14,7 +14,7 @@ export default function HashCallbackPage() {
     const handleHashCallback = async () => {
       try {
         const hash = window.location.hash;
-        
+
         if (!hash || !hash.includes('access_token')) {
           console.error('No access token found in hash');
           router.push('/login?error=hash_callback_failed');
@@ -25,16 +25,16 @@ export default function HashCallbackPage() {
 
         // For hash-based OAuth, we'll let the auth context handle the session
         // The tokens are already in the URL and will be picked up by Supabase's auto-refresh
-        
+
         // Wait a moment for the session to be processed
         setTimeout(() => {
           toast({
             title: 'Login Successful!',
             description: 'Welcome back! Redirecting to your dashboard...',
           });
-          
+
           // Redirect to the intended destination
-          router.push('/my-canvases');
+          router.push('/dashboard');
         }, 1500);
 
       } catch (error) {
