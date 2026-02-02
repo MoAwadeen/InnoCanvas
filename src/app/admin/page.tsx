@@ -23,6 +23,7 @@ import {
   ArrowUpRight,
   ArrowDownRight
 } from 'lucide-react';
+import { ThemeWrapper } from '@/components/theme-wrapper';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 

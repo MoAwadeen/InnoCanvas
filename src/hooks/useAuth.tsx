@@ -58,10 +58,46 @@ const AuthContext = createContext<AuthContextType>({
   getPlanLimits: async () => null,
 });
 
+// DEV MODE: Mock user for development without auth
+const DEV_SKIP_AUTH = process.env.NEXT_PUBLIC_DEV_SKIP_AUTH === 'true';
+
+const DEV_MOCK_USER = {
+  id: 'dev-mock-user-id',
+  email: 'dev@innocanvas.site',
+  app_metadata: {},
+  user_metadata: { full_name: 'Dev User' },
+  aud: 'authenticated',
+  created_at: new Date().toISOString(),
+} as User;
+
+const DEV_MOCK_PROFILE: UserProfile = {
+  id: 'dev-mock-user-id',
+  full_name: 'Dev User',
+  age: 25,
+  gender: 'prefer-not-to-say',
+  country: 'Unknown',
+  use_case: 'entrepreneur',
+  avatar_url: null,
+  email: 'dev@innocanvas.site',
+  phone: null,
+  company: 'InnoCanvas Dev',
+  job_title: 'Developer',
+  industry: 'technology',
+  experience_level: 'intermediate',
+  plan: 'premium',
+  plan_expiry: null,
+  subscription_id: null,
+  payment_provider: 'none',
+  preferences: { theme: 'dark', notifications: true, newsletter: true, language: 'en' },
+  statistics: { canvases_created: 5, last_login: new Date().toISOString(), total_exports: 3, favorite_colors: [] },
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+};
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [userData, setUserData] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(DEV_SKIP_AUTH ? DEV_MOCK_USER : null);
+  const [userData, setUserData] = useState<UserProfile | null>(DEV_SKIP_AUTH ? DEV_MOCK_PROFILE : null);
+  const [loading, setLoading] = useState(DEV_SKIP_AUTH ? false : true);
 
   const fetchUserProfile = useCallback(async () => {
     if (user) {
@@ -127,6 +163,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [userData?.plan]);
 
   useEffect(() => {
+    // DEV MODE: Skip all real auth when flag is set
+    if (DEV_SKIP_AUTH) {
+      setLoading(false);
+      return;
+    }
+
     const fetchSession = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
@@ -141,7 +183,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     };
-    
+
     fetchSession();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {

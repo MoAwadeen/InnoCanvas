@@ -4,13 +4,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -28,6 +21,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState, useCallback } from 'react';
 import { Logo } from '@/components/logo';
+import { ThemeWrapper } from '@/components/theme-wrapper';
 import { supabase, handleSupabaseError } from '@/lib/supabase';
 import { Greeting } from '@/components/greeting';
 
@@ -155,9 +149,11 @@ export default function MyCanvasesPage() {
 
   if (authLoading) {
       return (
-            <div className="min-h-screen w-full flex items-center justify-center bg-background">
-                <Loader className="w-16 h-16 animate-spin text-primary" />
-            </div>
+            <ThemeWrapper>
+                <div className="flex items-center justify-center min-h-screen">
+                    <Loader className="w-16 h-16 animate-spin text-[var(--accent-1)]" />
+                </div>
+            </ThemeWrapper>
         );
   }
 
@@ -167,14 +163,14 @@ export default function MyCanvasesPage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-background text-foreground p-4 md:p-8">
+    <ThemeWrapper className="text-white p-4 md:p-8">
       <header className="flex justify-between items-center mb-12">
         <Logo href="/my-canvases" />
         <div className="flex items-center gap-4">
            <Link href="/profile">
-            <Button variant="secondary"><User className="mr-2"/>Profile</Button>
+            <button className="btn-secondary flex items-center gap-2" style={{ padding: '8px 16px', fontSize: '0.875rem' }}><User className="w-4 h-4"/>Profile</button>
            </Link>
-           <Button variant="secondary" onClick={handleLogout}><LogOut className="mr-2"/>Logout</Button>
+           <button className="btn-secondary flex items-center gap-2" style={{ padding: '8px 16px', fontSize: '0.875rem' }} onClick={handleLogout}><LogOut className="w-4 h-4"/>Logout</button>
         </div>
       </header>
 
@@ -188,8 +184,8 @@ export default function MyCanvasesPage() {
           transition={{ duration: 0.5 }}
           className="mb-12"
         >
-          <h1 className="text-4xl md:text-5xl font-bold">Welcome back, {displayName} 👋</h1>
-          <p className="text-muted-foreground mt-2 text-lg">Here’s your latest business canvas progress.</p>
+          <h1 className="text-4xl md:text-5xl font-bold gradient-text" style={{ fontFamily: "'Playfair Display', serif" }}>Welcome back, {displayName} 👋</h1>
+          <p className="text-[var(--text-secondary)] mt-2 text-lg">Here's your latest business canvas progress.</p>
         </motion.div>
         
         <div className="flex justify-between items-center mb-8">
@@ -216,17 +212,17 @@ export default function MyCanvasesPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <Card
-                  className="card-glass flex flex-col h-full bg-secondary/30 p-0"
+                <div
+                  className="glass-strong card-hover flex flex-col h-full rounded-xl"
                 >
-                  <CardHeader className="p-6">
-                    <CardTitle className="line-clamp-2 text-card-foreground">{canvas.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex-grow p-6 pt-0">
-                    <p className="text-muted-foreground text-sm line-clamp-3 h-16">{canvas.preview}</p>
-                  </CardContent>
-                  <CardFooter className="flex justify-between items-center mt-auto p-6 pt-4 border-t border-white/10">
-                    <p className="text-sm text-muted-foreground">{canvas.date}</p>
+                  <div className="p-6">
+                    <h3 className="font-semibold text-lg line-clamp-2 text-white">{canvas.title}</h3>
+                  </div>
+                  <div className="flex-grow px-6 pb-4">
+                    <p className="text-[var(--text-muted)] text-sm line-clamp-3 h-16">{canvas.preview}</p>
+                  </div>
+                  <div className="flex justify-between items-center mt-auto p-6 pt-4 border-t border-white/10">
+                    <p className="text-sm text-[var(--text-muted)]">{canvas.date}</p>
                     <div className="flex gap-2">
                         <Link href={`/generate?canvasId=${canvas.id}`}>
                             <Button variant="secondary">Open</Button>
@@ -251,13 +247,13 @@ export default function MyCanvasesPage() {
                           </AlertDialogContent>
                         </AlertDialog>
                     </div>
-                  </CardFooter>
-                </Card>
+                  </div>
+                </div>
               </motion.div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 border-2 border-dashed border-border/20 rounded-2xl bg-secondary/20 flex flex-col items-center">
+          <div className="text-center py-20 border-2 border-dashed border-white/10 rounded-2xl glass flex flex-col items-center">
             <h2 className="text-2xl font-semibold mb-4">No Canvases Yet</h2>
             <p className="text-muted-foreground mb-6 max-w-md">
               It looks like your workspace is empty. Let's create your first Business Model Canvas and bring your ideas to life.
@@ -270,6 +266,6 @@ export default function MyCanvasesPage() {
           </div>
         )}
       </main>
-    </div>
+    </ThemeWrapper>
   );
 }

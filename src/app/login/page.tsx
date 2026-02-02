@@ -45,17 +45,17 @@ export default function LoginPage() {
       const urlParams = new URLSearchParams(window.location.search);
       const message = urlParams.get('message');
       const error = urlParams.get('error');
-      
+
       if (message === 'check-email') {
         toast({
           title: 'Check Your Email',
           description: 'Please check your email to verify your account before signing in.',
         });
       }
-      
+
       if (error) {
         let errorMessage = 'Authentication failed. Please try again.';
-        
+
         switch (error) {
           case 'auth_failed':
             errorMessage = 'Authentication failed. Please check your credentials and try again.';
@@ -70,7 +70,7 @@ export default function LoginPage() {
             errorMessage = 'An unexpected error occurred. Please try again.';
             break;
         }
-        
+
         toast({
           title: 'Authentication Error',
           description: errorMessage,
@@ -121,9 +121,9 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       console.log('Starting Google OAuth login...');
-      
+
       // Check if Supabase is properly configured
-      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || 
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL ||
           !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
           process.env.NEXT_PUBLIC_SUPABASE_URL === 'your_supabase_url_here' ||
           process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === 'your_supabase_anon_key_here') {
@@ -151,7 +151,7 @@ export default function LoginPage() {
       }
 
       console.log('Google OAuth initiated successfully:', data);
-      
+
     } catch (error: any) {
       console.error('Google login error:', error);
       const errorMessage = handleSupabaseError(error, 'Google login failed');
@@ -167,109 +167,120 @@ export default function LoginPage() {
 
   if (authLoading || user) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-background">
-        <Loader className="w-16 h-16 animate-spin text-primary" />
+      <div className="min-h-screen w-full flex items-center justify-center" style={{ background: '#0d0d1a' }}>
+        <Loader className="w-16 h-16 animate-spin text-purple-500" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center justify-center p-4">
-      <div className="absolute top-8 left-8">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 relative overflow-hidden" style={{ background: '#0d0d1a' }}>
+      {/* Animated background orbs */}
+      <div className="orb orb-1" />
+      <div className="orb orb-2" />
+      <div className="orb orb-3" />
+
+      <div className="absolute top-8 left-8 z-10">
         <Logo href="/" />
       </div>
-      <Card className="mx-auto max-w-md w-full card-glass bg-bright-cyan/20 backdrop-blur-lg">
-        <CardHeader>
-          <CardTitle className="text-2xl headline-glow">Login</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleLogin}>
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+
+      <div className="w-full max-w-md z-10 fade-in-up">
+        <Card className="border-0 glass-strong shadow-2xl">
+          <CardHeader className="text-center pb-6">
+            <CardTitle className="text-2xl font-bold gradient-text mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
+              Welcome Back
+            </CardTitle>
+            <CardDescription className="text-[var(--text-secondary)]">
+              Enter your email below to login to your account
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleLogin}>
+              <div className="grid gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="email" className="text-[var(--text-secondary)] text-sm font-medium">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="m@example.com"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={isLoading}
+                    className="bg-white/5 border-[var(--glass-border-strong)] text-white placeholder:text-[var(--text-muted)] focus:border-[var(--accent-1)] focus:ring-[var(--accent-1)]/20"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="password" className="text-[var(--text-secondary)] text-sm font-medium">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={isLoading}
+                    className="bg-white/5 border-[var(--glass-border-strong)] text-white placeholder:text-[var(--text-muted)] focus:border-[var(--accent-1)] focus:ring-[var(--accent-1)]/20"
+                  />
+                  <div className="text-right">
+                    <Link
+                      href="/reset-password"
+                      className="text-sm text-[var(--accent-1)] hover:text-[var(--accent-3)] transition-colors duration-200"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
+                </div>
+                <Button
+                  type="submit"
+                  className="w-full btn-primary text-base"
                   disabled={isLoading}
-                />
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader className="mr-2 h-4 w-4 animate-spin" />
+                      Logging in...
+                    </>
+                  ) : (
+                    'Login'
+                  )}
+                </Button>
               </div>
-                             <div className="grid gap-2">
-                 <Label htmlFor="password">Password</Label>
-                 <Input
-                   id="password"
-                   type="password"
-                   required
-                   value={password}
-                   onChange={(e) => setPassword(e.target.value)}
-                   disabled={isLoading}
-                 />
-                 <div className="text-right">
-                   <Link 
-                     href="/reset-password" 
-                     className="text-sm text-purple-300 hover:text-purple-200 transition-colors duration-200"
-                   >
-                     Forgot password?
-                   </Link>
-                 </div>
-               </div>
-              <Button 
-                type="submit" 
-                className="w-full btn-glow" 
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader className="mr-2 h-4 w-4 animate-spin" />
-                    Logging in...
-                  </>
-                ) : (
-                  'Login'
-                )}
-              </Button>
-            </div>
-          </form>
-          
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                Or continue with
-              </span>
-            </div>
-          </div>
+            </form>
 
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            onClick={handleGoogleLogin}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <Loader className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <GoogleIcon className="mr-2 h-4 w-4" />
-            )}
-            {isLoading ? 'Connecting...' : 'Continue with Google'}
-          </Button>
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-[var(--glass-border-strong)]" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="px-3 text-[var(--text-muted)] font-medium" style={{ background: 'transparent' }}>
+                  Or continue with
+                </span>
+              </div>
+            </div>
 
-          <div className="mt-4 text-center text-sm">
-            <span className="text-muted-foreground">Don't have an account? </span>
-            <Link href="/register" className="text-primary hover:underline">
-              Sign up
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
+            <Button
+              type="button"
+              className="w-full btn-secondary"
+              onClick={handleGoogleLogin}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <GoogleIcon className="mr-2 h-4 w-4" />
+              )}
+              {isLoading ? 'Connecting...' : 'Continue with Google'}
+            </Button>
+
+            <div className="mt-4 text-center text-sm">
+              <span className="text-[var(--text-muted)]">Don&apos;t have an account? </span>
+              <Link href="/register" className="text-[var(--accent-1)] hover:text-[var(--accent-3)] transition-colors duration-200">
+                Sign up
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

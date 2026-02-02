@@ -14,6 +14,7 @@ import {
 import { CheckCircle, CreditCard, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
+import { ThemeWrapper } from "@/components/theme-wrapper";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 
@@ -110,15 +111,15 @@ export default function PaymentPage() {
     };
 
   return (
-    <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center p-4 md:p-8">
+    <ThemeWrapper className="text-white flex flex-col items-center p-4 md:p-8">
         <header className="w-full max-w-5xl flex justify-between items-center mb-8">
             <Logo />
             <Link href="/my-canvases">
-                <Button variant="secondary">Back to My Canvases</Button>
+                <button className="btn-secondary" style={{ padding: '8px 16px', fontSize: '0.875rem' }}>Back to My Canvases</button>
             </Link>
       </header>
       <main className="w-full max-w-5xl flex-grow">
-        <h1 className="text-4xl md:text-5xl font-bold mb-8 text-center">Upgrade Your Plan</h1>
+        <h1 className="text-4xl md:text-5xl font-bold mb-8 text-center gradient-text" style={{ fontFamily: "'Playfair Display', serif" }}>Upgrade Your Plan</h1>
         <div className="grid lg:grid-cols-2 gap-12">
             <div>
                 <h2 className="text-2xl font-bold mb-4">Choose Your Plan</h2>
@@ -208,6 +209,6 @@ export default function PaymentPage() {
             </Card>
         </div>
       </main>
-    </div>
+    </ThemeWrapper>
   )
 }

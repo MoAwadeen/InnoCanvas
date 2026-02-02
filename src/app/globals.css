@@ -242,36 +242,63 @@
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(3, auto);
   gap: 1px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 12px;
   overflow: hidden;
 }
 
+@media (max-width: 768px) {
+  .bmc-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto;
+  }
+
+  .bmc-grid > * {
+    grid-row: auto !important;
+    grid-column: auto !important;
+  }
+}
+
 .bmc-cell {
-  background: rgba(255, 255, 255, 0.02);
-  padding: 12px;
-  font-size: 0.7rem;
+  background: var(--bg-dark);
+  padding: 14px 16px;
+  font-size: 0.75rem;
   color: var(--text-secondary);
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
 .bmc-cell-label {
   font-size: 0.6rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-  margin-bottom: 6px;
+  letter-spacing: 0.08em;
+  color: var(--accent-1);
+  margin-bottom: 8px;
 }
 
 .bmc-cell-highlight {
-  background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(99, 102, 241, 0.15));
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.12), rgba(99, 102, 241, 0.12));
 }
 
 /* Pricing card featured */
 .pricing-featured {
-  background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(99, 102, 241, 0.1));
-  border-color: var(--glass-border-strong);
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.12), rgba(99, 102, 241, 0.12));
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  box-shadow: 0 0 40px rgba(168, 85, 247, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Pricing card wrapper - allows badge overflow while keeping hover gradient */
+.pricing-card-wrapper {
+  position: relative;
+}
+
+.pricing-card-wrapper .pricing-badge {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  white-space: nowrap;
 }
 
 /* Nav glass pill */
@@ -281,4 +308,25 @@
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border);
   border-radius: 9999px;
+}
+
+/* Override shadcn Card in themed pages */
+.theme-wrapper .bg-card {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-color: var(--glass-border-strong);
+}
+
+.theme-wrapper input:not([type="color"]):not([type="file"]),
+.theme-wrapper textarea,
+.theme-wrapper [role="combobox"] {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: var(--glass-border-strong) !important;
+  color: white !important;
+}
+
+.theme-wrapper input::placeholder,
+.theme-wrapper textarea::placeholder {
+  color: var(--text-muted) !important;
 }

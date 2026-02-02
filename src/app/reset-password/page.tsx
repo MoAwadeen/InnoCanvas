@@ -56,29 +56,33 @@ export default function ResetPasswordPage() {
 
   if (isSent) {
     return (
-      <div className="min-h-screen w-full bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col items-center justify-center p-4">
-        <div className="w-full max-w-md">
-          <Card className="border-0 shadow-2xl bg-white/10 backdrop-blur-xl">
+      <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 relative overflow-hidden" style={{ background: '#0d0d1a' }}>
+        <div className="orb orb-1" />
+        <div className="orb orb-2" />
+        <div className="orb orb-3" />
+
+        <div className="w-full max-w-md z-10 fade-in-up">
+          <Card className="border-0 glass-strong shadow-2xl">
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold text-white mb-2">
+              <CardTitle className="text-2xl font-bold gradient-text mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
                 Check Your Email
               </CardTitle>
-              <CardDescription className="text-white/70">
-                We've sent password reset instructions to {email}
+              <CardDescription className="text-[var(--text-secondary)]">
+                We&apos;ve sent password reset instructions to {email}
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center space-y-4">
-              <p className="text-white/60 text-sm">
-                Didn't receive the email? Check your spam folder or try again.
+              <p className="text-[var(--text-muted)] text-sm">
+                Didn&apos;t receive the email? Check your spam folder or try again.
               </p>
               <Button
                 onClick={() => setIsSent(false)}
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                className="w-full btn-primary text-base"
               >
                 Try Again
               </Button>
-              <Link href="/login" className="block text-purple-300 hover:text-purple-200 text-sm">
-                ← Back to Login
+              <Link href="/login" className="block text-[var(--accent-1)] hover:text-[var(--accent-3)] text-sm transition-colors duration-200">
+                &larr; Back to Login
               </Link>
             </CardContent>
           </Card>
@@ -88,26 +92,31 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 relative overflow-hidden" style={{ background: '#0d0d1a' }}>
+      {/* Animated background orbs */}
+      <div className="orb orb-1" />
+      <div className="orb orb-2" />
+      <div className="orb orb-3" />
+
       {/* Logo */}
-      <div className="absolute top-8 left-8">
+      <div className="absolute top-8 left-8 z-10">
         <Logo href="/" />
       </div>
 
-      <div className="w-full max-w-md">
-        <Card className="border-0 shadow-2xl bg-white/10 backdrop-blur-xl">
+      <div className="w-full max-w-md z-10 fade-in-up">
+        <Card className="border-0 glass-strong shadow-2xl">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold text-white mb-2">
+            <CardTitle className="text-2xl font-bold gradient-text mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
               Reset Password
             </CardTitle>
-            <CardDescription className="text-white/70">
+            <CardDescription className="text-[var(--text-secondary)]">
               Enter your email to receive reset instructions
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleResetPassword} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-white/90 text-sm font-medium">
+                <Label htmlFor="email" className="text-[var(--text-secondary)] text-sm font-medium">
                   Email Address
                 </Label>
                 <Input
@@ -117,14 +126,14 @@ export default function ResetPasswordPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-white/40 focus:ring-white/20"
+                  className="bg-white/5 border-[var(--glass-border-strong)] text-white placeholder:text-[var(--text-muted)] focus:border-[var(--accent-1)] focus:ring-[var(--accent-1)]/20"
                   disabled={isLoading}
                 />
               </div>
-              
-              <Button 
-                type="submit" 
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] shadow-lg" 
+
+              <Button
+                type="submit"
+                className="w-full btn-primary text-base"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -139,9 +148,9 @@ export default function ResetPasswordPage() {
             </form>
 
             <div className="mt-6 text-center">
-              <Link 
-                href="/login" 
-                className="flex items-center justify-center gap-2 text-purple-300 hover:text-purple-200 text-sm transition-colors duration-200"
+              <Link
+                href="/login"
+                className="flex items-center justify-center gap-2 text-[var(--accent-1)] hover:text-[var(--accent-3)] text-sm transition-colors duration-200"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back to Login

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Sparkles, ArrowRight } from "lucide-react";
 import { Logo } from "@/components/logo";
+import { ThemeWrapper } from "@/components/theme-wrapper";
 import Link from "next/link";
 
 export default function PaymentSuccessPage() {
@@ -27,17 +28,19 @@ export default function PaymentSuccessPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen w-full bg-background text-foreground flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Processing your payment...</p>
+      <ThemeWrapper>
+        <div className="flex items-center justify-center min-h-screen text-center">
+          <div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--accent-1)] mx-auto mb-4"></div>
+            <p className="text-[var(--text-muted)]">Processing your payment...</p>
+          </div>
         </div>
-      </div>
+      </ThemeWrapper>
     );
   }
 
   return (
-    <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center p-4 md:p-8">
+    <ThemeWrapper className="text-white flex flex-col items-center p-4 md:p-8">
       <header className="w-full max-w-2xl flex justify-center items-center mb-8">
         <Logo />
       </header>
@@ -115,6 +118,6 @@ export default function PaymentSuccessPage() {
           </p>
         </div>
       </main>
-    </div>
+    </ThemeWrapper>
   );
 }

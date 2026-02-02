@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { ThemeWrapper } from '@/components/theme-wrapper';
 
 export const metadata: Metadata = {
   title: 'Terms of Service - InnoCanvas',
@@ -10,20 +11,20 @@ export const metadata: Metadata = {
 
 export default function TermsOfServicePage() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <ThemeWrapper className="text-white">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="mb-8">
           <Link href="/">
-            <Button variant="ghost" className="mb-4">
-              <ArrowLeft className="mr-2 h-4 w-4" />
+            <button className="btn-secondary mb-4 flex items-center gap-2" style={{ padding: '8px 16px', fontSize: '0.875rem' }}>
+              <ArrowLeft className="h-4 w-4" />
               Back to Home
-            </Button>
+            </button>
           </Link>
-          <h1 className="text-4xl font-bold mb-4">Terms of Service</h1>
-          <p className="text-muted-foreground">Last updated: December 19, 2024</p>
+          <h1 className="text-4xl font-bold mb-4 gradient-text" style={{ fontFamily: "'Playfair Display', serif" }}>Terms of Service</h1>
+          <p className="text-[var(--text-muted)]">Last updated: December 19, 2024</p>
         </div>
 
-        <div className="prose prose-invert max-w-none">
+        <div className="prose prose-invert max-w-none text-[var(--text-secondary)]">
           <section className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">1. Acceptance of Terms</h2>
             <p className="mb-4">
@@ -169,6 +170,6 @@ export default function TermsOfServicePage() {
           </section>
         </div>
       </div>
-    </div>
+    </ThemeWrapper>
   );
 }

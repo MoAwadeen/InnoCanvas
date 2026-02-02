@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { useState, useEffect } from "react"
 import { Logo } from "@/components/logo"
+import { ThemeWrapper } from "@/components/theme-wrapper"
 import { getPublicUrl, supabase } from "@/lib/supabase"
 import { SubscriptionManager } from "@/components/subscription-manager"
 
@@ -242,9 +243,11 @@ export default function ProfilePage() {
 
   if (authLoading || !user) {
       return (
-          <div className="min-h-screen w-full flex items-center justify-center bg-background">
-              <Loader className="w-16 h-16 animate-spin text-primary" />
-          </div>
+          <ThemeWrapper>
+              <div className="flex items-center justify-center min-h-screen">
+                  <Loader className="w-16 h-16 animate-spin text-[var(--accent-1)]" />
+              </div>
+          </ThemeWrapper>
       );
   }
   
@@ -252,20 +255,20 @@ export default function ProfilePage() {
   const displayInitial = displayName.charAt(0).toUpperCase();
 
   return (
-    <div className="min-h-screen bg-background">
+    <ThemeWrapper className="text-white">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <Logo />
-          <Button variant="outline" onClick={handleLogout}>
-            <LogOut className="mr-2 h-4 w-4" />
+          <button className="btn-secondary flex items-center gap-2" style={{ padding: '8px 16px', fontSize: '0.875rem' }} onClick={handleLogout}>
+            <LogOut className="h-4 w-4" />
             Logout
-          </Button>
+          </button>
         </div>
 
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-foreground">Profile Settings</h1>
-            <p className="text-muted-foreground">Manage your account and preferences</p>
+            <h1 className="text-3xl font-bold gradient-text" style={{ fontFamily: "'Playfair Display', serif" }}>Profile Settings</h1>
+            <p className="text-[var(--text-secondary)]">Manage your account and preferences</p>
           </div>
 
           <form onSubmit={handleSaveChanges} className="space-y-8">
@@ -485,8 +488,6 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
-    </div>
+    </ThemeWrapper>
   );
 }
-
-    

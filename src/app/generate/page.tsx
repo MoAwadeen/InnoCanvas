@@ -20,6 +20,7 @@ import html2canvas from 'html2canvas';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Logo } from '@/components/logo';
+import { ThemeWrapper } from '@/components/theme-wrapper';
 import Image from 'next/image';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
@@ -619,12 +620,12 @@ Format as a simple list with bullet points.`;
             exit={{ opacity: 0, y: -20 }}
             className="w-full max-w-4xl"
           >
-            <div className="bg-card rounded-2xl p-8 shadow-lg text-center border-border border">
+            <div className="glass-strong rounded-2xl p-8 text-center">
               <div className="mb-8">
                 <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-primary to-primary/60 rounded-full flex items-center justify-center">
                   <Lightbulb className="w-8 h-8 text-white" />
                 </div>
-                <h1 className="text-4xl font-bold mb-4 text-card-foreground">Tell Us About Your Idea</h1>
+                <h1 className="text-4xl font-bold mb-4 gradient-text" style={{ fontFamily: "'Playfair Display', serif" }}>Tell Us About Your Idea</h1>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                   Start with your business name and a detailed description. The more specific you are, the better the AI can understand and generate your Business Model Canvas!
                 </p>
@@ -722,7 +723,7 @@ Include: What problem you're solving, who your target customers are, and how you
             exit={{ opacity: 0, y: -20 }}
             className="w-full max-w-4xl"
           >
-            <div className="bg-card rounded-2xl p-8 shadow-lg border-border border">
+            <div className="glass-strong rounded-2xl p-8">
               {/* Progress Header */}
               <div className="text-center mb-8">
                 <div className="flex items-center justify-center gap-2 mb-4">
@@ -732,7 +733,7 @@ Include: What problem you're solving, who your target customers are, and how you
                     <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-semibold">3</div>
                   </div>
                 </div>
-                <h1 className="text-3xl font-bold mb-2 text-card-foreground">Refine Your Business Vision</h1>
+                <h1 className="text-3xl font-bold mb-2 gradient-text" style={{ fontFamily: "'Playfair Display', serif" }}>Refine Your Business Vision</h1>
                 <p className="text-muted-foreground">
                   Answer these questions to help the AI understand your business better and generate a more accurate canvas.
                 </p>
@@ -1100,14 +1101,16 @@ Include: What problem you're solving, who your target customers are, and how you
 
   if (authLoading && !canvasId) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-background">
-        <Loader className="w-16 h-16 animate-spin text-primary" />
-      </div>
+      <ThemeWrapper>
+        <div className="flex items-center justify-center min-h-screen">
+          <Loader className="w-16 h-16 animate-spin text-[var(--accent-1)]" />
+        </div>
+      </ThemeWrapper>
     );
   }
 
   return (
-    <div className="min-h-screen w-full bg-background text-foreground p-4 md:p-8">
+    <ThemeWrapper className="text-white p-4 md:p-8">
       <header className="flex justify-between items-center mb-8">
         <Logo />
         <div className="flex items-center gap-4">
@@ -1148,7 +1151,7 @@ Include: What problem you're solving, who your target customers are, and how you
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </ThemeWrapper>
   );
 }
 

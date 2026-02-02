@@ -2,6 +2,11 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+    // DEV MODE: Skip all auth checks to allow full access during development
+    if (process.env.NEXT_PUBLIC_DEV_SKIP_AUTH === 'true') {
+        return NextResponse.next({ request: { headers: request.headers } })
+    }
+
     let response = NextResponse.next({
         request: {
             headers: request.headers,

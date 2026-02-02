@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { Navbar } from "@/components/landing/navbar";
 
 function CheckIcon() {
   return (
@@ -33,19 +34,7 @@ export default function LandingPage() {
       <div className="orb orb-3" aria-hidden="true" />
 
       {/* Navigation */}
-      <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 nav-glass px-2 py-2 flex items-center gap-6" role="navigation">
-        <Link href="/" className="px-4 font-bold text-lg" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic" }}>
-          InnoCanvas
-        </Link>
-        <div className="hidden md:flex items-center gap-6">
-          <a href="#how-it-works" className="text-sm" style={{ color: "var(--text-secondary)" }}>How It Works</a>
-          <a href="#features" className="text-sm" style={{ color: "var(--text-secondary)" }}>Features</a>
-          <a href="#pricing" className="text-sm" style={{ color: "var(--text-secondary)" }}>Pricing</a>
-        </div>
-        <Link href="/register" className="btn-primary" style={{ padding: "8px 20px", fontSize: "0.875rem" }}>
-          Start Free
-        </Link>
-      </nav>
+      <Navbar />
 
       <main className="relative z-10">
         {/* Hero Section */}
@@ -232,16 +221,16 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto items-start">
             {/* Free */}
-            <div className="glass card-hover p-8 flex flex-col">
+            <div className="glass-strong card-hover p-8 flex flex-col">
               <h3 className="text-xl font-bold mb-1">Free</h3>
               <p className="text-sm mb-6" style={{ color: "var(--text-muted)" }}>Try it out, no commitment</p>
-              <div className="text-4xl font-bold mb-6">$0</div>
-              <ul className="space-y-3 mb-8 flex-grow">
+              <div className="text-4xl font-bold mb-8">$0</div>
+              <ul className="space-y-4 mb-10 flex-grow">
                 {["1 Business Model Canvas", "AI chat (limited)", "Export as JPG"].map((f) => (
-                  <li key={f} className="flex items-center gap-2 text-sm" style={{ color: "var(--text-secondary)" }}>
-                    <CheckIcon /> {f}
+                  <li key={f} className="flex items-start gap-3 text-sm" style={{ color: "var(--text-secondary)" }}>
+                    <CheckIcon /> <span>{f}</span>
                   </li>
                 ))}
               </ul>
@@ -249,40 +238,42 @@ export default function LandingPage() {
             </div>
 
             {/* Pro - Featured */}
-            <div className="relative glass card-hover pricing-featured p-8 flex flex-col" style={{ border: "1px solid var(--glass-border-strong)" }}>
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 gradient-text text-xs font-bold px-4 py-1 glass" style={{ borderRadius: "9999px" }}>
+            <div className="pricing-card-wrapper">
+              <span className="pricing-badge gradient-text text-xs font-bold px-5 py-1.5 glass-strong" style={{ borderRadius: "9999px" }}>
                 Most Popular
               </span>
-              <h3 className="text-xl font-bold mb-1">Pro</h3>
-              <p className="text-sm mb-6" style={{ color: "var(--text-muted)" }}>For founders building seriously</p>
-              <div className="text-4xl font-bold mb-6">
-                <span className="gradient-text">$8</span>
-                <span className="text-base font-normal" style={{ color: "var(--text-muted)" }}>/month</span>
+              <div className="pricing-featured card-hover p-8 pt-10 flex flex-col" style={{ borderRadius: "24px" }}>
+                <h3 className="text-xl font-bold mb-1">Pro</h3>
+                <p className="text-sm mb-6" style={{ color: "var(--text-muted)" }}>For founders building seriously</p>
+                <div className="text-4xl font-bold mb-8">
+                  <span className="gradient-text">$8</span>
+                  <span className="text-base font-normal" style={{ color: "var(--text-muted)" }}>/month</span>
+                </div>
+                <ul className="space-y-4 mb-10 flex-grow">
+                  {[
+                    "10 Business Model Canvases",
+                    "Unlimited AI chat",
+                    "Export as editable PDF",
+                    "Custom color palettes",
+                    "Priority support",
+                  ].map((f) => (
+                    <li key={f} className="flex items-start gap-3 text-sm" style={{ color: "var(--text-secondary)" }}>
+                      <CheckIcon /> <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/register" className="btn-primary justify-center w-full">Start Pro Free</Link>
               </div>
-              <ul className="space-y-3 mb-8 flex-grow">
-                {[
-                  "10 Business Model Canvases",
-                  "Unlimited AI chat",
-                  "Export as editable PDF",
-                  "Custom color palettes",
-                  "Priority support",
-                ].map((f) => (
-                  <li key={f} className="flex items-center gap-2 text-sm" style={{ color: "var(--text-secondary)" }}>
-                    <CheckIcon /> {f}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/register" className="btn-primary justify-center w-full">Start Pro Free</Link>
             </div>
 
             {/* Premium */}
-            <div className="glass card-hover p-8 flex flex-col">
+            <div className="glass-strong card-hover p-8 flex flex-col">
               <h3 className="text-xl font-bold mb-1">Premium</h3>
               <p className="text-sm mb-6" style={{ color: "var(--text-muted)" }}>Full toolkit for serious builders</p>
-              <div className="text-4xl font-bold mb-6">
+              <div className="text-4xl font-bold mb-8">
                 $15<span className="text-base font-normal" style={{ color: "var(--text-muted)" }}>/month</span>
               </div>
-              <ul className="space-y-3 mb-8 flex-grow">
+              <ul className="space-y-4 mb-10 flex-grow">
                 {[
                   "Unlimited canvases",
                   "Specialized AI consultants",
@@ -290,8 +281,8 @@ export default function LandingPage() {
                   "Custom templates",
                   "24/7 priority support",
                 ].map((f) => (
-                  <li key={f} className="flex items-center gap-2 text-sm" style={{ color: "var(--text-secondary)" }}>
-                    <CheckIcon /> {f}
+                  <li key={f} className="flex items-start gap-3 text-sm" style={{ color: "var(--text-secondary)" }}>
+                    <CheckIcon /> <span>{f}</span>
                   </li>
                 ))}
               </ul>
@@ -302,16 +293,18 @@ export default function LandingPage() {
 
         {/* Final CTA */}
         <section className="py-24 px-4 max-w-4xl mx-auto">
-          <div className="glass-strong p-12 text-center" style={{ borderTop: "2px solid", borderImage: "linear-gradient(90deg, var(--accent-1), var(--accent-2), var(--accent-3)) 1" }}>
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Your business model shouldn&apos;t take weeks to figure out
-            </h2>
-            <p className="mb-8 max-w-xl mx-auto" style={{ color: "var(--text-secondary)" }}>
-              Join founders who&apos;ve gone from scattered ideas to clear business models in minutes.
-            </p>
-            <Link href="/register" className="btn-primary">
-              Generate Your BMC Free <ArrowIcon />
-            </Link>
+          <div className="relative p-[1px] rounded-3xl" style={{ background: "linear-gradient(135deg, var(--accent-1), var(--accent-2), var(--accent-3))" }}>
+            <div className="glass-strong p-12 sm:p-16 text-center" style={{ borderRadius: "23px" }}>
+              <h2 className="text-3xl sm:text-4xl font-bold mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
+                Your business model shouldn&apos;t take weeks to figure out
+              </h2>
+              <p className="mb-10 max-w-xl mx-auto text-lg" style={{ color: "var(--text-secondary)" }}>
+                Join founders who&apos;ve gone from scattered ideas to clear business models in minutes.
+              </p>
+              <Link href="/register" className="btn-primary text-lg">
+                Generate Your BMC Free <ArrowIcon />
+              </Link>
+            </div>
           </div>
         </section>
       </main>
