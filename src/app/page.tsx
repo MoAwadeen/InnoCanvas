@@ -26,7 +26,7 @@ interface Circle {
 
 function Particles({
   quantity = 80,
-  color = "#3b82f6",
+  color = "#77ff00",
 }: {
   quantity?: number;
   color?: string;
@@ -37,7 +37,7 @@ function Particles({
   const mouseRef = useRef({ x: 0, y: 0 });
   const dprRef = useRef(1);
 
-  const rgb = useRef("59, 130, 246");
+  const rgb = useRef("119, 255, 0");
 
   useEffect(() => {
     const hex = color.replace("#", "");
@@ -216,7 +216,7 @@ function CheckIcon() {
     >
       <path
         d="M3 8.5l3.5 3.5L13 4.5"
-        stroke="#3b82f6"
+        stroke="#77ff00"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -269,7 +269,7 @@ function Navigation() {
           </nav>
           <Link
             href="/register"
-            className="text-sm text-zinc-100 bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg duration-200 font-medium"
+            className="text-sm text-black bg-[#77ff00] hover:bg-[#88ff22] px-4 py-2 rounded-lg duration-200 font-medium"
           >
             Start Free
           </Link>
@@ -293,7 +293,7 @@ export default function LandingPage() {
         <section className="flex flex-col items-center justify-center px-6 pt-32 pb-8 mx-auto max-w-7xl md:pt-40 lg:pt-48">
           <div className="animate-fade-in text-center">
             <div className="inline-flex items-center gap-2 px-3 py-1 mb-8 text-xs text-zinc-500 border border-zinc-800 rounded-full">
-              <span className="text-blue-400">✦</span> Built for early-stage
+              <span className="text-[#77ff00]">✦</span> Built for early-stage
               founders
             </div>
           </div>
@@ -311,7 +311,7 @@ export default function LandingPage() {
           <div className="animate-fade-in animate-delay-3 flex flex-col sm:flex-row items-center gap-4 mt-10">
             <Link
               href="/register"
-              className="flex items-center gap-2 px-6 py-3 text-sm font-medium text-white bg-blue-600 hover:bg-blue-500 rounded-lg duration-200"
+              className="flex items-center gap-2 px-6 py-3 text-sm font-medium text-black bg-[#77ff00] hover:bg-[#88ff22] rounded-lg duration-200"
             >
               Generate Your BMC Free <ArrowIcon />
             </Link>
@@ -334,7 +334,7 @@ export default function LandingPage() {
                   <span className="text-sm font-medium text-zinc-100">
                     EcoDelivery &mdash; Business Model
                   </span>
-                  <span className="text-xs text-blue-400 border border-blue-400/20 rounded-full px-2 py-0.5">
+                  <span className="text-xs text-[#77ff00] border border-[#77ff00]/20 rounded-full px-2 py-0.5">
                     AI Generated
                   </span>
                 </div>
@@ -393,7 +393,7 @@ export default function LandingPage() {
           className="px-6 pt-24 mx-auto max-w-7xl md:pt-32"
         >
           <div className="max-w-2xl mx-auto lg:mx-0">
-            <p className="text-sm text-blue-400 font-medium tracking-wide uppercase mb-4">
+            <p className="text-sm text-[#77ff00] font-medium tracking-wide uppercase mb-4">
               How It Works
             </p>
             <h2 className="text-3xl font-bold tracking-tight text-zinc-100 sm:text-4xl">
@@ -421,7 +421,7 @@ export default function LandingPage() {
             ].map((step) => (
               <Card key={step.num}>
                 <article className="relative p-6 md:p-8">
-                  <span className="text-4xl font-bold text-blue-500/20">
+                  <span className="text-4xl font-bold text-[#77ff00]/20">
                     {step.num}
                   </span>
                   <h3 className="mt-4 text-lg font-bold text-zinc-100 group-hover:text-white duration-150">
@@ -442,7 +442,7 @@ export default function LandingPage() {
           className="px-6 pt-24 mx-auto max-w-7xl md:pt-32"
         >
           <div className="max-w-2xl mx-auto lg:mx-0 mb-8">
-            <p className="text-sm text-blue-400 font-medium tracking-wide uppercase mb-4">
+            <p className="text-sm text-[#77ff00] font-medium tracking-wide uppercase mb-4">
               AI Consultant
             </p>
             <h2 className="text-3xl font-bold tracking-tight text-zinc-100 sm:text-4xl">
@@ -489,7 +489,7 @@ export default function LandingPage() {
             <Card>
               <div className="p-5 space-y-4">
                 <div className="flex justify-end">
-                  <div className="bg-blue-600 rounded-xl px-4 py-2.5 text-sm text-white max-w-xs">
+                  <div className="bg-[#77ff00] rounded-xl px-4 py-2.5 text-sm text-black max-w-xs">
                     How should I price my B2B SaaS for small restaurants?
                   </div>
                 </div>
@@ -522,7 +522,7 @@ export default function LandingPage() {
                   </p>
                 </div>
                 <div className="flex justify-end">
-                  <div className="bg-blue-600 rounded-xl px-4 py-2.5 text-sm text-white max-w-xs">
+                  <div className="bg-[#77ff00] rounded-xl px-4 py-2.5 text-sm text-black max-w-xs">
                     What about a usage-based model?
                   </div>
                 </div>
@@ -537,7 +537,7 @@ export default function LandingPage() {
           className="px-6 pt-24 pb-16 mx-auto max-w-7xl md:pt-32"
         >
           <div className="max-w-2xl mx-auto lg:mx-0 mb-4">
-            <p className="text-sm text-blue-400 font-medium tracking-wide uppercase mb-4">
+            <p className="text-sm text-[#77ff00] font-medium tracking-wide uppercase mb-4">
               Pricing
             </p>
             <h2 className="text-3xl font-bold tracking-tight text-zinc-100 sm:text-4xl">
@@ -582,11 +582,11 @@ export default function LandingPage() {
             </Card>
 
             {/* Pro */}
-            <Card className="border-blue-500/30 hover:border-blue-400/50">
+            <Card className="border-[#77ff00]/30 hover:border-[#77ff00]/50">
               <div className="p-6 md:p-8 flex flex-col h-full">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-bold text-zinc-100">Pro</h3>
-                  <span className="text-xs text-blue-400 border border-blue-400/20 rounded-full px-2 py-0.5">
+                  <span className="text-xs text-[#77ff00] border border-[#77ff00]/20 rounded-full px-2 py-0.5">
                     Most Popular
                   </span>
                 </div>
@@ -594,7 +594,7 @@ export default function LandingPage() {
                   For founders building seriously
                 </p>
                 <div className="mt-6">
-                  <span className="text-4xl font-bold text-blue-400">$8</span>
+                  <span className="text-4xl font-bold text-[#77ff00]">$8</span>
                   <span className="text-sm text-zinc-500">/month</span>
                 </div>
                 <ul className="space-y-3 mt-6 flex-grow">
@@ -615,7 +615,7 @@ export default function LandingPage() {
                 </ul>
                 <Link
                   href="/register"
-                  className="mt-8 flex items-center justify-center px-4 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-500 rounded-lg duration-200 w-full"
+                  className="mt-8 flex items-center justify-center px-4 py-2.5 text-sm font-medium text-black bg-[#77ff00] hover:bg-[#88ff22] rounded-lg duration-200 w-full"
                 >
                   Start Pro Free
                 </Link>
@@ -675,7 +675,7 @@ export default function LandingPage() {
               </p>
               <Link
                 href="/register"
-                className="inline-flex items-center gap-2 mt-8 px-6 py-3 text-sm font-medium text-white bg-blue-600 hover:bg-blue-500 rounded-lg duration-200"
+                className="inline-flex items-center gap-2 mt-8 px-6 py-3 text-sm font-medium text-black bg-[#77ff00] hover:bg-[#88ff22] rounded-lg duration-200"
               >
                 Generate Your BMC Free <ArrowIcon />
               </Link>

@@ -10,19 +10,19 @@
     --card-foreground: 240 6% 90%;
     --popover: 240 6% 6%;
     --popover-foreground: 240 6% 90%;
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 88 100% 50%;
+    --primary-foreground: 0 0% 0%;
     --secondary: 240 4% 16%;
     --secondary-foreground: 240 6% 90%;
     --muted: 240 4% 16%;
     --muted-foreground: 240 5% 65%;
-    --accent: 217 91% 60%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 88 100% 50%;
+    --accent-foreground: 0 0% 0%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 0 0% 100%;
     --border: 240 4% 16%;
     --input: 240 4% 16%;
-    --ring: 217 91% 60%;
+    --ring: 88 100% 50%;
     --radius: 0.75rem;
   }
 }
@@ -61,21 +61,16 @@
 /* Glow line */
 .glow-line {
   height: 1px;
-  background: linear-gradient(to right, transparent, #3b82f6, transparent);
+  background: linear-gradient(to right, transparent, #77ff00, transparent);
   opacity: 0.4;
 }
 
-/* Title gradient — white to zinc with blue hint */
+/* Title gradient — white to zinc with green hint */
 .title-gradient {
-  background: linear-gradient(to bottom right, #ffffff, #a1a1aa, #3b82f6);
+  background: linear-gradient(to bottom right, #ffffff, #a1a1aa, #77ff00);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-}
-
-/* Blue accent text */
-.text-accent-blue {
-  color: #3b82f6;
 }
 
 /* BMC Grid */
@@ -107,5 +102,19 @@
 }
 
 .bmc-cell-highlight {
-  background: rgb(59 130 246 / 0.06);
+  background: rgb(119 255 0 / 0.06);
+}
+
+/* Auth pages input styling */
+.auth-input {
+  @apply bg-zinc-900 border-zinc-800 text-zinc-100 rounded-lg;
+}
+
+.auth-input::placeholder {
+  @apply text-zinc-600;
+}
+
+.auth-input:focus {
+  border-color: #77ff00;
+  box-shadow: 0 0 0 1px rgb(119 255 0 / 0.3);
 }

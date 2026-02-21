@@ -5,19 +5,11 @@ import Link from "next/link";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from "@/hooks/useAuth";
-import { Logo } from "@/components/logo";
 import { supabase, handleSupabaseError } from '@/lib/supabase';
 import { User } from '@supabase/supabase-js';
 import { GoogleIcon } from "@/components/ui/google-icon";
@@ -33,29 +25,27 @@ export default function LoginPage() {
   const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    // Redirect if user is already logged in and data is loaded
     if (!authLoading && user) {
         router.push('/my-canvases');
     }
   }, [user, authLoading, router]);
 
-  // Check for email verification message and auth errors
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       const message = urlParams.get('message');
       const error = urlParams.get('error');
-      
+
       if (message === 'check-email') {
         toast({
           title: 'Check Your Email',
           description: 'Please check your email to verify your account before signing in.',
         });
       }
-      
+
       if (error) {
         let errorMessage = 'Authentication failed. Please try again.';
-        
+
         switch (error) {
           case 'auth_failed':
             errorMessage = 'Authentication failed. Please check your credentials and try again.';
@@ -70,7 +60,7 @@ export default function LoginPage() {
             errorMessage = 'An unexpected error occurred. Please try again.';
             break;
         }
-        
+
         toast({
           title: 'Authentication Error',
           description: errorMessage,
@@ -121,16 +111,14 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       console.log('Starting Google OAuth login...');
-      
-      // Check if Supabase is properly configured
-      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || 
+
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL ||
           !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
           process.env.NEXT_PUBLIC_SUPABASE_URL === 'your_supabase_url_here' ||
           process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === 'your_supabase_anon_key_here') {
         throw new Error('Supabase is not properly configured. Please check your environment variables.');
       }
 
-      // Use the correct redirect URL for OAuth
       const redirectUrl = `${window.location.origin}/auth/callback`;
       console.log('Using redirect URL:', redirectUrl);
 
@@ -151,7 +139,7 @@ export default function LoginPage() {
       }
 
       console.log('Google OAuth initiated successfully:', data);
-      
+
     } catch (error: any) {
       console.error('Google login error:', error);
       const errorMessage = handleSupabaseError(error, 'Google login failed');
@@ -167,81 +155,83 @@ export default function LoginPage() {
 
   if (authLoading || user) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-background">
-        <Loader className="w-16 h-16 animate-spin text-primary" />
+      <div className="min-h-screen w-full flex items-center justify-center bg-black">
+        <Loader className="w-8 h-8 animate-spin text-[#77ff00]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen w-full bg-black flex flex-col items-center justify-center p-4">
       <div className="absolute top-8 left-8">
-        <Logo href="/" />
+        <Link href="/" className="text-zinc-100 font-bold tracking-tight text-lg duration-200 hover:text-white">
+          InnoCanvas
+        </Link>
       </div>
-      <Card className="mx-auto max-w-md w-full card-glass bg-bright-cyan/20 backdrop-blur-lg">
-        <CardHeader>
-          <CardTitle className="text-2xl headline-glow">Login</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleLogin}>
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={isLoading}
-                />
-              </div>
-                             <div className="grid gap-2">
-                 <Label htmlFor="password">Password</Label>
-                 <Input
-                   id="password"
-                   type="password"
-                   required
-                   value={password}
-                   onChange={(e) => setPassword(e.target.value)}
-                   disabled={isLoading}
-                 />
-                 <div className="text-right">
-                   <Link 
-                     href="/reset-password" 
-                     className="text-sm text-purple-300 hover:text-purple-200 transition-colors duration-200"
-                   >
-                     Forgot password?
-                   </Link>
-                 </div>
-               </div>
-              <Button 
-                type="submit" 
-                className="w-full btn-glow" 
+
+      <div className="w-full max-w-md">
+        <div className="border border-zinc-800 rounded-xl p-8">
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold text-zinc-100 tracking-tight">Login</h1>
+            <p className="text-sm text-zinc-500 mt-2">Enter your email below to login to your account</p>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm text-zinc-300">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="m@example.com"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader className="mr-2 h-4 w-4 animate-spin" />
-                    Logging in...
-                  </>
-                ) : (
-                  'Login'
-                )}
-              </Button>
+                className="bg-zinc-900 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 focus:border-[#77ff00] focus:ring-[#77ff00]/30"
+              />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-sm text-zinc-300">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+                className="bg-zinc-900 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 focus:border-[#77ff00] focus:ring-[#77ff00]/30"
+              />
+              <div className="text-right">
+                <Link
+                  href="/reset-password"
+                  className="text-sm text-[#77ff00] hover:text-[#88ff22] duration-200"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+            </div>
+            <Button
+              type="submit"
+              className="w-full bg-[#77ff00] hover:bg-[#88ff22] text-black font-semibold rounded-lg duration-200"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <Loader className="mr-2 h-4 w-4 animate-spin" />
+                  Logging in...
+                </>
+              ) : (
+                'Login'
+              )}
+            </Button>
           </form>
-          
+
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
+              <span className="w-full border-t border-zinc-800" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
+              <span className="bg-black px-2 text-zinc-600">
                 Or continue with
               </span>
             </div>
@@ -250,7 +240,7 @@ export default function LoginPage() {
           <Button
             type="button"
             variant="outline"
-            className="w-full"
+            className="w-full border-zinc-800 bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100 duration-200"
             onClick={handleGoogleLogin}
             disabled={isLoading}
           >
@@ -262,14 +252,14 @@ export default function LoginPage() {
             {isLoading ? 'Connecting...' : 'Continue with Google'}
           </Button>
 
-          <div className="mt-4 text-center text-sm">
-            <span className="text-muted-foreground">Don't have an account? </span>
-            <Link href="/register" className="text-primary hover:underline">
+          <div className="mt-6 text-center text-sm">
+            <span className="text-zinc-500">Don&apos;t have an account? </span>
+            <Link href="/register" className="text-[#77ff00] hover:text-[#88ff22] duration-200">
               Sign up
             </Link>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
