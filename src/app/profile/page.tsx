@@ -23,7 +23,6 @@ import { useAuth, UserProfile } from "@/hooks/useAuth"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { useState, useEffect } from "react"
-import { Logo } from "@/components/logo"
 import { getPublicUrl, supabase } from "@/lib/supabase"
 import { SubscriptionManager } from "@/components/subscription-manager"
 
@@ -255,7 +254,7 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
-          <Logo />
+          <Link href="/" className="text-zinc-100 font-bold tracking-tight text-lg hover:text-white duration-200">InnoCanvas</Link>
           <Button variant="outline" onClick={handleLogout}>
             <LogOut className="mr-2 h-4 w-4" />
             Logout

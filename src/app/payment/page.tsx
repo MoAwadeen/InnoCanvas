@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/card"
 import { CheckCircle, CreditCard, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils";
-import { Logo } from "@/components/logo";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 
@@ -112,7 +111,7 @@ export default function PaymentPage() {
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center p-4 md:p-8">
         <header className="w-full max-w-5xl flex justify-between items-center mb-8">
-            <Logo />
+            <Link href="/" className="text-zinc-100 font-bold tracking-tight text-lg hover:text-white duration-200">InnoCanvas</Link>
             <Link href="/my-canvases">
                 <Button variant="secondary">Back to My Canvases</Button>
             </Link>
@@ -183,7 +182,7 @@ export default function PaymentPage() {
                             <Button 
                                 onClick={handlePayment}
                                 disabled={loading}
-                                className="w-full text-lg py-6 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90"
+                                className="w-full text-lg py-6 bg-[#77ff00] hover:bg-[#88ff22] text-black font-semibold"
                             >
                                 {loading ? (
                                     <>

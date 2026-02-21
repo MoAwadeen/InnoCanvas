@@ -19,7 +19,6 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Logo } from '@/components/logo';
 import Image from 'next/image';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
@@ -38,7 +37,7 @@ type BMCBlock = {
 };
 
 const initialColors = {
-  primary: '#30A2FF',
+  primary: '#77ff00',
   card: '#1c2333',
   background: '#0a0f1c',
   foreground: '#ffffff',
@@ -179,7 +178,7 @@ function BmcGeneratorPageClient() {
   });
 
   const [colors, setColors] = useState({
-    primary: '#30A2FF',
+    primary: '#77ff00',
     card: '#1c2333',
     background: '#0a0f1c',
     foreground: '#ffffff'
@@ -1109,7 +1108,7 @@ Include: What problem you're solving, who your target customers are, and how you
   return (
     <div className="min-h-screen w-full bg-background text-foreground p-4 md:p-8">
       <header className="flex justify-between items-center mb-8">
-        <Logo />
+        <Link href="/" className="text-zinc-100 font-bold tracking-tight text-lg hover:text-white duration-200">InnoCanvas</Link>
         <div className="flex items-center gap-4">
           <Link href="/my-canvases">
             <Button variant="secondary">Back to My Canvases</Button>

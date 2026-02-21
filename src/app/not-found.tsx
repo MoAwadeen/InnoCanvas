@@ -1,14 +1,13 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Home, ArrowLeft, Search } from 'lucide-react';
-import { Logo } from '@/components/logo';
 
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4">
       <div className="text-center max-w-md mx-auto">
         <div className="mb-8">
-          <Logo href="/" />
+          <Link href="/" className="text-zinc-100 font-bold tracking-tight text-lg hover:text-white duration-200">InnoCanvas</Link>
         </div>
         
         <div className="mb-8">

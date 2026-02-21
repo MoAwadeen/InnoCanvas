@@ -90,8 +90,8 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        gradient: "text-primary-foreground bg-gradient-to-r from-[#d1241b] to-[#f19070] hover:from-[#b91c1c] hover:to-[#dc2626]",
-        animated: "bg-gradient-to-r from-[#d1241b] to-[#f19070] text-white hover:from-[#b91c1c] hover:to-[#dc2626]",
+        gradient: "bg-[#77ff00] text-black hover:bg-[#88ff22]",
+        animated: "bg-[#77ff00] text-black hover:bg-[#88ff22]",
         "gradient-stroke": "btn-gradient-stroke",
       },
       size: {

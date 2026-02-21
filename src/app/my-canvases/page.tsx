@@ -27,7 +27,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState, useCallback } from 'react';
-import { Logo } from '@/components/logo';
 import { supabase, handleSupabaseError } from '@/lib/supabase';
 import { Greeting } from '@/components/greeting';
 
@@ -169,7 +168,7 @@ export default function MyCanvasesPage() {
   return (
     <div className="min-h-screen w-full bg-background text-foreground p-4 md:p-8">
       <header className="flex justify-between items-center mb-12">
-        <Logo href="/my-canvases" />
+        <Link href="/my-canvases" className="text-zinc-100 font-bold tracking-tight text-lg hover:text-white duration-200">InnoCanvas</Link>
         <div className="flex items-center gap-4">
            <Link href="/profile">
             <Button variant="secondary"><User className="mr-2"/>Profile</Button>
@@ -217,7 +216,7 @@ export default function MyCanvasesPage() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
                 <Card
-                  className="card-glass flex flex-col h-full bg-secondary/30 p-0"
+                  className="flex flex-col h-full border border-zinc-800 bg-zinc-900/50 p-0"
                 >
                   <CardHeader className="p-6">
                     <CardTitle className="line-clamp-2 text-card-foreground">{canvas.title}</CardTitle>
@@ -225,7 +224,7 @@ export default function MyCanvasesPage() {
                   <CardContent className="flex-grow p-6 pt-0">
                     <p className="text-muted-foreground text-sm line-clamp-3 h-16">{canvas.preview}</p>
                   </CardContent>
-                  <CardFooter className="flex justify-between items-center mt-auto p-6 pt-4 border-t border-white/10">
+                  <CardFooter className="flex justify-between items-center mt-auto p-6 pt-4 border-t border-zinc-800">
                     <p className="text-sm text-muted-foreground">{canvas.date}</p>
                     <div className="flex gap-2">
                         <Link href={`/generate?canvasId=${canvas.id}`}>

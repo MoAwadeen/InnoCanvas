@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Sparkles, ArrowRight } from "lucide-react";
-import { Logo } from "@/components/logo";
 import Link from "next/link";
 
 export default function PaymentSuccessPage() {
@@ -39,7 +38,7 @@ export default function PaymentSuccessPage() {
   return (
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center p-4 md:p-8">
       <header className="w-full max-w-2xl flex justify-center items-center mb-8">
-        <Logo />
+        <Link href="/" className="text-zinc-100 font-bold tracking-tight text-lg hover:text-white duration-200">InnoCanvas</Link>
       </header>
       
       <main className="w-full max-w-2xl flex-grow">
@@ -60,7 +59,7 @@ export default function PaymentSuccessPage() {
           </CardHeader>
           
           <CardContent className="space-y-6">
-            <div className="bg-gradient-to-r from-primary/10 to-purple-500/10 rounded-lg p-6">
+            <div className="bg-zinc-900/60 border border-zinc-800 rounded-lg p-6">
               <h3 className="text-xl font-semibold mb-3">What's Next?</h3>
               <div className="space-y-3 text-left">
                 <div className="flex items-center gap-3">
@@ -92,7 +91,7 @@ export default function PaymentSuccessPage() {
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Button 
                 onClick={handleContinue}
-                className="flex-1 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90"
+                className="flex-1 bg-[#77ff00] hover:bg-[#88ff22] text-black font-semibold"
               >
                 Start Creating
                 <ArrowRight className="ml-2 w-4 h-4" />
