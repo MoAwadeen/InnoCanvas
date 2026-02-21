@@ -1,250 +1,152 @@
-# InnoCanvas - AI-Powered Business Model Canvas Generator
+# InnoCanvas
 
-[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
-[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-green?style=for-the-badge&logo=supabase)](https://supabase.com/)
-[![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o--mini-purple?style=for-the-badge&logo=openai)](https://openai.com/)
-[![LemonSqueezy](https://img.shields.io/badge/LemonSqueezy-Payment-orange?style=for-the-badge)](https://lemonsqueezy.com/)
+AI-powered Business Model Canvas generator for entrepreneurs, students, and business professionals.
 
-**InnoCanvas** is a modern, AI-powered Business Model Canvas (BMC) generator that helps entrepreneurs, students, and business professionals create comprehensive business models using artificial intelligence.
+**Live**: [innocanvas.site](https://innocanvas.site)
 
-🌐 **Live Demo**: [innocanvas.site](https://innocanvas.site)
+## Tech Stack
 
-## ✨ Features
+- **Framework**: Next.js 15.3.6 (App Router, Turbopack)
+- **Language**: TypeScript 5
+- **Database**: Supabase (PostgreSQL + Auth + Storage)
+- **AI**: OpenAI GPT-4o-mini
+- **Payments**: LemonSqueezy (international) + Paymob (Egypt)
+- **UI**: Tailwind CSS, shadcn/ui, Radix UI, Framer Motion
+- **Forms**: React Hook Form + Zod
 
-### 🤖 AI-Powered Generation
-- **OpenAI GPT-4o-mini** integration for intelligent BMC generation
-- Multi-step refinement process with guided questions
-- Context-aware conversations throughout generation
-- Professional, business-ready output
+## Features
 
-### 👤 User Management
-- **Supabase Auth** with Google OAuth integration
-- Complete user profile system
-- Role-based access control (user/admin)
-- Email verification and secure authentication
+### BMC Generator (`/generate`)
+- Multi-step questionnaire (value proposition, customer segments, channels, revenue, key resources, business model type)
+- GPT-4o-mini generates all 9 BMC sections
+- Canvas preview with live editing
+- Export to PDF/PNG
+- Save to database
 
-### 💳 Subscription System
-- **LemonSqueezy** payment processing
-- Three-tier system: Free, Pro, Premium
-- Feature gating based on subscription plan
-- Subscription management interface
+### Authentication
+- Email/password registration with email verification
+- Google OAuth
+- Password reset flow
+- Profile management (name, company, job title, industry, avatar upload)
 
-### 👨‍💼 Admin Dashboard
-- Comprehensive admin panel with full management capabilities
-- User management (view, search, filter, promote/demote)
-- Subscription monitoring and revenue tracking
-- Canvas moderation and system settings
-- Activity logging for audit purposes
+### Subscription Plans
+| Plan | Price | Canvases | Features |
+|------|-------|----------|----------|
+| Free | $0 | 3 | Basic export |
+| Pro | $8/mo | 10 | PDF download, color customization, AI consultant, priority support |
+| Premium | $15/mo | Unlimited | All Pro + custom branding, no watermarks, team collaboration, API access |
 
-### 🎨 Visual Customization
-- Logo upload functionality
-- Color customization (primary, card, background)
-- Professional branding options
-- High-quality PDF export with custom branding
+### Admin Dashboard (`/admin/*`)
+- **Overview**: User count, canvases, revenue, active subscriptions
+- **Users**: List, search, change plans, ban/unban
+- **Canvases**: View/moderate/delete any canvas
+- **Subscriptions**: Revenue analytics, churn analysis
+- **Settings**: Maintenance mode, registration toggle, AI model selection, plan limits
 
-### 📊 Canvas Management
-- Save and load canvases
-- Public/private sharing options
-- Tagging and organization
-- Export capabilities
+## Project Structure
 
-## 🚀 Quick Start
+```
+src/
+├── app/
+│   ├── (auth)
+│   │   ├── login/
+│   │   ├── register/
+│   │   ├── reset-password/
+│   │   └── verify-email/
+│   ├── admin/
+│   │   ├── page.tsx          # Dashboard overview
+│   │   ├── users/
+│   │   ├── canvases/
+│   │   ├── subscriptions/
+│   │   └── settings/
+│   ├── api/
+│   │   ├── ai/               # AI generation endpoint
+│   │   ├── lemonsqueezy/     # Checkout + webhooks
+│   │   └── paymob/           # Checkout + webhooks
+│   ├── generate/             # BMC generator
+│   ├── my-canvases/          # User's saved canvases
+│   ├── payment/              # Plan selection + success
+│   ├── profile/              # User settings
+│   ├── privacy/
+│   ├── terms/
+│   └── page.tsx              # Landing page
+├── components/
+│   ├── ui/                   # shadcn/ui components
+│   ├── greeting.tsx
+│   └── subscription-manager.tsx
+├── hooks/
+│   ├── useAuth.tsx           # Auth state + plan limits
+│   └── useAI.ts              # AI service wrapper
+├── lib/
+│   ├── supabase.ts           # Supabase client
+│   ├── openai.ts             # OpenAI wrapper
+│   ├── lemonsqueezy.ts       # Payment service
+│   ├── paymob.ts             # Payment service (Egypt)
+│   └── plan-service.ts       # Plan limit enforcement
+└── ai/
+    └── services/ai-service.ts
+```
 
-### Prerequisites
-- Node.js 18+
-- npm or yarn
-- Supabase account
-- OpenAI API key
-- LemonSqueezy account (for payment features)
+## API Routes
 
-### Installation
+| Route | Method | Purpose |
+|-------|--------|---------|
+| `/api/ai` | POST | AI actions: `generateBusinessModelCanvas`, `chatWithContext`, `improveContent`, `generateInsights` |
+| `/api/lemonsqueezy/checkout` | POST | Create checkout session |
+| `/api/lemonsqueezy/webhook` | POST | Handle subscription lifecycle |
+| `/api/paymob/checkout` | POST | Create Paymob subscription |
+| `/api/paymob/webhook` | POST | Handle Paymob events |
+
+## Database Tables
+
+- **profiles**: User data, plan, subscription info, preferences
+- **canvases**: Saved BMC data per user
+- **plan_limits**: Feature flags per plan
+
+## Environment Variables
 
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd InnoCanvas
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
 
-# Install dependencies
+# OpenAI
+OPENAI_API_KEY=
+
+# LemonSqueezy
+LEMON_SQUEEZY_API_KEY=
+LEMON_SQUEEZY_WEBHOOK_SECRET=
+NEXT_PUBLIC_LEMON_SQUEEZY_STORE_ID=
+NEXT_PUBLIC_LEMON_SQUEEZY_PRO_VARIANT_ID=
+NEXT_PUBLIC_LEMON_SQUEEZY_PREMIUM_VARIANT_ID=
+
+# Paymob (optional)
+PAYMOB_API_KEY=
+PAYMOB_PUBLIC_KEY=
+PAYMOB_SECRET_KEY=
+PAYMOB_INTEGRATION_ID=
+```
+
+## Development
+
+```bash
 npm install
-
-# Set up environment variables
-cp env.example .env.local
-# Edit .env.local with your configuration
-
-# Run the development server
-npm run dev
+npm run dev     # http://localhost:9002
+npm run build   # Production build
 ```
 
-The application will be available at `http://localhost:9002`
+## Deployment
 
-### Environment Variables
+Hosted on Vercel. Push to `main` triggers automatic deployment.
 
-Create a `.env.local` file with the following variables:
+## Design System
 
-```bash
-# Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url_here
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
-
-# OpenAI Configuration
-OPENAI_API_KEY=your_openai_api_key_here
-
-# LemonSqueezy Configuration
-LEMON_SQUEEZY_API_KEY=your_lemonsqueezy_api_key_here
-LEMON_SQUEEZY_WEBHOOK_SECRET=your_lemonsqueezy_webhook_secret_here
-NEXT_PUBLIC_LEMON_SQUEEZY_STORE_ID=your_store_id_here
-NEXT_PUBLIC_LEMON_SQUEEZY_PRO_VARIANT_ID=your_pro_variant_id_here
-NEXT_PUBLIC_LEMON_SQUEEZY_PREMIUM_VARIANT_ID=your_premium_variant_id_here
-
-# Next.js Configuration
-NEXTAUTH_SECRET=your_nextauth_secret_here
-NEXTAUTH_URL=http://localhost:9002
-```
-
-### Database Setup
-
-1. Create a Supabase project
-2. Run the database setup script:
-   ```sql
-   -- Copy and paste the content of complete-database-enhancement-safe.sql
-   -- into your Supabase SQL Editor and run it
-   ```
-3. Configure authentication settings in Supabase
-4. Set up storage buckets for file uploads
-
-## 🏗️ Tech Stack
-
-### Frontend
-- **Next.js 15** (App Router)
-- **TypeScript**
-- **React 18**
-- **Tailwind CSS**
-- **shadcn/ui** + **Radix UI**
-- **Framer Motion**
-- **React Hook Form** + **Zod**
-
-### Backend
-- **Supabase** (PostgreSQL)
-- **Supabase Auth**
-- **Supabase Storage**
-- **Next.js API Routes**
-- **OpenAI GPT-4o-mini**
-- **LemonSqueezy**
-
-### Development
-- **Turbopack** (build tool)
-- **ESLint**
-- **TypeScript**
-- **npm**
-
-## 📁 Project Structure
-
-```
-InnoCanvas/
-├── src/
-│   ├── app/                    # Next.js App Router
-│   │   ├── admin/              # Admin dashboard
-│   │   ├── api/                # API routes
-│   │   ├── auth/               # Authentication
-│   │   ├── generate/           # BMC generation
-│   │   ├── login/register/     # Auth pages
-│   │   ├── profile/            # User profile
-│   │   ├── my-canvases/        # Canvas management
-│   │   ├── payment/            # Payment handling
-│   │   └── privacy/terms/      # Legal pages
-│   ├── components/             # Reusable components
-│   ├── hooks/                  # Custom React hooks
-│   ├── lib/                    # Utility libraries
-│   └── ai/                     # AI service integration
-├── public/                     # Static assets
-├── complete-database-enhancement-safe.sql
-├── LEMON_SQUEEZY_SETUP.md
-├── ADMIN_SETUP_GUIDE.md
-└── LAUNCH_CHECKLIST.md
-```
-
-## 🔌 API Endpoints
-
-### AI Routes
-- `POST /api/ai/generate` - Generate BMC
-- `POST /api/ai/refine` - Refine BMC
-- `POST /api/ai/improve` - Improve BMC
-
-### LemonSqueezy Routes
-- `POST /api/lemonsqueezy/checkout` - Create checkout
-- `POST /api/lemonsqueezy/webhook` - Handle webhooks
-- `GET /api/lemonsqueezy/subscription/[id]` - Get subscription
-- `POST /api/lemonsqueezy/subscription/[id]/cancel` - Cancel subscription
-- `POST /api/lemonsqueezy/subscription/[id]/resume` - Resume subscription
-
-## 🗄️ Database Schema
-
-### Core Tables
-- **`profiles`** - User profiles with subscription data
-- **`canvases`** - User-created BMC canvases
-- **`plan_limits`** - Feature definitions for each plan
-- **`subscriptions`** - Payment subscription data
-- **`system_settings`** - Platform configuration
-- **`admin_activity_log`** - Admin action audit trail
-
-## 🚀 Deployment
-
-### Vercel Deployment
-1. Connect your repository to Vercel
-2. Configure environment variables in Vercel dashboard
-3. Deploy automatically on push to main branch
-
-### Domain Configuration
-- **Domain**: innocanvas.site (registered for 1 year)
-- **SSL**: Automatic SSL certificate
-- **DNS**: Configure with Vercel
-
-## 📚 Documentation
-
-- **[Complete Project Documentation](PROJECT_DOCUMENTATION.md)** - Comprehensive project overview
-- **[LemonSqueezy Setup Guide](LEMON_SQUEEZY_SETUP.md)** - Payment system configuration
-- **[Admin Dashboard Guide](ADMIN_SETUP_GUIDE.md)** - Admin panel setup
-- **[Launch Checklist](LAUNCH_CHECKLIST.md)** - Pre-launch preparation
-- **[AI Agent Prompt](AI_AGENT_PROMPT.md)** - For AI assistants working on the project
-
-## 🎯 Current Status
-
-### ✅ **Production Ready**
-- Complete BMC generator with AI integration
-- Full authentication system
-- Payment processing with LemonSqueezy
-- Comprehensive admin dashboard
-- Modern, responsive UI/UX
-- Database with all necessary tables and functions
-- SEO optimization and legal pages
-
-### 🔄 **Pending Setup**
-- LemonSqueezy account activation
-- Production environment variables configuration
-- Google Analytics 4 integration
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
-
-For support and questions:
-- Check the [documentation](PROJECT_DOCUMENTATION.md) first
-- Create an issue for bugs
-- Submit feature requests
+- **Background**: `#000000` (pure black)
+- **Accent**: `#77ff00` (chartreuse green)
+- **Text**: zinc-100 > zinc-400 > zinc-500
+- **Borders**: zinc-800
+- **Font**: Inter
 
 ---
 
-**InnoCanvas** - Turn your ideas into business models with AI-powered precision.
-
-*Built with ❤️ using Next.js, Supabase, OpenAI, and LemonSqueezy*
+Built with Next.js, Supabase, OpenAI, and LemonSqueezy.
