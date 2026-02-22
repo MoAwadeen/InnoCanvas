@@ -2,6 +2,7 @@
 
 import React, { useRef, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
 import {
   motion,
   useMotionTemplate,
@@ -229,6 +230,7 @@ function CheckIcon() {
 
 function Navigation() {
   const [scrolled, setScrolled] = useState(false);
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -239,8 +241,8 @@ function Navigation() {
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 duration-200 border-b ${scrolled
-          ? "bg-zinc-900/500 border-zinc-800 backdrop-blur-lg"
-          : "bg-transparent border-transparent"
+        ? "bg-zinc-900/500 border-zinc-800 backdrop-blur-lg"
+        : "bg-transparent border-transparent"
         }`}
     >
       <div className="flex items-center justify-between px-6 py-4 mx-auto max-w-7xl">
@@ -266,12 +268,29 @@ function Navigation() {
               </a>
             ))}
           </nav>
-          <Link
-            href="/register"
-            className="text-sm text-black bg-[#77ff00] hover:bg-[#88ff22] px-4 py-2 rounded-lg duration-200 font-medium"
-          >
-            Start Free
-          </Link>
+          {!loading && user ? (
+            <div className="flex items-center gap-3">
+              <Link
+                href="/generate"
+                className="text-sm text-black bg-[#77ff00] hover:bg-[#88ff22] px-4 py-2 rounded-lg duration-200 font-medium"
+              >
+                Generate Canvas
+              </Link>
+              <Link
+                href="/my-canvases"
+                className="text-sm text-zinc-300 border border-zinc-800 hover:border-zinc-600 px-4 py-2 rounded-lg duration-200 font-medium"
+              >
+                Dashboard
+              </Link>
+            </div>
+          ) : (
+            <Link
+              href="/register"
+              className="text-sm text-black bg-[#77ff00] hover:bg-[#88ff22] px-4 py-2 rounded-lg duration-200 font-medium"
+            >
+              Start Free
+            </Link>
+          )}
         </div>
       </div>
     </header>
@@ -281,6 +300,9 @@ function Navigation() {
 /* ─── Main Page ─── */
 
 export default function LandingPage() {
+  const { user, loading } = useAuth();
+  const authHref = !loading && user ? "/generate" : "/register";
+
   return (
     <div className="relative min-h-screen">
       <Particles quantity={80} color="#ffffff" />
@@ -309,10 +331,10 @@ export default function LandingPage() {
 
           <div className="animate-fade-in animate-delay-3 flex flex-col sm:flex-row items-center gap-4 mt-10">
             <Link
-              href="/register"
+              href={authHref}
               className="flex items-center gap-2 px-6 py-3 text-sm font-medium text-black bg-[#77ff00] hover:bg-[#88ff22] rounded-lg duration-200"
             >
-              Generate Your BMC Free <ArrowIcon />
+              {!loading && user ? "Go to Generator" : "Generate Your BMC Free"} <ArrowIcon />
             </Link>
             <a
               href="#how-it-works"
@@ -673,10 +695,10 @@ export default function LandingPage() {
                 business models in minutes.
               </p>
               <Link
-                href="/register"
+                href={authHref}
                 className="inline-flex items-center gap-2 mt-8 px-6 py-3 text-sm font-medium text-black bg-[#77ff00] hover:bg-[#88ff22] rounded-lg duration-200"
               >
-                Generate Your BMC Free <ArrowIcon />
+                {!loading && user ? "Go to Generator" : "Generate Your BMC Free"} <ArrowIcon />
               </Link>
             </div>
           </Card>
