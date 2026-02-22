@@ -26,7 +26,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!authLoading && user) {
-        router.push('/my-canvases');
+      router.push('/my-canvases');
     }
   }, [user, authLoading, router]);
 
@@ -72,10 +72,10 @@ export default function LoginPage() {
 
   const handleSuccessfulLogin = async (loggedInUser: User) => {
     toast({
-        title: 'Login Successful!',
-        description: `Welcome ${loggedInUser.email || 'back'}!`,
+      title: 'Login Successful!',
+      description: `Welcome ${loggedInUser.email || 'back'}!`,
     });
-    router.push('/');
+    router.push('/my-canvases');
   }
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -113,9 +113,9 @@ export default function LoginPage() {
       console.log('Starting Google OAuth login...');
 
       if (!process.env.NEXT_PUBLIC_SUPABASE_URL ||
-          !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-          process.env.NEXT_PUBLIC_SUPABASE_URL === 'your_supabase_url_here' ||
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === 'your_supabase_anon_key_here') {
+        !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+        process.env.NEXT_PUBLIC_SUPABASE_URL === 'your_supabase_url_here' ||
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === 'your_supabase_anon_key_here') {
         throw new Error('Supabase is not properly configured. Please check your environment variables.');
       }
 

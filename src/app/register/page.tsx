@@ -87,15 +87,15 @@ export default function RegisterPage() {
       if (!signUpData.user) throw new Error("User not created.");
 
       try {
-        await supabase.from('profiles').insert({
+        await supabase.from('profiles').upsert({
           id: signUpData.user.id, full_name: values.fullName, age: values.age,
           gender: values.gender, country: values.country, use_case: values.useCase,
           email: values.email, plan: 'free',
           preferences: { theme: 'dark', notifications: true, newsletter: true, language: 'en' },
           statistics: { canvases_created: 0, last_login: null, total_exports: 0, favorite_colors: [] },
-        });
+        }, { onConflict: 'id' });
       } catch (profileError) {
-        console.warn('Manual profile creation failed, but user was created:', profileError);
+        console.warn('Profile upsert failed, but user was created:', profileError);
       }
 
       if (signUpData.user && !signUpData.user.email_confirmed_at) {
