@@ -1,168 +1,156 @@
--- Unified Supabase Schema for InnoCanvas
--- Run this script in your Supabase Dashboard > SQL Editor
+-- WARNING: This schema is for reference/context only.
+-- It reflects the actual live Supabase database as of Feb 2026.
+-- Do NOT run this file blindly — it may conflict with existing data.
 
--- 1. Profiles Table & Extensions
-create table if not exists public.profiles (
-  id uuid references auth.users on delete cascade not null primary key,
-  email text,
-  full_name text,
+-- =====================================================
+-- 1. Profiles Table
+-- =====================================================
+CREATE TABLE IF NOT EXISTS public.profiles (
+  id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  full_name text NOT NULL DEFAULT '',
+  email text NOT NULL DEFAULT '',
+  age integer,
+  gender text NOT NULL DEFAULT 'prefer-not-to-say',
+  country text NOT NULL DEFAULT 'Unknown',
+  use_case text NOT NULL DEFAULT 'other',
   avatar_url text,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  role text default 'user' check (role in ('user', 'admin')),
-  subscription_status text default 'inactive' check (subscription_status in ('active', 'inactive', 'cancelled', 'paused')),
-  subscription_plan text default 'free' check (subscription_plan in ('free', 'pro', 'premium')),
-  subscription_id text,
-  subscription_end_date timestamp with time zone,
-  subscription_start_date timestamp with time zone,
   phone text,
   company text,
   job_title text,
   industry text,
   experience_level text,
-  plan text default 'free',
+  plan text NOT NULL DEFAULT 'free' CHECK (plan IN ('free', 'pro', 'premium')),
   plan_expiry timestamp with time zone,
-  payment_provider text default 'lemonsqueezy',
-  preferences jsonb default '{"theme": "dark", "notifications": true, "newsletter": true, "language": "en"}',
-  statistics jsonb default '{"canvases_created": 0, "last_login": null, "total_exports": 0, "favorite_colors": []}'
+  subscription_id text,
+  subscription_status text NOT NULL DEFAULT 'free' CHECK (subscription_status IN ('free', 'active', 'cancelled', 'past_due', 'trialing')),
+  subscription_plan text,
+  current_period_start timestamp with time zone,
+  current_period_end timestamp with time zone,
+  payment_provider text NOT NULL DEFAULT 'none',
+  role text NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
+  is_verified boolean NOT NULL DEFAULT false,
+  last_sign_in_at timestamp with time zone,
+  preferences jsonb NOT NULL DEFAULT '{"theme": "dark", "language": "en", "newsletter": true, "notifications": true}',
+  statistics jsonb NOT NULL DEFAULT '{"last_login": null, "total_exports": 0, "favorite_colors": [], "canvases_created": 0}',
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  updated_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT profiles_pkey PRIMARY KEY (id)
 );
 
+-- =====================================================
 -- 2. Canvases Table
-create table if not exists public.canvases (
-  id uuid default gen_random_uuid() primary key,
-  user_id uuid references public.profiles(id) on delete cascade not null,
-  title text,
-  data jsonb default '{}'::jsonb,
-  is_public boolean default false,
-  tags text[],
-  view_count integer default 0,
-  export_count integer default 0,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+-- =====================================================
+CREATE TABLE IF NOT EXISTS public.canvases (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  title text NOT NULL DEFAULT 'Untitled Canvas',
+  description text,
+  business_description text,
+  content jsonb,
+  canvas_data jsonb,
+  form_data jsonb,
+  logo_url text,
+  colors jsonb DEFAULT '{"card": "#1a1a2e", "primary": "#a855f7", "background": "#0d0d1a", "foreground": "#ffffff"}',
+  remove_watermark boolean NOT NULL DEFAULT false,
+  is_public boolean NOT NULL DEFAULT false,
+  view_count integer NOT NULL DEFAULT 0,
+  export_count integer NOT NULL DEFAULT 0,
+  tags text[] DEFAULT '{}',
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  updated_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT canvases_pkey PRIMARY KEY (id)
 );
 
+-- =====================================================
 -- 3. Plan Limits Table
-create table if not exists public.plan_limits (
-  plan text primary key,
-  max_canvases integer not null,
-  pdf_download boolean default false,
-  color_customization boolean default false,
-  ai_consultant boolean default false,
-  templates_access boolean default false,
-  remove_watermark boolean default false,
-  priority_support boolean default false,
-  api_access boolean default false,
-  team_collaboration boolean default false,
-  created_at timestamp with time zone default now(),
-  updated_at timestamp with time zone default now()
+-- =====================================================
+CREATE TABLE IF NOT EXISTS public.plan_limits (
+  plan text NOT NULL CHECK (plan IN ('free', 'pro', 'premium')),
+  max_canvases integer NOT NULL DEFAULT 1,
+  pdf_download boolean NOT NULL DEFAULT false,
+  color_customization boolean NOT NULL DEFAULT false,
+  ai_consultant boolean NOT NULL DEFAULT false,
+  templates_access boolean NOT NULL DEFAULT false,
+  remove_watermark boolean NOT NULL DEFAULT false,
+  priority_support boolean NOT NULL DEFAULT false,
+  api_access boolean NOT NULL DEFAULT false,
+  team_collaboration boolean NOT NULL DEFAULT false,
+  CONSTRAINT plan_limits_pkey PRIMARY KEY (plan)
 );
 
-insert into public.plan_limits (plan, max_canvases, pdf_download, color_customization, ai_consultant, templates_access, remove_watermark, priority_support, api_access, team_collaboration) values
+INSERT INTO public.plan_limits (plan, max_canvases, pdf_download, color_customization, ai_consultant, templates_access, remove_watermark, priority_support, api_access, team_collaboration) VALUES
   ('free', 1, false, false, false, false, false, false, false, false),
   ('pro', 10, true, true, true, true, false, false, false, false),
   ('premium', -1, true, true, true, true, true, true, true, true)
-on conflict (plan) do nothing;
+ON CONFLICT (plan) DO NOTHING;
 
--- 4. Subscriptions Table
-create table if not exists public.subscriptions (
-  id uuid default gen_random_uuid() primary key,
-  user_id uuid references auth.users(id) on delete cascade not null,
-  subscription_id text unique not null,
-  plan text not null references public.plan_limits(plan),
-  status text not null default 'active',
-  current_period_start timestamp with time zone,
-  current_period_end timestamp with time zone,
-  cancel_at_period_end boolean default false,
-  payment_provider text default 'lemonsqueezy',
-  metadata jsonb,
-  created_at timestamp with time zone default now(),
-  updated_at timestamp with time zone default now()
-);
+-- =====================================================
+-- 4. RLS Policies
+-- =====================================================
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.canvases ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.plan_limits ENABLE ROW LEVEL SECURITY;
 
--- 5. System Settings Table
-create table if not exists public.system_settings (
-    id uuid default gen_random_uuid() primary key,
-    key text unique not null,
-    value jsonb not null,
-    description text,
-    created_at timestamp with time zone default now(),
-    updated_at timestamp with time zone default now()
-);
+-- Profiles: users can read/write their own profile
+CREATE POLICY "Users can view own profile" ON public.profiles FOR SELECT USING (auth.uid() = id);
+CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
+CREATE POLICY "Users can insert own profile" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
 
-insert into public.system_settings (key, value, description) values
-    ('maintenance_mode', 'false', 'Enable/disable maintenance mode'),
-    ('registration_enabled', 'true', 'Enable/disable user registration'),
-    ('max_canvases_free', '1', 'Maximum canvases for free users'),
-    ('max_canvases_pro', '10', 'Maximum canvases for pro users'),
-    ('max_canvases_premium', '-1', 'Maximum canvases for premium users (unlimited)'),
-    ('ai_generation_enabled', 'true', 'Enable/disable AI canvas generation'),
-    ('pdf_export_enabled', 'true', 'Enable/disable PDF export'),
-    ('logo_upload_enabled', 'true', 'Enable/disable logo upload'),
-    ('color_customization_enabled', 'true', 'Enable/disable color customization'),
-    ('public_canvases_enabled', 'true', 'Enable/disable public canvas sharing')
-on conflict (key) do nothing;
+-- Admin: admins can read all profiles
+CREATE POLICY "Admins can view all profiles" ON public.profiles FOR SELECT
+  USING (
+    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
+  );
 
--- 6. Admin Activity Log Table
-create table if not exists public.admin_activity_log (
-    id uuid default gen_random_uuid() primary key,
-    admin_user_id uuid references auth.users(id) on delete cascade not null,
-    action text not null,
-    target_type text not null,
-    target_id uuid,
-    details jsonb,
-    created_at timestamp with time zone default now()
-);
+-- Canvases: users can CRUD their own canvases
+CREATE POLICY "Users can view own canvases" ON public.canvases FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own canvases" ON public.canvases FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own canvases" ON public.canvases FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own canvases" ON public.canvases FOR DELETE USING (auth.uid() = user_id);
 
--- 7. RLS Policies
-alter table public.profiles enable row level security;
-alter table public.canvases enable row level security;
-alter table public.subscriptions enable row level security;
-alter table public.plan_limits enable row level security;
-alter table public.system_settings enable row level security;
-alter table public.admin_activity_log enable row level security;
+-- Canvases: anyone can view public canvases (for sharing)
+CREATE POLICY "Anyone can view public canvases" ON public.canvases FOR SELECT USING (is_public = true);
 
--- Profiles Policies
-create policy "Users can view own profile" on public.profiles for select using (auth.uid() = id);
-create policy "Users can update own profile" on public.profiles for update using (auth.uid() = id);
-create policy "Users can insert own profile" on public.profiles for insert with check (auth.uid() = id);
+-- Plan limits: anyone can read (needed for plan checks)
+CREATE POLICY "Anyone can read plan limits" ON public.plan_limits FOR SELECT USING (true);
 
--- Canvases Policies
-create policy "Users can view own canvases" on public.canvases for select using (auth.uid() = user_id);
-create policy "Users can insert own canvases" on public.canvases for insert with check (auth.uid() = user_id);
-create policy "Users can update own canvases" on public.canvases for update using (auth.uid() = user_id);
-create policy "Users can delete own canvases" on public.canvases for delete using (auth.uid() = user_id);
-create policy "Public can view public canvases" on public.canvases for select using (is_public = true);
-
--- 8. Functions & Triggers
+-- =====================================================
+-- 5. Functions & Triggers
+-- =====================================================
 
 -- Auto-create profile on signup
-create or replace function public.handle_new_user()
-returns trigger as $$
-begin
-  insert into public.profiles (id, email, full_name, avatar_url)
-  values (new.id, new.email, new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'avatar_url');
-  return new;
-end;
-$$ language plpgsql security definer;
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS trigger AS $$
+BEGIN
+  INSERT INTO public.profiles (id, email, full_name, avatar_url)
+  VALUES (
+    NEW.id,
+    NEW.email,
+    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', split_part(NEW.email, '@', 1)),
+    COALESCE(NEW.raw_user_meta_data->>'avatar_url', NEW.raw_user_meta_data->>'picture')
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
-drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute procedure public.handle_new_user();
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
 
 -- Auto-promote first user to admin
-create or replace function public.auto_promote_first_user()
-returns trigger as $$
-begin
-    if (select count(*) from public.profiles) = 1 then
-        new.role = 'admin';
-    end if;
-    return new;
-end;
-$$ language plpgsql;
+CREATE OR REPLACE FUNCTION public.auto_promote_first_user()
+RETURNS trigger AS $$
+BEGIN
+    IF (SELECT count(*) FROM public.profiles) = 1 THEN
+        NEW.role = 'admin';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
-drop trigger if exists trigger_auto_promote_first_user on public.profiles;
-create trigger trigger_auto_promote_first_user
-    before insert on public.profiles
-    for each row
-    execute function public.auto_promote_first_user();
+DROP TRIGGER IF EXISTS trigger_auto_promote_first_user ON public.profiles;
+CREATE TRIGGER trigger_auto_promote_first_user
+    BEFORE INSERT ON public.profiles
+    FOR EACH ROW
+    EXECUTE FUNCTION public.auto_promote_first_user();

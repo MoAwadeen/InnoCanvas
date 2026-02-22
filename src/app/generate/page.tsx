@@ -201,9 +201,9 @@ function BmcGeneratorPageClient() {
             .eq('id', canvasId)
             .eq('user_id', user.id)
             .single();
-          
+
           if (error) throw error;
-          
+
           if (data) {
             const canvasData = data.canvas_data;
             const formData = data.form_data;
@@ -239,7 +239,7 @@ function BmcGeneratorPageClient() {
   const handleInputChange = (key: string, value: string) => {
     setFormData((prev: any) => ({ ...prev, [key]: value }));
   };
-  
+
   const handleBmcDataChange = (key: string, value: string) => {
     if (bmcData) {
       setBmcData((prev: any) => prev ? { ...prev, [key]: value } : null);
@@ -247,7 +247,7 @@ function BmcGeneratorPageClient() {
   };
 
   const handleColorChange = (colorKey: string, value: string) => {
-    setColors((prev: any) => ({...prev, [colorKey]: value}));
+    setColors((prev: any) => ({ ...prev, [colorKey]: value }));
   };
 
   const handleGenerateCanvas = async (regenerate = false) => {
@@ -267,11 +267,11 @@ function BmcGeneratorPageClient() {
       const planLimits = await getPlanLimits();
       const currentPlan = userData?.plan || 'free';
       const maxCanvases = planLimits?.max_canvases || 1;
-      
-      toast({ 
-        title: 'Plan Limit Reached', 
-        description: `You've reached the limit of ${maxCanvases} canvas${maxCanvases > 1 ? 'es' : ''} for your ${currentPlan} plan. Please upgrade to create more canvases.`, 
-        variant: 'destructive' 
+
+      toast({
+        title: 'Plan Limit Reached',
+        description: `You've reached the limit of ${maxCanvases} canvas${maxCanvases > 1 ? 'es' : ''} for your ${currentPlan} plan. Please upgrade to create more canvases.`,
+        variant: 'destructive'
       });
       return;
     }
@@ -302,7 +302,7 @@ function BmcGeneratorPageClient() {
       }
 
       const data = await response.json();
-      
+
       if (data.error) {
         throw new Error(data.error);
       }
@@ -338,7 +338,7 @@ function BmcGeneratorPageClient() {
       setBmcData(completeBmcData);
       setStep(3);
       setCanvasGenerated(true);
-      
+
       toast({
         title: 'Canvas Generated!',
         description: 'Your Business Model Canvas has been created successfully.',
@@ -360,7 +360,7 @@ function BmcGeneratorPageClient() {
       toast({ title: 'Error', description: 'Cannot save. Missing data or user not logged in.', variant: 'destructive' });
       return;
     }
-    
+
     setIsLoading(true);
     try {
       const logoPath = logoUrl ? logoUrl.split('/').pop() : null;
@@ -386,9 +386,9 @@ function BmcGeneratorPageClient() {
           .from('canvases')
           .update({ ...canvasDataToSave, updated_at: new Date().toISOString() })
           .eq('id', canvasId);
-        
+
         if (error) throw error;
-        
+
         toast({
           title: 'Canvas Updated!',
           description: 'Your changes have been saved successfully.',
@@ -399,9 +399,9 @@ function BmcGeneratorPageClient() {
           .insert({ ...canvasDataToSave })
           .select('id')
           .single();
-        
+
         if (error) throw error;
-        
+
         // Update user statistics
         try {
           const { data: currentProfile, error: fetchError } = await supabase
@@ -409,19 +409,19 @@ function BmcGeneratorPageClient() {
             .select('statistics')
             .eq('id', user.id)
             .single();
-          
+
           if (!fetchError && currentProfile) {
             const currentStats = currentProfile.statistics || {};
             const updatedStats = {
               ...currentStats,
               canvases_created: (currentStats.canvases_created || 0) + 1
             };
-            
+
             const { error: statsError } = await supabase
               .from('profiles')
               .update({ statistics: updatedStats })
               .eq('id', user.id);
-            
+
             if (statsError) {
               console.warn('Failed to update user statistics:', statsError);
             }
@@ -429,8 +429,8 @@ function BmcGeneratorPageClient() {
         } catch (statsError) {
           console.warn('Error updating user statistics:', statsError);
         }
-        
-        router.replace(`/generate?canvasId=${data.id}`, { scroll: false }); 
+
+        router.replace(`/generate?canvasId=${data.id}`, { scroll: false });
         toast({
           title: 'Canvas Saved!',
           description: 'Your masterpiece is safe in "My Canvases".',
@@ -445,16 +445,16 @@ function BmcGeneratorPageClient() {
       setIsLoading(false);
     }
   };
-  
+
   const handleExport = () => {
     if (styledCanvasRef.current) {
       toast({
         title: 'Exporting PDF...',
         description: 'Please wait while we generate your PDF.',
       });
-      
+
       const element = styledCanvasRef.current;
-      
+
       html2canvas(element, {
         useCORS: true,
         backgroundColor: null,
@@ -463,7 +463,7 @@ function BmcGeneratorPageClient() {
         const imgData = canvas.toDataURL('image/png', 1.0);
         const imgWidth = canvas.width;
         const imgHeight = canvas.height;
-        
+
         const pdf = new jsPDF({
           orientation: imgWidth > imgHeight ? 'landscape' : 'portrait',
           unit: 'px',
@@ -494,11 +494,45 @@ function BmcGeneratorPageClient() {
     }
   };
 
-  const handleShare = () => {
-    toast({
-      title: 'Coming Soon!',
-      description: 'Public link sharing is currently under development.',
-    });
+  const handleShare = async () => {
+    if (!canvasId || !user) {
+      toast({
+        title: 'Save First',
+        description: 'Please save your canvas before sharing.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // Mark canvas as public
+      const { error } = await supabase
+        .from('canvases')
+        .update({ is_public: true })
+        .eq('id', canvasId)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      // Copy public link to clipboard
+      const shareUrl = `${window.location.origin}/canvas/${canvasId}`;
+      await navigator.clipboard.writeText(shareUrl);
+
+      toast({
+        title: 'Link Copied!',
+        description: 'Public link has been copied to your clipboard.',
+      });
+    } catch (error: any) {
+      console.error('Error sharing canvas:', error);
+      toast({
+        title: 'Share Failed',
+        description: 'Failed to share canvas. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGetSuggestions = async () => {
@@ -527,7 +561,7 @@ Format as JSON with keys: improvements, risks, recommendations, positioning`;
 
       const suggestions = await AIService.generateInsights(JSON.stringify(bmcData));
       setSuggestions(suggestions);
-      
+
       toast({
         title: 'Suggestions Generated',
         description: 'AI has analyzed your canvas and provided recommendations.',
@@ -571,7 +605,7 @@ Format as a simple list with bullet points.`;
     if (event.target.files && event.target.files[0] && user) {
       const file = event.target.files[0];
       if (file.size > 2 * 1024 * 1024) {
-        toast({ title: "File too large", description: "Logo should be less than 2MB.", variant: "destructive"});
+        toast({ title: "File too large", description: "Logo should be less than 2MB.", variant: "destructive" });
         return;
       }
 
@@ -591,7 +625,7 @@ Format as a simple list with bullet points.`;
         toast({ title: 'Logo uploaded!', description: 'Remember to save your canvas.' });
       } catch (error: any) {
         const errorMessage = handleSupabaseError(error, 'Failed to upload logo');
-        toast({ title: "Upload failed", description: errorMessage, variant: "destructive"});
+        toast({ title: "Upload failed", description: errorMessage, variant: "destructive" });
       } finally {
         setIsLoading(false); // Added setIsLoading(false) here
       }
@@ -607,7 +641,7 @@ Format as a simple list with bullet points.`;
         </div>
       );
     }
-    
+
     switch (step) {
       case 1:
         return (
@@ -705,7 +739,7 @@ Include: What problem you're solving, who your target customers are, and how you
                   'Please add more details to continue'
                 ) : (
                   <>
-                    Continue to Refinement <ChevronRight className="ml-2"/>
+                    Continue to Refinement <ChevronRight className="ml-2" />
                   </>
                 )}
               </Button>
@@ -746,10 +780,10 @@ Include: What problem you're solving, who your target customers are, and how you
                   </span>
                 </div>
                 <div className="w-full bg-muted rounded-full h-2">
-                  <div 
+                  <div
                     className="bg-primary h-2 rounded-full transition-all duration-300"
-                    style={{ 
-                      width: `${(refinementQuestions.filter(q => formData[q.key]).length / refinementQuestions.length) * 100}%` 
+                    style={{
+                      width: `${(refinementQuestions.filter(q => formData[q.key]).length / refinementQuestions.length) * 100}%`
                     }}
                   />
                 </div>
@@ -758,16 +792,15 @@ Include: What problem you're solving, who your target customers are, and how you
               {/* Questions */}
               <div className="space-y-8">
                 {refinementQuestions.map((q, index) => (
-                  <motion.div 
+                  <motion.div
                     key={q.key}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className={`p-6 rounded-xl border-2 transition-all duration-200 ${
-                      formData[q.key] 
-                        ? 'border-primary bg-primary/5' 
-                        : 'border-border bg-background/50'
-                    }`}
+                    className={`p-6 rounded-xl border-2 transition-all duration-200 ${formData[q.key]
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border bg-background/50'
+                      }`}
                   >
                     <div className="flex items-start gap-4">
                       <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-semibold">
@@ -789,18 +822,18 @@ Include: What problem you're solving, who your target customers are, and how you
                             {q.description}
                           </p>
                         )}
-                        
+
                         {q.type === 'radio' ? (
-                    <RadioGroup
-                      onValueChange={(value) => handleInputChange(q.key, value)}
-                      value={formData[q.key]}
+                          <RadioGroup
+                            onValueChange={(value) => handleInputChange(q.key, value)}
+                            value={formData[q.key]}
                             className="grid grid-cols-1 sm:grid-cols-2 gap-4"
                           >
                             {q.options?.map((opt) => (
                               <div key={opt.value} className="flex items-center">
-                                <RadioGroupItem value={opt.value} id={`${q.key}-${opt.value}`} className="peer sr-only"/>
-                                <Label 
-                                  htmlFor={`${q.key}-${opt.value}`} 
+                                <RadioGroupItem value={opt.value} id={`${q.key}-${opt.value}`} className="peer sr-only" />
+                                <Label
+                                  htmlFor={`${q.key}-${opt.value}`}
                                   className="flex flex-col items-start justify-between rounded-lg border-2 border-border bg-background p-4 hover:bg-accent/10 text-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 [&:has([data-state=checked])]:border-primary w-full cursor-pointer transition-all duration-200"
                                 >
                                   <div className="flex items-center gap-3 mb-2">
@@ -808,10 +841,10 @@ Include: What problem you're solving, who your target customers are, and how you
                                     <span className="font-medium">{opt.value}</span>
                                   </div>
                                   <p className="text-xs text-muted-foreground ml-11">{opt.description}</p>
-                          </Label>
-                        </div>
-                      ))}
-                    </RadioGroup>
+                                </Label>
+                              </div>
+                            ))}
+                          </RadioGroup>
                         ) : q.type === 'text' ? (
                           <div className="space-y-2">
                             <Textarea
@@ -839,12 +872,12 @@ Include: What problem you're solving, who your target customers are, and how you
                 <Button variant="outline" onClick={() => setStep(1)}>
                   <ArrowLeft className="mr-2" /> Back
                 </Button>
-                
+
                 <div className="flex items-center gap-4">
                   <div className="text-sm text-muted-foreground">
                     {refinementQuestions.filter(q => formData[q.key]).length} of {refinementQuestions.length} questions answered
                   </div>
-                  
+
                   {/* Summary Button */}
                   {refinementQuestions.filter(q => formData[q.key]).length === refinementQuestions.length && (
                     <Button
@@ -862,11 +895,11 @@ Include: What problem you're solving, who your target customers are, and how you
                       Review Answers
                     </Button>
                   )}
-                  
-                <Button
-                  size="lg"
-                  variant="gradient"
-                  onClick={() => handleGenerateCanvas(false)}
+
+                  <Button
+                    size="lg"
+                    variant="gradient"
+                    onClick={() => handleGenerateCanvas(false)}
                     disabled={isLoading || refinementQuestions.filter(q => formData[q.key]).length < refinementQuestions.length}
                   >
                     {isLoading ? (
@@ -875,10 +908,10 @@ Include: What problem you're solving, who your target customers are, and how you
                       </>
                     ) : (
                       <>
-                        Generate Canvas <ChevronRight className="ml-2"/>
+                        Generate Canvas <ChevronRight className="ml-2" />
                       </>
                     )}
-                </Button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -905,7 +938,7 @@ Include: What problem you're solving, who your target customers are, and how you
                   <div className="card-glass p-4 rounded-2xl flex flex-wrap items-center justify-center gap-x-6 gap-y-4">
                     <div className="flex items-center gap-2">
                       <Button variant="gradient" size="sm" onClick={() => handleGenerateCanvas(true)} disabled={isLoading}>
-                        {isLoading ? <Loader className="mr-2 animate-spin" /> : <RefreshCw className="mr-2" />} 
+                        {isLoading ? <Loader className="mr-2 animate-spin" /> : <RefreshCw className="mr-2" />}
                         Regenerate
                       </Button>
                       <Button variant="secondary" size="sm" onClick={() => setIsEditing(!isEditing)}>
@@ -917,13 +950,13 @@ Include: What problem you're solving, who your target customers are, and how you
                     </div>
 
                     <Separator orientation='vertical' className='h-8' />
-                    
+
                     <div className='flex items-center gap-3'>
                       <Label className="font-semibold text-base text-foreground">Logo</Label>
-                      <input type="file" id="logo-upload" className="hidden" accept="image/png, image/jpeg, image/svg+xml" onChange={handleLogoUpload} disabled={isLoading}/>
+                      <input type="file" id="logo-upload" className="hidden" accept="image/png, image/jpeg, image/svg+xml" onChange={handleLogoUpload} disabled={isLoading} />
                       <Button asChild variant="outline" size="sm">
                         <label htmlFor="logo-upload" className="cursor-pointer">
-                          {isLoading ? <Loader className="mr-2 animate-spin" /> : <Upload className="mr-2"/>}
+                          {isLoading ? <Loader className="mr-2 animate-spin" /> : <Upload className="mr-2" />}
                           Upload
                         </label>
                       </Button>
@@ -931,7 +964,7 @@ Include: What problem you're solving, who your target customers are, and how you
                         <Label htmlFor="remove-watermark" className="font-semibold text-base flex items-center gap-1">
                           <Gem size={16} className="text-vivid-pink" />
                         </Label>
-                        <Switch id="remove-watermark" checked={removeWatermark} onCheckedChange={setRemoveWatermark}/>
+                        <Switch id="remove-watermark" checked={removeWatermark} onCheckedChange={setRemoveWatermark} />
                         <Badge variant="outline" className='border-vivid-pink text-vivid-pink'>PRO</Badge>
                       </div>
                     </div>
@@ -939,13 +972,13 @@ Include: What problem you're solving, who your target customers are, and how you
                     <Separator orientation='vertical' className='h-8' />
 
                     <div className='flex items-center gap-3'>
-                      <h2 className="font-semibold text-base flex items-center gap-2"><Palette className='text-primary'/> Theme</h2>
+                      <h2 className="font-semibold text-base flex items-center gap-2"><Palette className='text-primary' /> Theme</h2>
                       <div className="flex items-center gap-2">
                         {Object.keys(colors).map(key => (
                           <div key={key} className="flex items-center gap-2">
                             <Label className="capitalize text-xs text-foreground">{key}</Label>
-                            <input 
-                              type="color" 
+                            <input
+                              type="color"
                               value={colors[key as keyof typeof colors]}
                               onChange={e => handleColorChange(key, e.target.value)}
                               className="w-6 h-6 rounded border-none cursor-pointer bg-transparent"
@@ -956,15 +989,19 @@ Include: What problem you're solving, who your target customers are, and how you
                     </div>
 
                     <Separator orientation='vertical' className='h-8' />
-                    
+
                     <div className="flex items-center gap-2">
                       <Button variant='secondary' size="sm" onClick={handleGetSuggestions} disabled={isGettingSuggestions}>
-                        {isGettingSuggestions ? <Loader className="mr-2 animate-spin"/> : <Sparkles className="mr-2" />}
+                        {isGettingSuggestions ? <Loader className="mr-2 animate-spin" /> : <Sparkles className="mr-2" />}
                         Get Feedback
                       </Button>
                       <Button variant="secondary" size="sm" onClick={handleExport} disabled={isLoading}>
                         <Download className="mr-2" />
                         Export
+                      </Button>
+                      <Button variant="secondary" size="sm" onClick={handleShare} disabled={isLoading || !canvasId}>
+                        <Share2 className="mr-2" />
+                        Share
                       </Button>
                     </div>
                   </div>
@@ -977,7 +1014,7 @@ Include: What problem you're solving, who your target customers are, and how you
                         <>
                           {/* Large diagonal watermark covering the entire canvas */}
                           <div className="absolute inset-0 z-30 pointer-events-none">
-                            <div 
+                            <div
                               className="absolute inset-0 opacity-5"
                               style={{
                                 background: `repeating-linear-gradient(
@@ -991,7 +1028,7 @@ Include: What problem you're solving, who your target customers are, and how you
                             />
                             {/* Large centered watermark */}
                             <div className="absolute inset-0 flex items-center justify-center">
-                              <div 
+                              <div
                                 className="text-center opacity-10"
                                 style={{ color: colors.primary }}
                               >
@@ -1004,7 +1041,7 @@ Include: What problem you're solving, who your target customers are, and how you
                             </div>
                             {/* Corner watermark */}
                             <div className="absolute bottom-4 right-4 z-40">
-                              <div 
+                              <div
                                 className="text-center opacity-20"
                                 style={{ color: colors.primary }}
                               >
@@ -1014,7 +1051,7 @@ Include: What problem you're solving, who your target customers are, and how you
                             </div>
                             {/* Top-left watermark */}
                             <div className="absolute top-4 left-4 z-40">
-                              <div 
+                              <div
                                 className="text-center opacity-15"
                                 style={{ color: colors.primary }}
                               >
@@ -1024,7 +1061,7 @@ Include: What problem you're solving, who your target customers are, and how you
                             </div>
                             {/* Bottom-left watermark */}
                             <div className="absolute bottom-4 left-4 z-40">
-                              <div 
+                              <div
                                 className="text-center opacity-15"
                                 style={{ color: colors.primary }}
                               >
@@ -1038,7 +1075,7 @@ Include: What problem you're solving, who your target customers are, and how you
                             </div>
                             {/* Top-right watermark */}
                             <div className="absolute top-4 right-4 z-40">
-                              <div 
+                              <div
                                 className="text-center opacity-15"
                                 style={{ color: colors.primary }}
                               >
@@ -1051,7 +1088,7 @@ Include: What problem you're solving, who your target customers are, and how you
                       )}
 
                       <div className="flex justify-between items-start mb-4 relative z-10">
-                        <h2 className="text-3xl font-bold" style={{color: colors.primary}}>Business Model Canvas</h2>
+                        <h2 className="text-3xl font-bold" style={{ color: colors.primary }}>Business Model Canvas</h2>
                         {logoUrl && <div className="relative w-40 h-20"><Image src={logoUrl} alt="Logo" layout="fill" objectFit="contain" /></div>}
                       </div>
 
@@ -1160,7 +1197,7 @@ const StyledBmcBlock = ({ title, content, icon, isEditing, onChange, colors }: {
       </div>
       <div className="mt-2 flex-grow overflow-hidden">
         {isEditing ? (
-          <Textarea 
+          <Textarea
             value={content}
             onChange={onChange}
             className="w-full h-full bg-transparent border-0 text-xs md:text-sm p-0 focus-visible:ring-0 resize-none"

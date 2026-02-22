@@ -23,7 +23,14 @@ export interface UserProfile {
   plan: 'free' | 'pro' | 'premium';
   plan_expiry: string | null;
   subscription_id: string | null;
+  subscription_status: 'free' | 'active' | 'cancelled' | 'past_due' | 'trialing';
+  subscription_plan: string | null;
+  current_period_start: string | null;
+  current_period_end: string | null;
   payment_provider: string;
+  role: 'user' | 'admin';
+  is_verified: boolean;
+  last_sign_in_at: string | null;
   preferences: {
     theme: string;
     notifications: boolean;
@@ -53,7 +60,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   userData: null,
   loading: true,
-  fetchUserProfile: async () => {},
+  fetchUserProfile: async () => { },
   checkPlanLimit: async () => false,
   getPlanLimits: async () => null,
 });
@@ -65,54 +72,54 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchUserProfile = useCallback(async () => {
     if (user) {
-        try {
-          const { data, error } = await supabase
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (error && error.code !== 'PGRST116') { // PGRST116: "object not found"
+          console.error("Error fetching user data:", error);
+          setUserData(null);
+        } else if (data) {
+          setUserData(data);
+        } else {
+          // Profile doesn't exist, create it
+          const { data: newProfile, error: createError } = await supabase
             .from('profiles')
-            .select('*')
-            .eq('id', user.id)
+            .insert({
+              id: user.id,
+              full_name: user.user_metadata.full_name ||
+                user.user_metadata.name ||
+                user.email?.split('@')[0] ||
+                'Unknown',
+              avatar_url: user.user_metadata.avatar_url ||
+                user.user_metadata.picture ||
+                null,
+              email: user.email || '',
+              age: null,
+              gender: 'prefer-not-to-say',
+              country: 'Unknown',
+              use_case: 'other',
+              plan: 'free',
+              preferences: { theme: 'dark', notifications: true, newsletter: true, language: 'en' },
+              statistics: { canvases_created: 0, last_login: null, total_exports: 0, favorite_colors: [] }
+            })
+            .select()
             .single();
 
-          if (error && error.code !== 'PGRST116') { // PGRST116: "object not found"
-            console.error("Error fetching user data:", error);
+          if (createError) {
+            console.error("Error creating profile:", createError);
             setUserData(null);
-          } else if (data) {
-            setUserData(data);
           } else {
-            // Profile doesn't exist, create it
-            const { data: newProfile, error: createError } = await supabase
-              .from('profiles')
-              .insert({
-                id: user.id,
-                full_name: user.user_metadata.full_name || 
-                           user.user_metadata.name || 
-                           user.email?.split('@')[0] || 
-                           'Unknown',
-                avatar_url: user.user_metadata.avatar_url || 
-                           user.user_metadata.picture || 
-                           null,
-                email: user.email || '',
-                age: null,
-                gender: 'prefer-not-to-say',
-                country: 'Unknown',
-                use_case: 'other',
-                plan: 'free',
-                preferences: { theme: 'dark', notifications: true, newsletter: true, language: 'en' },
-                statistics: { canvases_created: 0, last_login: null, total_exports: 0, favorite_colors: [] }
-              })
-              .select()
-              .single();
-
-            if (createError) {
-              console.error("Error creating profile:", createError);
-              setUserData(null);
-            } else {
-              setUserData(newProfile);
-            }
+            setUserData(newProfile);
           }
-        } catch (error) {
-          console.error("Error in fetchUserProfile:", error);
-          setUserData(null);
         }
+      } catch (error) {
+        console.error("Error in fetchUserProfile:", error);
+        setUserData(null);
+      }
     }
   }, [user]);
 
@@ -141,14 +148,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       }
     };
-    
+
     fetchSession();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, session?.user?.email);
       const currentUser = session?.user || null;
       setUser(currentUser);
-      
+
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         if (currentUser) {
           // Fetch user profile when user signs in
@@ -171,13 +178,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 .from('profiles')
                 .insert({
                   id: currentUser.id,
-                  full_name: currentUser.user_metadata.full_name || 
-                             currentUser.user_metadata.name || 
-                             currentUser.email?.split('@')[0] || 
-                             'Unknown',
-                  avatar_url: currentUser.user_metadata.avatar_url || 
-                             currentUser.user_metadata.picture || 
-                             null,
+                  full_name: currentUser.user_metadata.full_name ||
+                    currentUser.user_metadata.name ||
+                    currentUser.email?.split('@')[0] ||
+                    'Unknown',
+                  avatar_url: currentUser.user_metadata.avatar_url ||
+                    currentUser.user_metadata.picture ||
+                    null,
                   email: currentUser.email || '',
                   age: null,
                   gender: 'prefer-not-to-say',
@@ -206,7 +213,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       } else if (event === 'USER_UPDATED') {
         if (currentUser) {
-          setUserData(prev => prev ? {...prev, full_name: currentUser.user_metadata.full_name} : null);
+          setUserData(prev => prev ? { ...prev, full_name: currentUser.user_metadata.full_name } : null);
         }
       } else if (event === 'SIGNED_OUT') {
         setUserData(null);
@@ -241,11 +248,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (context === undefined) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };
 
-    

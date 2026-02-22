@@ -1,8 +1,69 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateText } from '@/lib/openai';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+
+// Simple in-memory rate limiter (per user, 20 requests per minute)
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT = 20;
+const RATE_WINDOW_MS = 60 * 1000;
+
+function checkRateLimit(userId: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(userId);
+
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(userId, { count: 1, resetAt: now + RATE_WINDOW_MS });
+    return true;
+  }
+
+  if (entry.count >= RATE_LIMIT) {
+    return false;
+  }
+
+  entry.count++;
+  return true;
+}
 
 export async function POST(request: NextRequest) {
   try {
+    // Authenticate the request
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value;
+          },
+          set(name: string, value: string, options: any) {
+            cookieStore.set({ name, value, ...options });
+          },
+          remove(name: string, options: any) {
+            cookieStore.delete({ name, ...options });
+          },
+        },
+      }
+    );
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+
+    // Check rate limit
+    if (!checkRateLimit(user.id)) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please wait a moment before trying again.' },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const { action, ...params } = body;
 
@@ -24,7 +85,7 @@ export async function POST(request: NextRequest) {
           result = `AI haiku about ${params.topic}:\nWhispers in the wind\nNature's gentle melody\nPeaceful harmony`;
         }
         break;
-      
+
       case 'generateBusinessModelCanvas':
         if (!params.businessIdea) {
           return NextResponse.json(
@@ -32,7 +93,7 @@ export async function POST(request: NextRequest) {
             { status: 400 }
           );
         }
-        
+
         // Professional & Consistent BMC Generation Prompt
         const enhancedPrompt = `You are an award-winning startup strategist, business consultant, and venture capitalist with 20+ years of experience helping founders create successful business models.  
 You are tasked with generating a **professional, high-quality, and standardized Business Model Canvas** for the given business idea.
@@ -98,10 +159,10 @@ ${params.mcqAnswers ? JSON.stringify(params.mcqAnswers, null, 2) : 'None provide
 Use these answers to create a more accurate and tailored Business Model Canvas.
 
 Now, generate the final **Business Model Canvas** with the above standards applied. Output in JSON format with keys: customer_segments, value_propositions, channels, customer_relationships, revenue_streams, key_activities, key_resources, key_partnerships, cost_structure.`;
-        
+
         try {
           result = await generateText(enhancedPrompt);
-          
+
           // Try to parse the response as JSON
           if (result) {
             try {
@@ -112,7 +173,7 @@ Now, generate the final **Business Model Canvas** with the above standards appli
               } else if (cleanedResult.startsWith('```')) {
                 cleanedResult = cleanedResult.replace(/^```\s*/, '').replace(/\s*```$/, '');
               }
-              
+
               const parsed = JSON.parse(cleanedResult);
               // Convert snake_case keys to camelCase for consistency
               result = {
@@ -171,7 +232,7 @@ Now, generate the final **Business Model Canvas** with the above standards appli
           };
         }
         break;
-      
+
       case 'generateCreativeContent':
         if (!params.prompt) {
           return NextResponse.json(
@@ -189,7 +250,7 @@ Now, generate the final **Business Model Canvas** with the above standards appli
           result = `Creative content about: ${params.prompt}\n\nThis is a sample creative content generated for demonstration purposes.`;
         }
         break;
-      
+
       case 'improveContent':
         if (!params.content) {
           return NextResponse.json(
@@ -209,7 +270,7 @@ Now, generate the final **Business Model Canvas** with the above standards appli
           result = `Improved content:\n${params.content}\n\nThis content has been enhanced for better clarity and impact.`;
         }
         break;
-      
+
       case 'generateInsights':
         if (!params.content) {
           return NextResponse.json(
@@ -229,7 +290,7 @@ Now, generate the final **Business Model Canvas** with the above standards appli
           result = `Key insights for the provided content:\n\n1. Consider expanding on the main points\n2. Add more specific examples\n3. Include actionable recommendations\n4. Focus on user benefits`;
         }
         break;
-      
+
       case 'chatWithContext':
         if (!params.messages) {
           return NextResponse.json(
@@ -248,7 +309,7 @@ Now, generate the final **Business Model Canvas** with the above standards appli
           result = "I understand your message. How can I help you further?";
         }
         break;
-      
+
       default:
         return NextResponse.json(
           { error: 'Invalid action' },

@@ -7,13 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Users, 
-  CreditCard, 
-  FileText, 
-  TrendingUp, 
-  Settings, 
-  Shield, 
+import {
+  Users,
+  CreditCard,
+  FileText,
+  TrendingUp,
+  Settings,
+  Shield,
   Activity,
   DollarSign,
   Calendar,
@@ -79,7 +79,7 @@ export default function AdminDashboard() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      
+
       // Fetch user statistics
       const { count: totalUsers } = await supabase
         .from('profiles')
@@ -104,9 +104,17 @@ export default function AdminDashboard() {
         .select('*', { count: 'exact', head: true })
         .gte('created_at', startOfMonth.toISOString());
 
-      // Mock monthly revenue (you'll need to implement actual revenue tracking)
-      const monthlyRevenue = activeSubscriptions * 29.99; // Assuming $29.99 per subscription
-      const conversionRate = totalUsers > 0 ? (activeSubscriptions / totalUsers) * 100 : 0;
+      // Calculate revenue from actual subscription data
+      const { data: activeSubs } = await supabase
+        .from('profiles')
+        .select('plan')
+        .eq('subscription_status', 'active');
+
+      const planPrices: Record<string, number> = { free: 0, pro: 9.99, premium: 29.99 };
+      const monthlyRevenue = (activeSubs || []).reduce((sum, sub) => {
+        return sum + (planPrices[sub.plan] || 0);
+      }, 0);
+      const conversionRate = totalUsers > 0 ? ((activeSubscriptions || 0) / totalUsers) * 100 : 0;
 
       setStats({
         totalUsers: totalUsers || 0,

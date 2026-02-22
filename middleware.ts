@@ -59,11 +59,27 @@ export async function middleware(request: NextRequest) {
     } = await supabase.auth.getUser()
 
     // Protected routes
-    const protectedRoutes = ['/my-canvases', '/profile', '/settings', '/admin']
+    const protectedRoutes = ['/my-canvases', '/profile', '/settings', '/admin', '/generate']
     const isProtectedRoute = protectedRoutes.some(route => request.nextUrl.pathname.startsWith(route))
 
     if (isProtectedRoute && !user) {
         return NextResponse.redirect(new URL('/login', request.url))
+    }
+
+    // Admin-only routes: verify user role
+    const adminRoutes = ['/admin']
+    const isAdminRoute = adminRoutes.some(route => request.nextUrl.pathname.startsWith(route))
+
+    if (isAdminRoute && user) {
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single()
+
+        if (!profile || profile.role !== 'admin') {
+            return NextResponse.redirect(new URL('/my-canvases', request.url))
+        }
     }
 
     // Auth routes (redirect to dashboard if already logged in)
