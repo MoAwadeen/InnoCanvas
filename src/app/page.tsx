@@ -238,11 +238,10 @@ function Navigation() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 duration-200 border-b ${
-        scrolled
+      className={`fixed inset-x-0 top-0 z-50 duration-200 border-b ${scrolled
           ? "bg-zinc-900/500 border-zinc-800 backdrop-blur-lg"
           : "bg-transparent border-transparent"
-      }`}
+        }`}
     >
       <div className="flex items-center justify-between px-6 py-4 mx-auto max-w-7xl">
         <Link
@@ -284,7 +283,7 @@ function Navigation() {
 export default function LandingPage() {
   return (
     <div className="relative min-h-screen">
-      <Particles quantity={80} color="#3b82f6" />
+      <Particles quantity={80} color="#ffffff" />
 
       <Navigation />
 
